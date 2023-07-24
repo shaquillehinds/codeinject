@@ -1,0 +1,9 @@
+.env
+node_modules/
+dist/
+.env
+*.env
+*.zip
+.ebextensions
+*playground.ts
+*playground.js
