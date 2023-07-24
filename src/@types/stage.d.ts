@@ -1,4 +1,7 @@
-type StageType = "import" | "property";
+type FinderStageType = "property";
+type RegularStageType = "import";
+
+type StageType = FinderStageType | RegularStageType;
 
 type ImportOptions = {
   type: "import";

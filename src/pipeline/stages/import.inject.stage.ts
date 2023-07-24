@@ -17,7 +17,7 @@ export default function injectImportStage(
   const importCollection = workingSource.find(jcs.ImportDeclaration);
   let size = importCollection.size();
 
-  importCollection.insertAfter((e: ImportDeclaration, i: number) =>
+  importCollection.insertBefore((e: ImportDeclaration, i: number) =>
     i === size - 1 ? newImport : undefined
   );
 
