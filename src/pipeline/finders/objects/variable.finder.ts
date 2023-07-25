@@ -3,10 +3,10 @@ import { JSCodeshift } from "jscodeshift";
 export default function variableObjectFinder<T>(
   jcs: JSCodeshift,
   collection: Collection<T>,
-  { variableName }: VariableObjectOptions
+  { name }: VariableObjectFinderOptions
 ) {
   return collection
-    .find(jcs.Identifier, { name: variableName })
+    .find(jcs.Identifier, { name })
     .closest(jcs.VariableDeclaration)
     .find(jcs.ObjectExpression);
 }

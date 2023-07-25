@@ -3,8 +3,12 @@ import { Collection, ImportDeclaration, JSCodeshift } from "jscodeshift";
 export default function injectImportStage(
   jcs: JSCodeshift,
   workingSource: Collection,
-  { importName, source, isDefault }: StageOptions<"import">
+  { importName, source, isDefault, col }: StageOptions<"import">
 ): Collection {
+  if (!col) {
+    console.error("No expression collection passed to injectImportStage");
+    return workingSource;
+  }
   const newImport = jcs.importDeclaration(
     [
       isDefault
@@ -14,10 +18,9 @@ export default function injectImportStage(
     jcs.stringLiteral(source)
   );
 
-  const importCollection = workingSource.find(jcs.ImportDeclaration);
-  let size = importCollection.size();
+  let size = col.size();
 
-  importCollection.insertBefore((e: ImportDeclaration, i: number) =>
+  col.insertBefore((e: ImportDeclaration, i: number) =>
     i === size - 1 ? newImport : undefined
   );
 

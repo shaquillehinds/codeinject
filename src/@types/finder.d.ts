@@ -1,11 +1,21 @@
-type FinderType = "variableObject";
+type FinderType = "variableObject" | "switch";
 
-type VariableObjectOptions = {
-  type: "variableObject";
-  variableName: string;
+type BaseFinderOptions = {
+  type: FinderType;
+  name: string;
 };
 
-type FinderOptions<T extends FinderType> = { type: T } & VariableObjectOptions;
+type VariableObjectFinderOptions = BaseFinderOptions & {
+  type: "variableObject";
+};
+
+type SwitchFinderOptions = BaseFinderOptions & {
+  type: "switch";
+};
+
+type FinderOptions<T extends FinderType> =
+  | VariableObjectFinderOptions
+  | SwitchFinderOptions;
 
 type Finder = (
   j: JSCodeshift,

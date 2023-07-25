@@ -1,4 +1,5 @@
 import { Collection, JSCodeshift } from "jscodeshift";
+import objToExp from "../parsers/objToExp.parser";
 
 export default function injectPropertyStage(
   jcs: JSCodeshift,
@@ -10,14 +11,13 @@ export default function injectPropertyStage(
     return workingSource;
   }
 
-  const newProperty = jcs.objectProperty(
-    jcs.identifier(key),
-    identifier ? jcs.identifier(value) : jcs.literal(value)
-  );
+  const properties = col.get(0)?.node.properties || [];
 
-  const properties = col.get(0).node.properties;
+  const objExp = objToExp(jcs, { [key]: value });
 
-  col.get().replace(jcs.objectExpression([...properties, newProperty]));
+  for (let prop of properties) objExp.properties.push(prop);
+
+  col.get().replace(objExp);
 
   return workingSource;
 }

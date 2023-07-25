@@ -4,10 +4,11 @@ import chalk from "chalk";
 import { program } from "commander";
 import * as commands from "./commands";
 import { StagePipeline } from "./pipeline";
-import j from "jscodeshift";
+import jcs from "jscodeshift";
 import path from "path";
-import { injectImportStage, injectPropertyStage } from "./pipeline/stages";
-import { objectVariableFinder } from "./pipeline/finders";
+import * as stages from "./pipeline/stages";
+import { objectVariableFinder, switchFinder } from "./pipeline/finders";
+import reducerStateReturnStatement from "./templates/statements/reducerState.return.statement";
 
 program.version("1.0.0").description("Client Management System CLI");
 
@@ -17,35 +18,52 @@ for (let command in commands) {
   commands[commandKey](program);
 }
 
-console.log(chalk.cyan(process.cwd()));
+console.info(chalk.cyan(process.cwd()));
 
-new StagePipeline(j, `${path.join(process.cwd(), "/testFile.playground.ts")}`)
+await new StagePipeline(
+  jcs,
+  `${path.join(process.cwd(), "/testFile2.playground.ts")}`
+)
   .start()
-  .stage<"import">({
-    stage: injectImportStage,
+  .stage<"case">({
+    stage: stages.injectSwitchCaseStage,
     options: {
-      source: "./test.reducer",
-      isDefault: true,
-      importName: "testReducer",
-      type: "import",
+      caseName: "AppActionType.SET_SOMETHING",
+      identifier: true,
+      statements: [
+        reducerStateReturnStatement(jcs, {
+          something: "action.payload@jsc.identifier",
+        }),
+      ],
+    },
+    finder: {
+      func: switchFinder,
+      options: { name: "action.type", type: "switch" },
     },
   })
   .stage<"property">({
-    stage: injectPropertyStage,
+    stage: stages.injectPropertyStage,
     options: {
-      type: "property",
-      key: "test",
-      value: "testReducer",
-      identifier: true,
+      key: "something",
+      value: 26,
+      identifier: false,
     },
     finder: {
       func: objectVariableFinder,
       options: {
         type: "variableObject",
-        variableName: "reducers",
+        name: "initialState",
       },
     },
   })
+  // .stage<"import">({
+  //   stage: injectImportStage,
+  //   options: {
+  //     source: "./test.reducer",
+  //     isDefault: true,
+  //     importName: "testReducer",
+  //   },
+  // })
   .finish();
 
 program.parse(process.argv);

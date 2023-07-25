@@ -1,9 +1,13 @@
 import { Collection, JSCodeshift } from "jscodeshift";
 import { readFileSync, writeFileSync } from "fs";
+import * as prettier from "prettier";
 
 export default class StagePipeline {
   protected currentStage?: Collection;
-  constructor(protected j: JSCodeshift, protected fileLocation: string) {
+  constructor(
+    protected j: JSCodeshift,
+    protected fileLocation: string
+  ) {
     return this;
   }
 
@@ -26,23 +30,28 @@ export default class StagePipeline {
     options,
   }: {
     stage: Stage<T>;
-    options: StageOptions<T>;
-    finder?: { func: Finder; options: FinderOptions<F> };
+    options: StageOptions<T> & { col?: Collection };
+    finder: StageFinder<F>;
   }) {
     if (!this.currentStage) this.start();
-    if (finder) {
-      options.col = finder.func(this.j, this.currentStage!, finder.options);
-    }
+    options.col = finder.func(this.j, this.currentStage!, finder.options);
     stage(this.j, this.currentStage!, options);
     return this;
   }
 
-  finish() {
+  async finish() {
     if (!this.currentStage)
       return console.error(
         "No current stage, are you sure a stage has been completed?"
       );
-    const updatedSource = this.currentStage?.toSource();
+    let updatedSource = this.currentStage.toSource();
+    try {
+      updatedSource = await prettier.format(updatedSource, {
+        parser: "typescript",
+      });
+    } catch (error) {
+      console.info(error);
+    }
     delete this.currentStage;
     writeFileSync(this.fileLocation, updatedSource, "utf-8");
     return updatedSource;

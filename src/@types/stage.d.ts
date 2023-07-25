@@ -1,33 +1,46 @@
-type FinderStageType = "property";
-type RegularStageType = "import";
+type StageType = "property" | "case" | "import";
 
-type StageType = FinderStageType | RegularStageType;
+type BaseStageOptions<T> = {};
 
 type ImportOptions = {
-  type: "import";
   isDefault?: boolean;
   source: string;
   importName: string;
+  col?: Collection<import("jscodeshift").ImportDeclaration>;
 };
 
 type PropertyOptions = {
-  type: "property";
   identifier?: boolean;
   key: string;
   col?: Collection<import("jscodeshift").ObjectExpression>;
 } & (
   | { identifier: true; value: string }
-  | { value: Literal; identifier: undefined }
-  | { identifier: false; value: Literal }
+  | { value: any; identifier: undefined }
+  | { identifier: false; value: any }
 );
 
-type StageOptions<T extends StageType> = { type: T; col?: Collection } & (
-  | ImportOptions
-  | PropertyOptions
-);
+type CaseOptions = {
+  caseName: string;
+  identifier?: boolean;
+  statements: import("ast-types/gen/kinds").StatementKind[];
+  col?: Collection<import("jscodeshift").SwitchStatement>;
+};
+
+type StageOptions<T extends StageType> = T extends "import"
+  ? ImportOptions
+  : T extends "property"
+  ? PropertyOptions
+  : T extends "case"
+  ? CaseOptions
+  : BaseStageOptions;
 
 type Stage<T> = (
   j: JSCodeshift,
   col: Collection,
   opts: StageOptions<T>
 ) => Collection<T>;
+
+type StageFinder<T = FinderType> = {
+  func: Finder;
+  options: FinderOptions<T>;
+};
