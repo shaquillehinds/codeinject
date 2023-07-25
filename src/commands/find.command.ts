@@ -8,7 +8,7 @@ export default function findCommand(program: Command) {
     .option("-t --test", "Testing flag options")
     .argument("<find>")
     .action(async (name, opts, command) => {
-      console.log(name, opts, command.name());
+      console.info(name, opts, command.name());
       process.exit(0);
     });
 }
