@@ -27,7 +27,7 @@
     "inquirer": "^9.2.8",
     "jscodeshift": "^0.15.0",
     "nanospinner": "^1.1.0",
-    "parse-ts-to-ast": "^0.1.4"
+    "prettier": "^3.0.0"
   },
   "devDependencies": {
     "@types/chalk-animation": "^1.6.1",
