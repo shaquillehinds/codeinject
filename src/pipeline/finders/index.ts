@@ -1,4 +1,5 @@
 import objectVariableFinder from "./objects/variable.finder";
 import switchFinder from "./switch.finder";
+import tsEnumFinder from "./tsEnum.finder";
 
-export { objectVariableFinder, switchFinder };
+export { objectVariableFinder, switchFinder, tsEnumFinder };

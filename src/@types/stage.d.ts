@@ -1,4 +1,4 @@
-type StageType = "property" | "case" | "import";
+type StageType = "property" | "case" | "import" | "tsEnum";
 
 type BaseStageOptions<T> = {};
 
@@ -26,12 +26,20 @@ type CaseOptions = {
   col?: Collection<import("jscodeshift").SwitchStatement>;
 };
 
+type TSEnumOptions = {
+  key: string;
+  value: string | number;
+  col?: Collection<import("jscodeshift").TSEnumDeclaration>;
+};
+
 type StageOptions<T extends StageType> = T extends "import"
   ? ImportOptions
   : T extends "property"
   ? PropertyOptions
   : T extends "case"
   ? CaseOptions
+  : T extends "tsEnum"
+  ? TSEnumOptions
   : BaseStageOptions;
 
 type Stage<T> = (

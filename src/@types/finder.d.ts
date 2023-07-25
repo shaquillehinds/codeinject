@@ -1,4 +1,4 @@
-type FinderType = "variableObject" | "switch";
+type FinderType = "variableObject" | "switch" | "tsEnum";
 
 type BaseFinderOptions = {
   type: FinderType;
@@ -13,9 +13,14 @@ type SwitchFinderOptions = BaseFinderOptions & {
   type: "switch";
 };
 
+type TSEnumFinderOptions = BaseFinderOptions & {
+  type: "tsEnum";
+};
+
 type FinderOptions<T extends FinderType> =
   | VariableObjectFinderOptions
-  | SwitchFinderOptions;
+  | SwitchFinderOptions
+  | TSEnumFinderOptions;
 
 type Finder = (
   j: JSCodeshift,
