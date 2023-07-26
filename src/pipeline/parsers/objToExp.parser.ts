@@ -35,9 +35,17 @@ export default function objToExp(jcs: JSCodeshift, obj: Obj) {
         break;
       }
       case "string": {
-        const split = property.split("@jsc.identifier");
-        if (split[1] !== undefined) value = jcs.identifier(split[0]);
-        else value = jcs.literal(split[0]);
+        const split = property.split("@jcs.identifier");
+        if (split[1] !== undefined) {
+          if (split[0] === key) {
+            const id = jcs.identifier(key);
+            properties.push(
+              jcs.objectProperty.from({ shorthand: true, key: id, value: id })
+            );
+            continue;
+          }
+          value = jcs.identifier(split[0]);
+        } else value = jcs.literal(split[0]);
         break;
       }
       default:
