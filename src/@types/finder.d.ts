@@ -1,10 +1,11 @@
 type FinderType =
   | "variableObject"
+  | "variableArray"
   | "switch"
   | "tsEnum"
-  | "tsInterfaceBody"
   | "import"
   | "program"
+  | "tsInterfaceBody"
   | "tsTypeAlias"
   | "tsTypeLiteral";
 
@@ -15,6 +16,11 @@ type BaseFinderOptions = {
 
 type VariableObjectFinderOptions = BaseFinderOptions & {
   type: "variableObject";
+  name: string;
+};
+
+type VariableArrayFinderOptions = BaseFinderOptions & {
+  type: "variableArray";
   name: string;
 };
 
@@ -53,6 +59,7 @@ type ProgramFinderOptions = BaseFinderOptions & {
 
 type FinderOptions<T extends FinderType> =
   | VariableObjectFinderOptions
+  | VariableArrayFinderOptions
   | SwitchFinderOptions
   | TSEnumFinderOptions
   | InterfaceFinderBodyOptions

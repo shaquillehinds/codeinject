@@ -1,5 +1,6 @@
 type StageType =
   | "property"
+  | "arrayElement"
   | "case"
   | "import"
   | "tsEnumMember"
@@ -21,6 +22,15 @@ type PropertyOptions = {
   identifier?: boolean;
   key: string;
   col?: Collection<import("jscodeshift").ObjectExpression>;
+} & (
+  | { identifier: true; value: string }
+  | { value: any; identifier: undefined }
+  | { identifier: false; value: any }
+);
+
+type ArrayElementOptions = {
+  identifier?: boolean;
+  col?: Collection<import("jscodeshift").ArrayExpression>;
 } & (
   | { identifier: true; value: string }
   | { value: any; identifier: undefined }
@@ -77,6 +87,8 @@ type StageOptions<T extends StageType> = T extends "import"
   ? ImportOptions
   : T extends "property"
   ? PropertyOptions
+  : T extends "arrayElement"
+  ? ArrayElementOptions
   : T extends "case"
   ? CaseOptions
   : T extends "tsEnumMember"

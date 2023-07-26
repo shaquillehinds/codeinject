@@ -31,6 +31,17 @@ await new StagePipeline(
   `${path.join(process.cwd(), "/testFile4.playground.ts")}`
 )
   .start()
+  .stage<"arrayElement">({
+    stage: stages.injectArrayElementStage,
+    options: {
+      identifier: true,
+      value: "ReDrawer",
+    },
+    finder: {
+      func: finders.arrayVariableFinder,
+      options: { type: "variableArray", name: "myArr" },
+    },
+  })
   // .stage<"tsTypeAlias">({
   //   stage: stages.injectTSTypeAliasStage,
   //   options: { type: "union", stringTemplate: "SetSomething" },
