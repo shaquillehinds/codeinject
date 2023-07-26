@@ -7,7 +7,8 @@ type StageType =
   | "tsInterfaceBody"
   | "tsTypeAlias"
   | "tsTypeLiteral"
-  | "stringTemplate";
+  | "stringTemplate"
+  | "namedExport";
 
 type BaseStageOptions<T> = {};
 
@@ -16,6 +17,11 @@ type ImportOptions = {
   source: string;
   importName: string;
   col?: Collection<import("jscodeshift").ImportDeclaration>;
+};
+
+type NamedExportOptions = {
+  name: string;
+  col?: Collection<import("jscodeshift").ExportNamedDeclaration>;
 };
 
 type PropertyOptions = {
@@ -85,6 +91,8 @@ type StringTemplateOptions = {
 
 type StageOptions<T extends StageType> = T extends "import"
   ? ImportOptions
+  : T extends "namedExport"
+  ? NamedExportOptions
   : T extends "property"
   ? PropertyOptions
   : T extends "arrayElement"

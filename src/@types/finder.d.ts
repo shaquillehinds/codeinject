@@ -4,6 +4,8 @@ type FinderType =
   | "switch"
   | "tsEnum"
   | "import"
+  | "export"
+  | "defaultExport"
   | "program"
   | "tsInterfaceBody"
   | "tsTypeAlias"
@@ -53,6 +55,14 @@ type ImportFinderOptions = BaseFinderOptions & {
   type: "import";
 };
 
+type ExportFinderOptions = BaseFinderOptions & {
+  type: "export";
+};
+
+type DefaultExportFinderOptions = BaseFinderOptions & {
+  type: "defaultExport";
+};
+
 type ProgramFinderOptions = BaseFinderOptions & {
   type: "program";
 };
@@ -66,6 +76,8 @@ type FinderOptions<T extends FinderType> =
   | TSTypeAliasFinderOptions
   | TSTypeLiteralFinderOptions
   | ImportFinderOptions
+  | ExportFinderOptions
+  | DefaultExportFinderOptions
   | ProgramFinderOptions;
 
 type Finder = (
