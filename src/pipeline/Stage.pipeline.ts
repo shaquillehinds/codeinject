@@ -34,7 +34,8 @@ export default class StagePipeline {
     finder: StageFinder<F>;
   }) {
     if (!this.currentStage) this.start();
-    options.col = finder.func(this.j, this.currentStage!, finder.options);
+    if (!options.col)
+      options.col = finder.func(this.j, this.currentStage!, finder.options);
     stage(this.j, this.currentStage!, options);
     return this;
   }

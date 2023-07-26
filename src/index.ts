@@ -32,6 +32,22 @@ await new StagePipeline(
   `${path.join(process.cwd(), "/testFile4.playground.ts")}`
 )
   .start()
+  // .stage<"stringTemplate">({
+  //   stage: stages.injectStringTemplateStage,
+  //   options: {
+  //     position: "afterImport",
+  //     template: `
+  //     interface SetSomething {
+  //       type: AppActionType.Set_Something;
+  //       payload: string;
+  //     }
+  //   `,
+  //   },
+  //   finder: {
+  //     func: finders.programFinder,
+  //     options: { type: "program" },
+  //   },
+  // })
   // .stage<"tsInterfaceBody">({
   //   stage: stages.injectTSInterfaceBodyStage,
   //   finder: {
@@ -42,12 +58,12 @@ await new StagePipeline(
   //     bodyStringTemplate: myTemplate('"custom"'),
   //   },
   // })
-  // .stage<"tsEnum">({
+  // .stage<"tsEnumMember">({
   //   stage: stages.injectTSEnumStage,
   //   options: { key: "SET_SOMETHING", value: "SET_SOMETHING" },
   //   finder: {
-  //     func: finders.tsEnumFinder,
-  //     options: { name: "AppActionType", type: "tsEnum" },
+  //     func: finders.tsEnumMemberFinder,
+  //     options: { name: "AppActionType", type: "tsEnumMember" },
   //   },
   // })
   // .stage<"case">({

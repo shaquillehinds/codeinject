@@ -1,4 +1,10 @@
-type StageType = "property" | "case" | "import" | "tsEnum" | "tsInterfaceBody";
+type StageType =
+  | "property"
+  | "case"
+  | "import"
+  | "tsEnumMember"
+  | "tsInterfaceBody"
+  | "stringTemplate";
 
 type BaseStageOptions<T> = {};
 
@@ -26,7 +32,7 @@ type CaseOptions = {
   col?: Collection<import("jscodeshift").SwitchStatement>;
 };
 
-type TSEnumOptions = {
+type TSEnumMemberOptions = {
   key: string;
   value: string | number;
   col?: Collection<import("jscodeshift").TSEnumDeclaration>;
@@ -37,16 +43,30 @@ type TSInterfaceBodyOptions = {
   col?: Collection<import("jscodeshift").TSInterfaceBody>;
 };
 
+type StringTemplatePosition =
+  | "afterImport"
+  | "beforeImport"
+  | "firstLine"
+  | "lastLine";
+
+type StringTemplateOptions = {
+  template: string;
+  position?: StringTemplatePosition;
+  col?: Collection<import("jscodeshift").Program>;
+};
+
 type StageOptions<T extends StageType> = T extends "import"
   ? ImportOptions
   : T extends "property"
   ? PropertyOptions
   : T extends "case"
   ? CaseOptions
-  : T extends "tsEnum"
-  ? TSEnumOptions
+  : T extends "tsEnumMember"
+  ? TSEnumMemberOptions
   : T extends "tsInterfaceBody"
   ? TSInterfaceBodyOptions
+  : T extends "stringTemplate"
+  ? StringTemplateOptions
   : BaseStageOptions;
 
 type Stage<T> = (
