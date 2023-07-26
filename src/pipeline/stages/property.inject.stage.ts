@@ -4,7 +4,7 @@ import objToExp from "../parsers/objToExp.parser";
 export default function injectPropertyStage(
   jcs: JSCodeshift,
   workingSource: Collection,
-  { key, value, identifier, col }: StageOptions<"property">
+  { key, value, col }: StageOptions<"property">
 ) {
   if (!col) {
     console.error("No expression collection passed to injectPropertyStage");
