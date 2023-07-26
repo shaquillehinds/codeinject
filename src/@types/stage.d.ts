@@ -4,6 +4,8 @@ type StageType =
   | "import"
   | "tsEnumMember"
   | "tsInterfaceBody"
+  | "tsTypeAlias"
+  | "tsTypeLiteral"
   | "stringTemplate";
 
 type BaseStageOptions<T> = {};
@@ -43,6 +45,22 @@ type TSInterfaceBodyOptions = {
   col?: Collection<import("jscodeshift").TSInterfaceBody>;
 };
 
+type TSTypeAliasOptions = {
+  type:
+    | "union"
+    | "intersection"
+    | "unionGroup"
+    | "intersectionGroup"
+    | "overwrite";
+  stringTemplate: string;
+  col?: Collection<import("jscodeshift").TSTypeAliasDeclaration>;
+};
+
+type TSTypeLiteralOptions = {
+  stringTemplate: string;
+  col?: Collection<import("jscodeshift").TSTypeLiteral>;
+};
+
 type StringTemplatePosition =
   | "afterImport"
   | "beforeImport"
@@ -65,6 +83,10 @@ type StageOptions<T extends StageType> = T extends "import"
   ? TSEnumMemberOptions
   : T extends "tsInterfaceBody"
   ? TSInterfaceBodyOptions
+  : T extends "tsTypeAlias"
+  ? TSTypeAliasOptions
+  : T extends "tsTypeLiteral"
+  ? TSTypeLiteralOptions
   : T extends "stringTemplate"
   ? StringTemplateOptions
   : BaseStageOptions;

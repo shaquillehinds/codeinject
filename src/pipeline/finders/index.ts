@@ -4,6 +4,8 @@ import tsEnumFinder from "./tsEnum.finder";
 import tsInterfaceBodyFinder from "./tsInterfaceBody.finder";
 import importFinder from "./import.finder";
 import programFinder from "./program.finder";
+import tsTypeAliasFinder from "./tsTypeAlias.finder";
+import tsTypeLiteralFinder from "./tsTypeLiteral.finder";
 
 export {
   programFinder,
@@ -12,4 +14,6 @@ export {
   switchFinder,
   tsEnumFinder,
   tsInterfaceBodyFinder,
+  tsTypeAliasFinder,
+  tsTypeLiteralFinder,
 };

@@ -26,12 +26,19 @@ const myTemplate = (prop: string) => `{
     players: Player[];
   }
 }`;
-
 await new StagePipeline(
   jcs,
   `${path.join(process.cwd(), "/testFile4.playground.ts")}`
 )
   .start()
+  // .stage<"tsTypeAlias">({
+  //   stage: stages.injectTSTypeAliasStage,
+  //   options: { type: "union", stringTemplate: "SetSomething" },
+  //   finder: {
+  //     func: finders.tsTypeAliasFinder,
+  //     options: { type: "tsTypeAlias", name: "AppAction" },
+  //   },
+  // })
   // .stage<"stringTemplate">({
   //   stage: stages.injectStringTemplateStage,
   //   options: {

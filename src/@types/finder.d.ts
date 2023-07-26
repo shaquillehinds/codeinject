@@ -4,7 +4,9 @@ type FinderType =
   | "tsEnum"
   | "tsInterfaceBody"
   | "import"
-  | "program";
+  | "program"
+  | "tsTypeAlias"
+  | "tsTypeLiteral";
 
 type BaseFinderOptions = {
   type: FinderType;
@@ -31,6 +33,16 @@ type InterfaceFinderBodyOptions = BaseFinderOptions & {
   name: string;
 };
 
+type TSTypeAliasFinderOptions = BaseFinderOptions & {
+  type: "tsTypeAlias";
+  name: string;
+};
+
+type TSTypeLiteralFinderOptions = BaseFinderOptions & {
+  type: "tsTypeLiteral";
+  name: string;
+};
+
 type ImportFinderOptions = BaseFinderOptions & {
   type: "import";
 };
@@ -44,6 +56,8 @@ type FinderOptions<T extends FinderType> =
   | SwitchFinderOptions
   | TSEnumFinderOptions
   | InterfaceFinderBodyOptions
+  | TSTypeAliasFinderOptions
+  | TSTypeLiteralFinderOptions
   | ImportFinderOptions
   | ProgramFinderOptions;
 
