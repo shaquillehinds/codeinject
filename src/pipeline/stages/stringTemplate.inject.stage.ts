@@ -1,5 +1,5 @@
 import { Collection, JSCodeshift, Program } from "jscodeshift";
-import { importFinder } from "../finders";
+import importFinder from "../finders/import.finder";
 /**
  *
  * @param options.stringTemplate - Provide typescipt code in a template string
