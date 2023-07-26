@@ -16,10 +16,10 @@ import { TSTypeKind } from "ast-types/gen/kinds";
  * `)
  * ```
  */
-export default function injectTSTypeAliasStage(
+export default function injectTSTypeAliasStage<T extends "tsTypeAlias">(
   jcs: JSCodeshift,
   workingSource: Collection,
-  { type, stringTemplate, col }: StageOptions<"tsTypeAlias">
+  { type, stringTemplate, col }: StageOptions<T>
 ) {
   if (!col) {
     console.error("No expression collection passed to injectTSTypeAliasStage");
