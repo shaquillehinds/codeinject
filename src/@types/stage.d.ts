@@ -1,14 +1,17 @@
-type StageType =
-  | "property"
-  | "arrayElement"
-  | "case"
-  | "import"
-  | "tsEnumMember"
-  | "tsInterfaceBody"
-  | "tsTypeAlias"
-  | "tsTypeLiteral"
-  | "stringTemplate"
-  | "namedExport";
+enum StageTypeE {
+  property = "property",
+  arrayElement = "arrayElement",
+  case = "case",
+  import = "import",
+  tsEnumMember = "tsEnumMember",
+  tsInterfaceBody = "tsInterfaceBody",
+  tsTypeAlias = "tsTypeAlias",
+  tsTypeLiteral = "tsTypeLiteral",
+  stringTemplate = "stringTemplate",
+  namedExport = "namedExport",
+}
+
+type StageType = keyof typeof StageTypeE;
 
 type BaseStageOptions<T> = {};
 
@@ -25,14 +28,10 @@ type NamedExportOptions = {
 };
 
 type PropertyOptions = {
-  identifier?: boolean;
   key: string;
+  value: any;
   col?: Collection<import("jscodeshift").ObjectExpression>;
-} & (
-  | { identifier: true; value: string }
-  | { value: any; identifier: undefined }
-  | { identifier: false; value: any }
-);
+};
 
 type ArrayElementOptions = {
   identifier?: boolean;
@@ -111,11 +110,11 @@ type StageOptions<T extends StageType> = T extends "import"
   ? StringTemplateOptions
   : BaseStageOptions;
 
-type Stage<T> = (
+type Stage<T extends StageType> = (
   j: JSCodeshift,
   col: Collection,
   opts: StageOptions<T>
-) => Collection<T>;
+) => Collection;
 
 type StageFinder<T = FinderType> = {
   func: Finder;

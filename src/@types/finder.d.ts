@@ -1,15 +1,37 @@
-type FinderType =
-  | "variableObject"
-  | "variableArray"
-  | "switch"
-  | "tsEnum"
-  | "import"
-  | "export"
-  | "defaultExport"
-  | "program"
-  | "tsInterfaceBody"
-  | "tsTypeAlias"
-  | "tsTypeLiteral";
+enum FinderTypeE {
+  variableObject = "variableObject",
+  variableArray = "variableArray",
+  switch = "switch",
+  tsEnum = "tsEnum",
+  import = "import",
+  export = "export",
+  defaultExport = "defaultExport",
+  program = "program",
+  tsInterfaceBody = "tsInterfaceBody",
+  tsTypeAlias = "tsTypeAlias",
+  tsTypeLiteral = "tsTypeLiteral",
+}
+
+type FinderType = keyof typeof FinderTypeE;
+
+type FinderOptions<T extends FinderType> =
+  | VariableObjectFinderOptions
+  | VariableArrayFinderOptions
+  | SwitchFinderOptions
+  | TSEnumFinderOptions
+  | InterfaceFinderBodyOptions
+  | TSTypeAliasFinderOptions
+  | TSTypeLiteralFinderOptions
+  | ImportFinderOptions
+  | ExportFinderOptions
+  | DefaultExportFinderOptions
+  | ProgramFinderOptions;
+
+type Finder = (
+  j: JSCodeshift,
+  col: Collection,
+  opts: FinderOptions
+) => Collection;
 
 type BaseFinderOptions = {
   type: FinderType;
@@ -66,22 +88,3 @@ type DefaultExportFinderOptions = BaseFinderOptions & {
 type ProgramFinderOptions = BaseFinderOptions & {
   type: "program";
 };
-
-type FinderOptions<T extends FinderType> =
-  | VariableObjectFinderOptions
-  | VariableArrayFinderOptions
-  | SwitchFinderOptions
-  | TSEnumFinderOptions
-  | InterfaceFinderBodyOptions
-  | TSTypeAliasFinderOptions
-  | TSTypeLiteralFinderOptions
-  | ImportFinderOptions
-  | ExportFinderOptions
-  | DefaultExportFinderOptions
-  | ProgramFinderOptions;
-
-type Finder = (
-  j: JSCodeshift,
-  col: Collection,
-  opts: FinderOptions
-) => Collection;
