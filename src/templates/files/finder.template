@@ -1,0 +1,9 @@
+import { Collection, JSCodeshift } from "jscodeshift";
+
+export default function TemplateFinder<T>(
+  jcs: JSCodeshift,
+  collection: Collection<T>,
+  options: TemplateFinderOptions
+) {
+  return collection.find(jcs.Identifier, { name: options.name });
+}
