@@ -9,10 +9,7 @@ export default function injectTSEnumMemberStage(
     console.error("No expression collection passed to injectTSEnumStage");
     return workingSource;
   }
-  const newMember = jcs.tsEnumMemberMember(
-    jcs.identifier(key),
-    jcs.literal(value)
-  );
+  const newMember = jcs.tsEnumMember(jcs.identifier(key), jcs.literal(value));
   const tsEnumMember = col.get().value as TSEnumDeclaration;
   tsEnumMember.members.push(newMember);
   col.forEach((p) => p.replace(tsEnumMember));
