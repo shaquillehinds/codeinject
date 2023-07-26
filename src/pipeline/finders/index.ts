@@ -10,7 +10,7 @@ import arrayVariableFinder from "./variableArray.finder";
 import objectVariableFinder from "./variableObject.finder";
 import tsInterfaceBodyFinder from "./tsInterfaceBody.finder";
 
-export {
+const finders = {
   importFinder,
   exportFinder,
   switchFinder,
@@ -23,3 +23,4 @@ export {
   objectVariableFinder,
   tsInterfaceBodyFinder,
 };
+export default finders;

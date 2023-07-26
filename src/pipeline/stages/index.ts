@@ -9,7 +9,7 @@ import injectTSTypeLiteralStage from "./tsTypeLiteral.inject.stage";
 import injectStringTemplateStage from "./stringTemplate.inject.stage";
 import injectTSInterfaceBodyStage from "./tsInterfaceBody.inject.stage";
 
-export {
+const stages = {
   injectImportStage,
   injectPropertyStage,
   injectSwitchCaseStage,
@@ -21,3 +21,5 @@ export {
   injectStringTemplateStage,
   injectTSInterfaceBodyStage,
 };
+
+export default stages;
