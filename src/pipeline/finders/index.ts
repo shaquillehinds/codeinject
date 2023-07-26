@@ -1,19 +1,23 @@
 import switchFinder from "./switch.finder";
 import tsEnumFinder from "./tsEnum.finder";
 import importFinder from "./import.finder";
+import exportFinder from "./export.finder";
 import programFinder from "./program.finder";
 import tsTypeAliasFinder from "./tsTypeAlias.finder";
 import tsTypeLiteralFinder from "./tsTypeLiteral.finder";
-import arrayVariableFinder from "./arrays/variable.finder";
-import objectVariableFinder from "./objects/variable.finder";
+import exportDefaultFinder from "./defaultExport.finder";
+import arrayVariableFinder from "./variableArray.finder";
+import objectVariableFinder from "./variableObject.finder";
 import tsInterfaceBodyFinder from "./tsInterfaceBody.finder";
 
 export {
   importFinder,
+  exportFinder,
   switchFinder,
   tsEnumFinder,
   programFinder,
   tsTypeAliasFinder,
+  exportDefaultFinder,
   tsTypeLiteralFinder,
   arrayVariableFinder,
   objectVariableFinder,
