@@ -1,4 +1,4 @@
-type StageType = "property" | "case" | "import" | "tsEnum";
+type StageType = "property" | "case" | "import" | "tsEnum" | "tsInterfaceBody";
 
 type BaseStageOptions<T> = {};
 
@@ -32,6 +32,11 @@ type TSEnumOptions = {
   col?: Collection<import("jscodeshift").TSEnumDeclaration>;
 };
 
+type TSInterfaceBodyOptions = {
+  bodyStringTemplate: string;
+  col?: Collection<import("jscodeshift").TSInterfaceBody>;
+};
+
 type StageOptions<T extends StageType> = T extends "import"
   ? ImportOptions
   : T extends "property"
@@ -40,6 +45,8 @@ type StageOptions<T extends StageType> = T extends "import"
   ? CaseOptions
   : T extends "tsEnum"
   ? TSEnumOptions
+  : T extends "tsInterfaceBody"
+  ? TSInterfaceBodyOptions
   : BaseStageOptions;
 
 type Stage<T> = (

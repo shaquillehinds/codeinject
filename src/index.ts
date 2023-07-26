@@ -20,19 +20,36 @@ for (let command in commands) {
 
 console.info(chalk.cyan(process.cwd()));
 
+const myTemplate = (prop: string) => `{
+  roles: {
+    main: ${prop};
+    players: Player[];
+  }
+}`;
+
 await new StagePipeline(
   jcs,
-  `${path.join(process.cwd(), "/testFile3.playground.ts")}`
+  `${path.join(process.cwd(), "/testFile4.playground.ts")}`
 )
   .start()
-  .stage<"tsEnum">({
-    stage: stages.injectTSEnumStage,
-    options: { key: "SET_SOMETHING", value: "SET_SOMETHING" },
-    finder: {
-      func: finders.tsEnumFinder,
-      options: { name: "AppActionType", type: "tsEnum" },
-    },
-  })
+  // .stage<"tsInterfaceBody">({
+  //   stage: stages.injectTSInterfaceBodyStage,
+  //   finder: {
+  //     func: finders.tsInterfaceBodyFinder,
+  //     options: { name: "SetAppStatus", type: "tsInterfaceBody" },
+  //   },
+  //   options: {
+  //     bodyStringTemplate: myTemplate('"custom"'),
+  //   },
+  // })
+  // .stage<"tsEnum">({
+  //   stage: stages.injectTSEnumStage,
+  //   options: { key: "SET_SOMETHING", value: "SET_SOMETHING" },
+  //   finder: {
+  //     func: finders.tsEnumFinder,
+  //     options: { name: "AppActionType", type: "tsEnum" },
+  //   },
+  // })
   // .stage<"case">({
   //   stage: stages.injectSwitchCaseStage,
   //   options: {

@@ -14,12 +14,5 @@ export default function injectTSEnumStage(
   tsEnum.members.push(newMember);
   col.forEach((p) => p.replace(tsEnum));
 
-  // const prevMembers = col.get().value.members;
-  // console.log(prevMembers);
-  // const newEnumCol = jcs.tsEnumDeclaration(jcs.identifier("AppActionType"), [
-  //   ...prevMembers,
-  //   newMember,
-  // ]);
-  // col.forEach((e) => e.replace(newEnumCol));
   return workingSource;
 }
