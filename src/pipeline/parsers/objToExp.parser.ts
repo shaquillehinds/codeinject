@@ -2,6 +2,7 @@ import { JSCodeshift, ObjectMethod, ObjectProperty } from "jscodeshift";
 import { ExpressionKind, PatternKind } from "ast-types/gen/kinds";
 import arrToExp from "./arrToExp.parser";
 import funcToExp from "./funcToExp.parser";
+import stringToASTType from "./stringToASTType.parser";
 
 interface Obj {
   [key: string]: any;
@@ -35,17 +36,14 @@ export default function objToExp(jcs: JSCodeshift, obj: Obj) {
         break;
       }
       case "string": {
-        const split = property.split("@jcs.identifier");
-        if (split[1] !== undefined) {
-          if (split[0] === key) {
-            const id = jcs.identifier(key);
-            properties.push(
-              jcs.objectProperty.from({ shorthand: true, key: id, value: id })
-            );
-            continue;
-          }
-          value = jcs.identifier(split[0]);
-        } else value = jcs.literal(split[0]);
+        const { type, string } = stringToASTType(property);
+        if (type.type === "Identifier" && string === key) {
+          properties.push(
+            jcs.objectProperty.from({ shorthand: true, key: type, value: type })
+          );
+          continue;
+        }
+        value = type;
         break;
       }
       default:
