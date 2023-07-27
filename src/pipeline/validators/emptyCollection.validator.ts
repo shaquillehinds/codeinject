@@ -1,3 +1,4 @@
+import { chalkStderr } from "chalk";
 import { Collection } from "jscodeshift";
 
 export default function emptyCollectionValidator<T>(
@@ -6,7 +7,9 @@ export default function emptyCollectionValidator<T>(
 ) {
   if (!collection.size())
     throw new Error(
-      `The collection "${collectionName}" is empty, can't use in stage`
+      chalkStderr.redBright(
+        `The collection "${collectionName}" is empty, can't use in stage`
+      )
     );
   return collection;
 }

@@ -1,3 +1,4 @@
+import { chalkStderr } from "chalk";
 import { Collection } from "jscodeshift";
 
 export default function singleNodeCollectionValidator<T>(
@@ -7,7 +8,9 @@ export default function singleNodeCollectionValidator<T>(
   const col = collection.filter((e, i) => i === 0);
   if (!col.size())
     throw new Error(
-      `The collection ${collectionName} is empty, can't use in stage`
+      chalkStderr.redBright(
+        `The collection ${collectionName} is empty, can't use in stage`
+      )
     );
   return col;
 }
