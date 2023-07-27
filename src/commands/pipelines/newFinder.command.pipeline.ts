@@ -43,10 +43,7 @@ export default async function newFinderCommandPipeline(name: string) {
         options: { type: "tsTypeAlias", name: "FinderOptions" },
       },
     })
-    .finish();
-
-  console.log(name, nameL);
-  await new StagePipeline(jcs, "src/pipeline/finders/index.ts")
+    .parse("src/pipeline/finders/index.ts")
     .stage<StageTypeE.import>({
       stage: stages.injectImportStage,
       options: {

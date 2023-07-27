@@ -12,9 +12,9 @@ export default function newCommand(program: Command) {
     .description("Creates a new stage or finder")
     // dash syntax resolves to camel case --first-name=firstName
     .option("-n --name <string>", "Name of stage or finder")
-    .action(async (type, { name }) => {
+    .option("-c --collection <string>", "Name of stage collection")
+    .action(async (type, { name, collection }) => {
       let newType = type as NewType;
-      let newName = name;
       if (!type) {
         newType = (
           await inquirer.prompt({
@@ -25,32 +25,42 @@ export default function newCommand(program: Command) {
           })
         ).newType;
       }
-      if (!newName) {
-        newName = (
+      if (!name) {
+        name = (
           await inquirer.prompt({
-            name: "newName",
+            name: "name",
             type: "input",
             message: "Name of you finder or stage",
           })
-        ).newName;
+        ).name;
       }
-      const nameL = newName[0].toLowerCase() + newName.slice(1);
+      const nameL = name[0].toLowerCase() + name.slice(1);
+      name = name[0].toUpperCase() + name.slice(1);
 
       if (newType === "finder") {
-        await newFinderCommandPipeline(newName);
+        await newFinderCommandPipeline(name);
         writeFileSync(
           `src/pipeline/finders/${nameL}.finder.ts`,
           readFileSync(`src/templates/files/finder.template`, "utf-8")
-            .replaceAll("{!template}", newName)
+            .replaceAll("{!template}", name)
             .replaceAll("{template}", nameL),
           "utf-8"
         );
       } else if (newType === "stage") {
-        await newStageCommandPipeline(newName);
+        let col = collection;
+        if (!col)
+          col = (
+            await inquirer.prompt({
+              name: "col",
+              type: "input",
+              message: "Name of collection this stage will be using.",
+            })
+          ).col;
+        await newStageCommandPipeline(name, col);
         writeFileSync(
           `src/pipeline/stages/${nameL}.inject.stage.ts`,
           readFileSync(`src/templates/files/stage.template`, "utf-8")
-            .replaceAll("{!template}", newName)
+            .replaceAll("{!template}", name)
             .replaceAll("{template}", nameL),
           "utf-8"
         );

@@ -46,10 +46,7 @@ export default async function newStageCommandPipeline(
         options: { type: "tsTypeAlias", name: "StageOptions" },
       },
     })
-    .finish();
-
-  console.log(name, nameL);
-  await new StagePipeline(jcs, "src/pipeline/stages/index.ts")
+    .parse("src/pipeline/stages/index.ts")
     .stage<StageTypeE.import>({
       stage: stages.injectImportStage,
       options: {
