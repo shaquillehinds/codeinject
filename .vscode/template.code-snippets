@@ -1,0 +1,11 @@
+{
+  "Debug Logger": {
+    "prefix": "deb",
+    "body": [
+      "import { DebugLogger } from \"@utils/Logger\";",
+      "",
+      "const log = DebugLogger(\"$1$TM_FILENAME\");"
+    ],
+    "description": "Add debuglogger"
+  }
+}
