@@ -1,5 +1,5 @@
 import { JSCodeshift } from "jscodeshift";
-import singleNodeCollectionValidator from "../validators/singleNodeCollection.validator";
+import singleNodeCollectionValidator from "../validators/singleNodeCollection.finder.validator";
 
 export default function arrayVariableFinder<T>(
   jcs: JSCodeshift,

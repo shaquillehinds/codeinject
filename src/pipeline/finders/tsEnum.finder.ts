@@ -1,5 +1,5 @@
 import { Collection, JSCodeshift } from "jscodeshift";
-import singleNodeCollectionValidator from "../validators/singleNodeCollection.validator";
+import singleNodeCollectionValidator from "../validators/singleNodeCollection.finder.validator";
 
 export default function tsEnumFinder<T>(
   jcs: JSCodeshift,
