@@ -49,25 +49,25 @@ type StageFinder<T = FinderType> = {
   options: FinderOptions<T>;
 };
 
-type BaseStageOptions<T> = {};
+type BaseStageOptions = {};
 
 type ImportOptions = {
   isDefault?: boolean;
   source: string;
   importName: string;
   col?: Collection<import("jscodeshift").ImportDeclaration>;
-};
+} & BaseStageOptions;
 
 type NamedExportOptions = {
   name: string;
   col?: Collection<import("jscodeshift").ExportNamedDeclaration>;
-};
+} & BaseStageOptions;
 
 type PropertyOptions = {
   key: string;
   value: any;
   col?: Collection<import("jscodeshift").ObjectExpression>;
-};
+} & BaseStageOptions;
 
 type ArrayElementOptions = {
   identifier?: boolean;
@@ -76,25 +76,26 @@ type ArrayElementOptions = {
   | { identifier: true; value: string }
   | { value: any; identifier: undefined }
   | { identifier: false; value: any }
-);
+) &
+  BaseStageOptions;
 
 type CaseOptions = {
   caseName: string;
   identifier?: boolean;
   statements: import("ast-types/gen/kinds").StatementKind[];
   col?: Collection<import("jscodeshift").SwitchStatement>;
-};
+} & BaseStageOptions;
 
 type TSEnumMemberOptions = {
   key: string;
   value: string | number;
   col?: Collection<import("jscodeshift").TSEnumDeclaration>;
-};
+} & BaseStageOptions;
 
 type TSInterfaceBodyOptions = {
   bodyStringTemplate: string;
   col?: Collection<import("jscodeshift").TSInterfaceBody>;
-};
+} & BaseStageOptions;
 
 type TSTypeAliasOptions = {
   type:
@@ -105,7 +106,7 @@ type TSTypeAliasOptions = {
     | "overwrite";
   stringTemplate: string;
   col?: Collection<import("jscodeshift").TSTypeAliasDeclaration>;
-};
+} & BaseStageOptions;
 
 type TSTypeAliasConditionalOptions = {
   extendee: string;
@@ -113,12 +114,12 @@ type TSTypeAliasConditionalOptions = {
   trueClause: string;
   falseClause?: string;
   col?: Collection<import("jscodeshift").TSTypeAliasDeclaration>;
-};
+} & BaseStageOptions;
 
 type TSTypeLiteralOptions = {
   stringTemplate: string;
   col?: Collection<import("jscodeshift").TSTypeLiteral>;
-};
+} & BaseStageOptions;
 
 type StringTemplatePosition =
   | "afterImport"
@@ -130,4 +131,4 @@ type StringTemplateOptions = {
   template: string;
   position?: StringTemplatePosition;
   col?: Collection<import("jscodeshift").Program>;
-};
+} & BaseStageOptions;
