@@ -5,5 +5,5 @@ export default function {template}Finder<T>(
   collection: Collection<T>,
   options: {!template}FinderOptions
 ) {
-  return collection.find(jcs.Identifier, { name: options.name });
+  return collection.find(jcs.Identifier, options);
 }
