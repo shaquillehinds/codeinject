@@ -1,4 +1,7 @@
 import { Collection, JSCodeshift } from "jscodeshift";
+import { DebugLogger } from "@utils/Logger";
+
+const log = DebugLogger("{template}.inject.stage.ts");
 
 export default function inject{!template}Stage(
   jcs: JSCodeshift,
@@ -6,7 +9,7 @@ export default function inject{!template}Stage(
   { col }: StageOptions<"{template}">
 ) {
   if (!col) {
-    console.error("No expression collection passed to inject{!template}Stage");
+    log("error", "No expression collection passed to this stage.");
     return workingSource;
   }
 
