@@ -14,27 +14,27 @@ enum FinderTypeE {
 
 type FinderType = keyof typeof FinderTypeE;
 
-type FinderOptions<T extends FinderType> = T extends FinderTypeE.variableObject
+type FinderOptions<T extends FinderType> = T extends "variableObject"
   ? VariableObjectFinderOptions
-  : T extends FinderTypeE.variableArray
+  : T extends "variableArray"
   ? VariableArrayFinderOptions
-  : T extends FinderTypeE.switch
+  : T extends "switch"
   ? SwitchFinderOptions
-  : T extends FinderTypeE.tsEnum
+  : T extends "tsEnum"
   ? TSEnumFinderOptions
-  : T extends FinderTypeE.tsInterfaceBody
+  : T extends "tsInterfaceBody"
   ? InterfaceFinderBodyOptions
-  : T extends FinderTypeE.tsTypeAlias
+  : T extends "tsTypeAlias"
   ? TSTypeAliasFinderOptions
-  : T extends FinderTypeE.tsTypeLiteral
+  : T extends "tsTypeLiteral"
   ? TSTypeLiteralFinderOptions
-  : T extends FinderTypeE.import
+  : T extends "import"
   ? ImportFinderOptions
-  : T extends FinderTypeE.export
+  : T extends "export"
   ? ExportFinderOptions
-  : T extends FinderTypeE.defaultExport
+  : T extends "defaultExport"
   ? DefaultExportFinderOptions
-  : T extends FinderTypeE.program
+  : T extends "program"
   ? ProgramFinderOptions
   : BaseFinderOptions;
 
