@@ -1,0 +1,14 @@
+import { Collection, JSCodeshift } from "jscodeshift";
+
+export default function inject{!template}Stage(
+  jcs: JSCodeshift,
+  workingSource: Collection,
+  { col }: StageOptions<"{template}">
+) {
+  if (!col) {
+    console.error("No expression collection passed to inject{!template}Stage");
+    return workingSource;
+  }
+
+  return workingSource;
+}
