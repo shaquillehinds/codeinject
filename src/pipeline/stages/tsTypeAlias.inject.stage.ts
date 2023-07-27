@@ -46,10 +46,11 @@ export default function injectTSTypeAliasStage<T extends "tsTypeAlias">(
           prevType = jcs.tsParenthesizedType(prevType);
         }
         const union = jcs.tsUnionType([prevType, tsType]);
-        const newTypeDec = jcs.tsTypeAliasDeclaration(
-          col.get().value.id,
-          union
-        );
+        const newTypeDec = jcs.tsTypeAliasDeclaration.from({
+          typeParameters: col.get().value.typeParameters,
+          id: col.get().value.id,
+          typeAnnotation: union,
+        });
         col.replaceWith(newTypeDec);
       }
       break;
@@ -59,7 +60,11 @@ export default function injectTSTypeAliasStage<T extends "tsTypeAlias">(
         jcs.tsParenthesizedType(tsTypeAlias.typeAnnotation),
         tsType,
       ]);
-      const newTypeDec = jcs.tsTypeAliasDeclaration(col.get().value.id, union);
+      const newTypeDec = jcs.tsTypeAliasDeclaration.from({
+        typeParameters: col.get().value.typeParameters,
+        id: col.get().value.id,
+        typeAnnotation: union,
+      });
       col.replaceWith(newTypeDec);
       break;
     }
@@ -75,10 +80,11 @@ export default function injectTSTypeAliasStage<T extends "tsTypeAlias">(
           prevType = jcs.tsParenthesizedType(prevType);
         }
         const intersection = jcs.tsIntersectionType([prevType, tsType]);
-        const newTypeDec = jcs.tsTypeAliasDeclaration(
-          col.get().value.id,
-          intersection
-        );
+        const newTypeDec = jcs.tsTypeAliasDeclaration.from({
+          typeParameters: col.get().value.typeParameters,
+          id: col.get().value.id,
+          typeAnnotation: intersection,
+        });
         col.replaceWith(newTypeDec);
       }
       break;
@@ -88,15 +94,20 @@ export default function injectTSTypeAliasStage<T extends "tsTypeAlias">(
         jcs.tsParenthesizedType(tsTypeAlias.typeAnnotation),
         tsType,
       ]);
-      const newTypeDec = jcs.tsTypeAliasDeclaration(
-        col.get().value.id,
-        intersection
-      );
+      const newTypeDec = jcs.tsTypeAliasDeclaration.from({
+        typeParameters: col.get().value.typeParameters,
+        id: col.get().value.id,
+        typeAnnotation: intersection,
+      });
       col.replaceWith(newTypeDec);
       break;
     }
     default:
-      const newTypeDec = jcs.tsTypeAliasDeclaration(col.get().value.id, tsType);
+      const newTypeDec = jcs.tsTypeAliasDeclaration.from({
+        typeParameters: col.get().value.typeParameters,
+        id: col.get().value.id,
+        typeAnnotation: tsType,
+      });
       col.replaceWith(newTypeDec);
       break;
   }

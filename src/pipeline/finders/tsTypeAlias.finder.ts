@@ -7,5 +7,6 @@ export default function tsTypeAliasFinder<T>(
 ) {
   return collection
     .find(jcs.Identifier, { name })
-    .closest(jcs.TSTypeAliasDeclaration);
+    .closest(jcs.TSTypeAliasDeclaration)
+    .filter((t, i) => i === 0);
 }
