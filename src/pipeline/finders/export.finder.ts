@@ -1,8 +1,12 @@
 import { Collection, JSCodeshift } from "jscodeshift";
+import singleNodeCollectionValidator from "../validators/singleNodeCollection.validator";
 
 export default function exportFinder<T>(
   jcs: JSCodeshift,
   collection: Collection<T>
 ) {
-  return collection.find(jcs.ExportNamedDeclaration);
+  return singleNodeCollectionValidator(
+    collection.find(jcs.ExportNamedDeclaration),
+    "ExportNamedCollection"
+  );
 }

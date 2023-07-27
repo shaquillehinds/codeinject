@@ -1,4 +1,5 @@
 import { Collection, JSCodeshift } from "jscodeshift";
+import singleNodeCollectionValidator from "../validators/singleNodeCollection.validator";
 
 export default function switchFinder<T>(
   jcs: JSCodeshift,
@@ -6,7 +7,10 @@ export default function switchFinder<T>(
   { name }: SwitchFinderOptions
 ) {
   const split = name.split(".");
-  return collection
-    .find(jcs.Identifier, { name: split[split.length - 1] })
-    .closest(jcs.SwitchStatement);
+  return singleNodeCollectionValidator(
+    collection
+      .find(jcs.Identifier, { name: split[split.length - 1] })
+      .closest(jcs.SwitchStatement),
+    "SwitchStatement"
+  );
 }

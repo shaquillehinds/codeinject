@@ -1,8 +1,12 @@
 import { Collection, JSCodeshift } from "jscodeshift";
+import emptyCollectionValidator from "../validators/emptyCollection.validator";
 
 export default function importFinder<T>(
   jcs: JSCodeshift,
   collection: Collection<T>
 ) {
-  return collection.find(jcs.ImportDeclaration);
+  return emptyCollectionValidator(
+    collection.find(jcs.ImportDeclaration),
+    "ImportDeclaration"
+  );
 }
