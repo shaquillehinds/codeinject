@@ -9,15 +9,15 @@ export default async function newStageCommandPipeline(
 ) {
   const nameL = name[0].toLowerCase() + name.slice(1);
   await new StagePipeline(jcs, "src/@types/stage.d.ts")
-    .stage<StageTypeE.tsEnumMember>({
+    .stage<StageTypeE.tsEnumMember, FinderTypeE.tsEnum>({
       stage: stages.injectTSEnumMemberStage,
       options: { key: nameL, value: nameL },
       finder: {
         func: finders.tsEnumFinder,
-        options: { type: "tsEnum", name: "StageTypeE" },
+        options: { name: "StageTypeE" },
       },
     })
-    .stage<StageTypeE.stringTemplate>({
+    .stage<StageTypeE.stringTemplate, FinderTypeE.program>({
       stage: stages.injectStringTemplateStage,
       options: {
         template: `
@@ -31,10 +31,10 @@ export default async function newStageCommandPipeline(
       },
       finder: {
         func: finders.programFinder,
-        options: { type: "program" },
+        options: {},
       },
     })
-    .stage<StageTypeE.tsTypeAliasConditional>({
+    .stage<StageTypeE.tsTypeAliasConditional, FinderTypeE.tsTypeAlias>({
       stage: stages.injectTSTypeAliasConditionalStage,
       options: {
         extendee: "T",
@@ -43,37 +43,37 @@ export default async function newStageCommandPipeline(
       },
       finder: {
         func: finders.tsTypeAliasFinder,
-        options: { type: "tsTypeAlias", name: "StageOptions" },
+        options: { name: "StageOptions" },
       },
     })
     .parse("src/@types/stage.enums.ts")
-    .stage<StageTypeE.tsEnumMember>({
+    .stage<StageTypeE.tsEnumMember, FinderTypeE.tsEnum>({
       stage: stages.injectTSEnumMemberStage,
       finder: {
         func: finders.tsEnumFinder,
-        options: { type: "tsEnum", name: "StageTypeE" },
+        options: { name: "StageTypeE" },
       },
       options: { key: nameL, value: nameL },
     })
-    .stage<StageTypeE.tsEnumMember>({
+    .stage<StageTypeE.tsEnumMember, FinderTypeE.tsEnum>({
       stage: stages.injectTSEnumMemberStage,
       finder: {
         func: finders.tsEnumFinder,
-        options: { type: "tsEnum", name: "StageNameE" },
+        options: { name: "StageNameE" },
       },
       options: { key: nameL, value: `inject${name}Stage` },
     })
     .parse("src/pipeline/stages/index.ts")
-    .stage<StageTypeE.import>({
+    .stage<StageTypeE.import, FinderTypeE.import>({
       stage: stages.injectImportStage,
       options: {
         importName: `inject${name}Stage`,
         source: `./${nameL}.inject.stage`,
         isDefault: true,
       },
-      finder: { func: finders.importFinder, options: { type: "import" } },
+      finder: { func: finders.importFinder, options: {} },
     })
-    .stage<StageTypeE.property>({
+    .stage<StageTypeE.property, FinderTypeE.variableObject>({
       stage: stages.injectPropertyStage,
       options: {
         key: `inject${name}Stage`,
@@ -81,7 +81,7 @@ export default async function newStageCommandPipeline(
       },
       finder: {
         func: finders.objectVariableFinder,
-        options: { name: "stages", type: "variableObject" },
+        options: { name: "stages" },
       },
     })
     .finish();

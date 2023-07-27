@@ -14,18 +14,29 @@ enum FinderTypeE {
 
 type FinderType = keyof typeof FinderTypeE;
 
-type FinderOptions<T extends FinderType> =
-  | VariableObjectFinderOptions
-  | VariableArrayFinderOptions
-  | SwitchFinderOptions
-  | TSEnumFinderOptions
-  | InterfaceFinderBodyOptions
-  | TSTypeAliasFinderOptions
-  | TSTypeLiteralFinderOptions
-  | ImportFinderOptions
-  | ExportFinderOptions
-  | DefaultExportFinderOptions
-  | ProgramFinderOptions;
+type FinderOptions<T extends FinderType> = T extends FinderTypeE.variableObject
+  ? VariableObjectFinderOptions
+  : T extends FinderTypeE.variableArray
+  ? VariableArrayFinderOptions
+  : T extends FinderTypeE.switch
+  ? SwitchFinderOptions
+  : T extends FinderTypeE.tsEnum
+  ? TSEnumFinderOptions
+  : T extends FinderTypeE.tsInterfaceBody
+  ? InterfaceFinderBodyOptions
+  : T extends FinderTypeE.tsTypeAlias
+  ? TSTypeAliasFinderOptions
+  : T extends FinderTypeE.tsTypeLiteral
+  ? TSTypeLiteralFinderOptions
+  : T extends FinderTypeE.import
+  ? ImportFinderOptions
+  : T extends FinderTypeE.export
+  ? ExportFinderOptions
+  : T extends FinderTypeE.defaultExport
+  ? DefaultExportFinderOptions
+  : T extends FinderTypeE.program
+  ? ProgramFinderOptions
+  : BaseFinderOptions;
 
 type Finder = (
   j: JSCodeshift,
@@ -33,58 +44,40 @@ type Finder = (
   opts: FinderOptions
 ) => Collection;
 
-type BaseFinderOptions = {
-  type: FinderType;
-  name?: string;
-};
+type BaseFinderOptions = {};
 
 type VariableObjectFinderOptions = BaseFinderOptions & {
-  type: "variableObject";
   name: string;
 };
 
 type VariableArrayFinderOptions = BaseFinderOptions & {
-  type: "variableArray";
   name: string;
 };
 
 type SwitchFinderOptions = BaseFinderOptions & {
-  type: "switch";
   name: string;
 };
 
 type TSEnumFinderOptions = BaseFinderOptions & {
-  type: "tsEnum";
   name: string;
 };
 
 type InterfaceFinderBodyOptions = BaseFinderOptions & {
-  type: "tsInterfaceBody";
   name: string;
 };
 
 type TSTypeAliasFinderOptions = BaseFinderOptions & {
-  type: "tsTypeAlias";
   name: string;
 };
 
 type TSTypeLiteralFinderOptions = BaseFinderOptions & {
-  type: "tsTypeLiteral";
   name: string;
 };
 
-type ImportFinderOptions = BaseFinderOptions & {
-  type: "import";
-};
+type ImportFinderOptions = BaseFinderOptions & {};
 
-type ExportFinderOptions = BaseFinderOptions & {
-  type: "export";
-};
+type ExportFinderOptions = BaseFinderOptions & {};
 
-type DefaultExportFinderOptions = BaseFinderOptions & {
-  type: "defaultExport";
-};
+type DefaultExportFinderOptions = BaseFinderOptions & {};
 
-type ProgramFinderOptions = BaseFinderOptions & {
-  type: "program";
-};
+type ProgramFinderOptions = BaseFinderOptions & {};
