@@ -15,6 +15,7 @@
     "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */,
     "baseUrl": ".",
     "paths": {
+      "@src/*": ["./src/*"],
       "@utils/*": ["./src/utils/*"],
       "@commands/*": ["./src/commands/*"],
       "@templates/*": ["./src/tempaltes/*"],
