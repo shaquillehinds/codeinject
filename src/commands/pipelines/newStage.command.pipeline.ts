@@ -26,7 +26,7 @@ export default async function newStageCommandPipeline(
         col?: Collection${
           collection ? `<import("jscodeshift").${collection}>` : ""
         };
-      }
+      } & BaseStageOptions
     `,
       },
       finder: {
@@ -45,6 +45,23 @@ export default async function newStageCommandPipeline(
         func: finders.tsTypeAliasFinder,
         options: { type: "tsTypeAlias", name: "StageOptions" },
       },
+    })
+    .parse("src/@types/stage.enums.ts")
+    .stage<StageTypeE.tsEnumMember>({
+      stage: stages.injectTSEnumMemberStage,
+      finder: {
+        func: finders.tsEnumFinder,
+        options: { type: "tsEnum", name: "StageTypeE" },
+      },
+      options: { key: nameL, value: nameL },
+    })
+    .stage<StageTypeE.tsEnumMember>({
+      stage: stages.injectTSEnumMemberStage,
+      finder: {
+        func: finders.tsEnumFinder,
+        options: { type: "tsEnum", name: "StageNameE" },
+      },
+      options: { key: nameL, value: `inject${name}Stage` },
     })
     .parse("src/pipeline/stages/index.ts")
     .stage<StageTypeE.import>({
