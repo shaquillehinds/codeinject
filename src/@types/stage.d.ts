@@ -6,12 +6,48 @@ enum StageTypeE {
   tsEnumMember = "tsEnumMember",
   tsInterfaceBody = "tsInterfaceBody",
   tsTypeAlias = "tsTypeAlias",
+  tsTypeAliasConditional = "tsTypeAliasConditional",
   tsTypeLiteral = "tsTypeLiteral",
   stringTemplate = "stringTemplate",
   namedExport = "namedExport",
 }
 
 type StageType = keyof typeof StageTypeE;
+
+type StageOptions<T extends StageType> = T extends "import"
+  ? ImportOptions
+  : T extends "namedExport"
+  ? NamedExportOptions
+  : T extends "property"
+  ? PropertyOptions
+  : T extends "arrayElement"
+  ? ArrayElementOptions
+  : T extends "case"
+  ? CaseOptions
+  : T extends "tsEnumMember"
+  ? TSEnumMemberOptions
+  : T extends "tsInterfaceBody"
+  ? TSInterfaceBodyOptions
+  : T extends "tsTypeAlias"
+  ? TSTypeAliasOptions
+  : T extends "tsTypeAliasConditional"
+  ? TSTypeAliasConditionalOptions
+  : T extends "tsTypeLiteral"
+  ? TSTypeLiteralOptions
+  : T extends "stringTemplate"
+  ? StringTemplateOptions
+  : BaseStageOptions;
+
+type Stage<T extends StageType> = (
+  j: JSCodeshift,
+  col: Collection,
+  opts: StageOptions<T>
+) => Collection;
+
+type StageFinder<T = FinderType> = {
+  func: Finder;
+  options: FinderOptions<T>;
+};
 
 type BaseStageOptions<T> = {};
 
@@ -71,6 +107,14 @@ type TSTypeAliasOptions = {
   col?: Collection<import("jscodeshift").TSTypeAliasDeclaration>;
 };
 
+type TSTypeAliasConditionalOptions = {
+  extendee: string;
+  extender: string;
+  trueClause: string;
+  falseClause?: string;
+  col?: Collection<import("jscodeshift").TSTypeAliasDeclaration>;
+};
+
 type TSTypeLiteralOptions = {
   stringTemplate: string;
   col?: Collection<import("jscodeshift").TSTypeLiteral>;
@@ -86,37 +130,4 @@ type StringTemplateOptions = {
   template: string;
   position?: StringTemplatePosition;
   col?: Collection<import("jscodeshift").Program>;
-};
-
-type StageOptions<T extends StageType> = T extends "import"
-  ? ImportOptions
-  : T extends "namedExport"
-  ? NamedExportOptions
-  : T extends "property"
-  ? PropertyOptions
-  : T extends "arrayElement"
-  ? ArrayElementOptions
-  : T extends "case"
-  ? CaseOptions
-  : T extends "tsEnumMember"
-  ? TSEnumMemberOptions
-  : T extends "tsInterfaceBody"
-  ? TSInterfaceBodyOptions
-  : T extends "tsTypeAlias"
-  ? TSTypeAliasOptions
-  : T extends "tsTypeLiteral"
-  ? TSTypeLiteralOptions
-  : T extends "stringTemplate"
-  ? StringTemplateOptions
-  : BaseStageOptions;
-
-type Stage<T extends StageType> = (
-  j: JSCodeshift,
-  col: Collection,
-  opts: StageOptions<T>
-) => Collection;
-
-type StageFinder<T = FinderType> = {
-  func: Finder;
-  options: FinderOptions<T>;
 };
