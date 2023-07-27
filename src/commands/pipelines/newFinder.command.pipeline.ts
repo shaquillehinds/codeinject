@@ -19,6 +19,8 @@ export default async function newFinderCommandPipeline(name: string) {
       },
       { name: "FinderOptions" }
     )
+    .parse("src/@types/finder.enums.ts")
+    .injectTSEnumMember({ key: nameL, value: nameL }, { name: "FinderTypeE" })
     .parse("src/pipeline/finders/index.ts")
     .injectImport({
       importName: `${nameL}Finder`,
