@@ -1,4 +1,7 @@
 import { Collection, JSCodeshift, TSTypeLiteral } from "jscodeshift";
+import { DebugLogger } from "@utils/Logger";
+
+const log = DebugLogger("tsTypeLiteral.inject.stage.ts");
 /**
  *
  * @param options.stringTemplate - Provide type literal signatures in a template string
@@ -15,9 +18,7 @@ export default function injectTSTypeLiteralStage(
   { stringTemplate, col }: StageOptions<"tsTypeLiteral">
 ) {
   if (!col) {
-    console.error(
-      "No expression collection passed to injectTSTypeLiteralStage"
-    );
+    log("error", "No expression collection passed to this stage.");
     return workingSource;
   }
   const template = `type Template = ${stringTemplate}`;

@@ -1,5 +1,8 @@
 import { Collection, JSCodeshift } from "jscodeshift";
 import objToExp from "../parsers/objToExp.parser";
+import { DebugLogger } from "@utils/Logger";
+
+const log = DebugLogger("property.inject.stage.ts");
 
 export default function injectPropertyStage(
   jcs: JSCodeshift,
@@ -7,7 +10,7 @@ export default function injectPropertyStage(
   { key, value, col }: StageOptions<"property">
 ) {
   if (!col) {
-    console.error("No expression collection passed to injectPropertyStage");
+    log("error", "No expression collection passed to this stage.");
     return workingSource;
   }
 

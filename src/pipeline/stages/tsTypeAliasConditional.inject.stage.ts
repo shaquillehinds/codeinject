@@ -1,6 +1,9 @@
 import { Collection, JSCodeshift } from "jscodeshift";
 import { TSTypeKind } from "ast-types/gen/kinds";
 import stringToASTType from "../parsers/stringToASTType.parser";
+import { DebugLogger } from "@utils/Logger";
+
+const log = DebugLogger("tsTypeAliasConditional.inject.stage.ts");
 /**
  *
  * @param options.trueClause - Provide type signature in a template string
@@ -19,9 +22,7 @@ export default function injectTSTypeAliasConditionalStage<
   { trueClause, falseClause, extendee, extender, col }: StageOptions<T>
 ) {
   if (!col) {
-    console.error(
-      "No expression collection passed to injectTSTypeAliasConditionalStage"
-    );
+    log("error", "No expression collection passed to this stage.");
     return workingSource;
   }
   const template = `type Template = ${trueClause}`;

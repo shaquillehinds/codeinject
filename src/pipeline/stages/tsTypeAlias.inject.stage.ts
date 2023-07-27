@@ -6,6 +6,9 @@ import {
   TSUnionType,
 } from "jscodeshift";
 import { TSTypeKind } from "ast-types/gen/kinds";
+import { DebugLogger } from "@utils/Logger";
+
+const log = DebugLogger("tsTypeAlias.inject.stage.ts");
 /**
  *
  * @param options.stringTemplate - Provide type signature in a template string
@@ -22,7 +25,7 @@ export default function injectTSTypeAliasStage<T extends "tsTypeAlias">(
   { type, stringTemplate, col }: StageOptions<T>
 ) {
   if (!col) {
-    console.error("No expression collection passed to injectTSTypeAliasStage");
+    log("error", "No expression collection passed to this stage.");
     return workingSource;
   }
   const template = `type Template = ${stringTemplate}`;

@@ -1,4 +1,7 @@
 import { Collection, JSCodeshift, SwitchStatement } from "jscodeshift";
+import { DebugLogger } from "@utils/Logger";
+
+const log = DebugLogger("switchCase.inject.stage.ts");
 
 export default function injectSwitchCaseStage(
   jcs: JSCodeshift,
@@ -6,7 +9,7 @@ export default function injectSwitchCaseStage(
   { caseName, statements, col, identifier }: StageOptions<"case">
 ) {
   if (!col) {
-    console.error("No expression collection passed to injectSwitchCaseStage");
+    log("error", "No expression collection passed to this stage.");
     return workingSource;
   }
   const newCase = jcs.switchCase(

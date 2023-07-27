@@ -1,4 +1,7 @@
 import { Collection, ImportDeclaration, JSCodeshift } from "jscodeshift";
+import { DebugLogger } from "@utils/Logger";
+
+const log = DebugLogger("import.inject.stage.ts");
 
 export default function injectImportStage(
   jcs: JSCodeshift,
@@ -6,7 +9,7 @@ export default function injectImportStage(
   { importName, source, isDefault, col }: StageOptions<"import">
 ): Collection {
   if (!col) {
-    console.error("No expression collection passed to injectImportStage");
+    log("error", "No expression collection passed to this stage.");
     return workingSource;
   }
   const newImport = jcs.importDeclaration(

@@ -1,4 +1,7 @@
 import { Collection, JSCodeshift } from "jscodeshift";
+import { DebugLogger } from "@utils/Logger";
+
+const log = DebugLogger("namedExport.inject.stage.ts");
 
 export default function injectNamedExportStage(
   jcs: JSCodeshift,
@@ -6,7 +9,7 @@ export default function injectNamedExportStage(
   { name, col }: StageOptions<"namedExport">
 ): Collection {
   if (!col) {
-    console.error("No expression collection passed to injectImportStage");
+    log("error", "No expression collection passed to this stage.");
     return workingSource;
   }
   const namedExpSpecifiers = col.find(jcs.ExportSpecifier);

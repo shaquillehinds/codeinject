@@ -1,4 +1,7 @@
 import { Collection, JSCodeshift, TSInterfaceBody } from "jscodeshift";
+import { DebugLogger } from "@utils/Logger";
+
+const log = DebugLogger("tsInterfaceBody.inject.stage.ts");
 /**
  *
  * @param options.bodyStringTemplate - Provide interface signatures in a template string
@@ -16,9 +19,7 @@ export default function injectTSInterfaceBodyStage(
   { bodyStringTemplate, col }: StageOptions<"tsInterfaceBody">
 ) {
   if (!col) {
-    console.error(
-      "No expression collection passed to injectTSInterfaceBodyStage"
-    );
+    log("error", "No expression collection passed to this stage.");
     return workingSource;
   }
   const template = `interface Template ${bodyStringTemplate}`;

@@ -1,5 +1,8 @@
 import { Collection, JSCodeshift, Program } from "jscodeshift";
 import importFinder from "../finders/import.finder";
+import { DebugLogger } from "@utils/Logger";
+
+const log = DebugLogger("stringTemplate.inject.stage.ts");
 /**
  *
  * @param options.stringTemplate - Provide typescipt code in a template string
@@ -18,9 +21,7 @@ export default function injectStringTemplateStage(
   { template, position, col }: StageOptions<"stringTemplate">
 ) {
   if (!col) {
-    console.error(
-      "No expression collection passed to injectStringTemplateStage"
-    );
+    log("error", "No expression collection passed to this stage.");
     return workingSource;
   }
   const templateNodes = jcs.withParser("tsx")(template).find(jcs.Program).get()

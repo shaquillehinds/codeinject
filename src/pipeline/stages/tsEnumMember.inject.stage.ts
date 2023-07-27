@@ -1,4 +1,7 @@
 import { Collection, JSCodeshift, TSEnumDeclaration } from "jscodeshift";
+import { DebugLogger } from "@utils/Logger";
+
+const log = DebugLogger("tsEnumMember.inject.stage.ts");
 
 export default function injectTSEnumMemberStage(
   jcs: JSCodeshift,
@@ -6,7 +9,7 @@ export default function injectTSEnumMemberStage(
   { key, value, col }: StageOptions<"tsEnumMember">
 ) {
   if (!col) {
-    console.error("No expression collection passed to injectTSEnumStage");
+    log("error", "No expression collection passed to this stage.");
     return workingSource;
   }
   const newMember = jcs.tsEnumMember(jcs.identifier(key), jcs.literal(value));
