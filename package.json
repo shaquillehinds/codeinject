@@ -11,11 +11,10 @@
   "bin": "./dist/index.js",
   "scripts": {
     "deploy": "bash scripts/deploy.sh",
-    "build": "tsc -p ./",
+    "build": "tsc -p ./ && tsc-alias -p ./tsconfig.json ",
     "pre:start": "yarn build",
     "start": "node --experimental-specifier-resolution=node dist/",
-    "start:mon": "nodemon -I --experimental-specifier-resolution=node dist/",
-    "start:dev": "bash scripts/startDev.sh"
+    "start:dev": "concurrently \"tsc -w\" \"tsc-alias -w\""
   },
   "dependencies": {
     "chalk": "^5.3.0",
@@ -37,7 +36,8 @@
     "@types/inquirer": "^9.0.3",
     "@types/jscodeshift": "^0.11.6",
     "@types/node": "^20.4.2",
-    "nodemon": "^3.0.1",
+    "concurrently": "^8.2.0",
+    "tsc-alias": "^1.8.7",
     "typescript": "^5.1.6"
   }
 }
