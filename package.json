@@ -1,6 +1,6 @@
 {
   "name": "tscodeinject",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Inject code into your typescript files",
   "main": "dist/index.js",
   "keywords": [],
@@ -22,9 +22,9 @@
   "bin": "./dist/index.bin.js",
   "scripts": {
     "deploy": "bash scripts/deploy.sh",
-    "build": "rm -rf dist && tsc -p ./ && tsc-alias -p ./tsconfig.json && chmod +x dist/index.js",
+    "build": "rm -rf dist && tsc -p ./ && tsc-alias -p ./tsconfig.json && chmod +x dist/index.bin.js",
     "pre:start": "yarn build",
-    "start": "node --experimental-specifier-resolution=node dist/",
+    "start": "node dist/",
     "start:dev": "yarn build && concurrently \"tsc -w\" \"tsc-alias -w\"",
     "npm-pub": "yarn build && npm publish --access public"
   },

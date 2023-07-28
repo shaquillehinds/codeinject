@@ -1,8 +1,7 @@
 {
-  // "ts-node": { "files": true },
   "compilerOptions": {
-    "target": "ES2017" /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019', 'ES2020', or 'ESNEXT'. */,
-    "module": "ES2022",
+    "target": "ES6" /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019', 'ES2020', or 'ESNEXT'. */,
+    "module": "ESNext",
     "lib": [
       "ESNext"
     ] /* Specify library files to be included in the compilation. */,
@@ -24,6 +23,7 @@
     },
     "typeRoots": ["./src/@types"]
   },
+  "tsc-alias": { "resolveFullPaths": true },
   "include": ["src"],
   "exclude": ["node_modules"]
 }
