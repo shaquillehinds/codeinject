@@ -59,7 +59,7 @@ export default function newCommand(program: Command) {
           newInserts.finder(finder, finderL, collection);
         }
 
-        const stageOpts = await newCommandPrompts.options("finder");
+        const stageOpts = await newCommandPrompts.options("stage");
         await newStageCommandPipeline(name, finder, stageOpts, collection);
 
         newInserts.stage(name, nameL, collection);
