@@ -54,7 +54,6 @@ export default function newCommand(program: Command) {
           );
 
           const finderOpts = await newCommandPrompts.options("finder");
-          log("warn", finderOpts);
           await newFinderCommandPipeline(finder, finderOpts);
 
           newInserts.finder(finder, finderL, collection);
