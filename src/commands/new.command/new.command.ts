@@ -6,7 +6,7 @@ import newFinderCommandPipeline from "../pipelines/newFinder.command.pipeline";
 import newStageCommandPipeline from "../pipelines/newStage.command.pipeline";
 import newCommandPrompts from "./new.prompts";
 import newInserts from "./new.inserts";
-import utilities from "./new.utilities";
+import utilities, { handleName } from "./new.utilities";
 
 const log = DebugLogger("new.command.ts");
 
@@ -23,7 +23,7 @@ export default function newCommand(program: Command) {
       "Name of finder you want to use for the stage"
     )
     .option("-c --collection <string>", "Name of stage collection")
-    .action(async (type, { name: n, collection, finder }) => {
+    .action(async (type, { name: n, collection, finder: f }) => {
       let newType = type as NewType;
 
       if (!type) newType = await newCommandPrompts.type();
@@ -38,14 +38,14 @@ export default function newCommand(program: Command) {
         await newFinderCommandPipeline(name, finderOpts);
         newInserts.finder(name, nameL, collection);
       } else if (newType === "stage") {
-        if (!finder) finder = await newCommandPrompts.finder();
+        if (!f) f = await newCommandPrompts.finder();
 
-        if (!finder) {
+        if (!f) {
           log("error", "A finder is required to create a new stage");
           process.exit(1);
         }
 
-        const finderL = finder[0].toLowerCase() + finder.slice(1);
+        const [finder, finderL] = handleName(f);
         if (finder && !FinderTypeE[finder as FinderType]) {
           console.info(
             chalk.cyanBright(
