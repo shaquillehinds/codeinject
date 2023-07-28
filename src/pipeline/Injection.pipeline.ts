@@ -55,10 +55,10 @@ class InjectionPipeline {
     }
     for (let ast of this.asts) {
       try {
-        const updatedSource = await prettier.format(
-          ast.ast.toSource(),
-          this.prettierOptions
-        );
+        const updatedSource = await prettier.format(ast.ast.toSource(), {
+          parser: "typescript",
+          ...this.prettierOptions,
+        });
         writeFileSync(ast.location, updatedSource, "utf-8");
         const updateString = this.updates.join("\n");
         console.info(updateString);
