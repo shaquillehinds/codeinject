@@ -1,4 +1,4 @@
-import { JSCodeshift } from "jscodeshift";
+import { Collection, JSCodeshift } from "jscodeshift";
 import singleNodeCollectionValidator from "../validators/singleNodeCollection.finder.validator";
 import { VariableArrayFinderOptions } from "@src/@types/finder";
 

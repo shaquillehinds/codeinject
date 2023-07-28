@@ -1,5 +1,6 @@
 import inquirer from "inquirer";
 import { typeAliasOptsToStr } from "./new.utilities";
+import { YesOrNo } from "@src/@types";
 
 const type = async () =>
   (

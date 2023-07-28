@@ -1,4 +1,4 @@
-import { JSCodeshift } from "jscodeshift";
+import { Collection, JSCodeshift } from "jscodeshift";
 import { Finder, FinderOptions, FinderType } from "./finder";
 
 export enum StageTypeE {

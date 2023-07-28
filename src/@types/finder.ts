@@ -1,3 +1,5 @@
+import { Collection } from "jscodeshift";
+
 export enum FinderTypeE {
   variableObject = "variableObject",
   variableArray = "variableArray",
