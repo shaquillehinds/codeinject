@@ -10,7 +10,7 @@ export default async function newFinderCommandPipeline(
     .injectStringTemplate({
       template: `
 
-      type ${name}FinderOptions = BaseFinderOptions & {
+      export type ${name}FinderOptions = BaseFinderOptions & {
         ${finderOptions}
       }
     `,

@@ -50,8 +50,8 @@ export default async function newStageCommandPipeline(
       finderOptions: FinderOptions<"${finderName}">
     ) {
       if (!this.ast) this.parse();
-      stageOptions.col = f.${finderName}Finder(this.j, this.ast!, finderOptions);
-      s.inject${name}Stage(this.j, this.ast!, stageOptions);
+      stageOptions.col = f.${finderName}Finder(j, this.ast!, finderOptions);
+      s.inject${name}Stage(j, this.ast!, stageOptions);
       return this;
     }
 
