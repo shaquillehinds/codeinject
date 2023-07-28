@@ -4,7 +4,8 @@ import jcs from "jscodeshift";
 export default async function newStageCommandPipeline(
   name: string,
   finderName: string,
-  collection?: string
+  options: string,
+  collection: string = ""
 ) {
   const nameL = name[0].toLowerCase() + name.slice(1);
   await new StagePipeline(jcs, "src/@types/stage.d.ts")
@@ -13,6 +14,7 @@ export default async function newStageCommandPipeline(
       template: `
 
     type ${name}Options =  {
+      ${options}
       col?: Collection${
         collection ? `<import("jscodeshift").${collection}>` : ""
       };

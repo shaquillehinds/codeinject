@@ -1,14 +1,19 @@
 import { StagePipeline } from "../../pipeline";
 import jcs from "jscodeshift";
 
-export default async function newFinderCommandPipeline(name: string) {
+export default async function newFinderCommandPipeline(
+  name: string,
+  finderOptions: string
+) {
   const nameL = name[0].toLowerCase() + name.slice(1);
   await new StagePipeline(jcs, "src/@types/finder.d.ts")
     .injectTSEnumMember({ key: nameL, value: nameL }, { name: "FinderTypeE" })
     .injectStringTemplate({
       template: `
 
-      type ${name}FinderOptions = BaseFinderOptions & {}
+      type ${name}FinderOptions = BaseFinderOptions & {
+        ${finderOptions}
+      }
     `,
     })
     .injectTSTypeAliasConditional(
