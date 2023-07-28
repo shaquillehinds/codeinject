@@ -1,23 +1,32 @@
 import { readFileSync, writeFileSync } from "fs";
 
-const finder = (name: string, nameL: string, collection: string) =>
+interface InsertProps {
+  name: string;
+  nameL: string;
+  collection: string;
+}
+
+const finder = (props: InsertProps) =>
   writeFileSync(
-    `src/pipeline/finders/${nameL}.finder.ts`,
+    `src/pipeline/finders/${props.nameL}.finder.ts`,
     readFileSync(`src/templates/files/finder.template`, "utf-8")
-      .replaceAll("{!template}", name)
-      .replaceAll("{template}", nameL)
-      .replaceAll("{collection}", collection)
-      .replace("{find}", collection ? `.find(jcs.${collection})` : ""),
+      .replaceAll("{!template}", props.name)
+      .replaceAll("{template}", props.nameL)
+      .replaceAll("{collection}", props.collection)
+      .replace(
+        "{find}",
+        props.collection ? `.find(jcs.${props.collection})` : ""
+      ),
     "utf-8"
   );
 
-const stage = (name: string, nameL: string, collection: string) =>
+const stage = (props: InsertProps) =>
   writeFileSync(
-    `src/pipeline/stages/${nameL}.inject.stage.ts`,
+    `src/pipeline/stages/${props.nameL}.inject.stage.ts`,
     readFileSync(`src/templates/files/stage.template`, "utf-8")
-      .replaceAll("{!template}", name)
-      .replaceAll("{template}", nameL)
-      .replaceAll("{collection}", collection),
+      .replaceAll("{!template}", props.name)
+      .replaceAll("{template}", props.nameL)
+      .replaceAll("{collection}", props.collection),
     "utf-8"
   );
 
