@@ -17,7 +17,10 @@ export function typeAliasOptsToStr(opts: [string, string][]) {
   return opts.reduce((prev, curr) => {
     const split = curr[1].split("@jcs.stringLiteral");
 
-    return prev + `\n ${curr[0]}: ${split[1] ? `"${curr[1]}"` : curr[1]};`;
+    return (
+      prev +
+      `\n ${curr[0]}: ${split[1] !== undefined ? `"${split[0]}"` : curr[1]};`
+    );
   }, "");
 }
 
