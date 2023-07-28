@@ -43,24 +43,26 @@ export default function newCommand(program: Command) {
       const nameL = name[0].toLowerCase() + name.slice(1);
       name = name[0].toUpperCase() + name.slice(1);
 
+      if (!collection)
+        collection = (
+          await inquirer.prompt({
+            name: "col",
+            type: "input",
+            message: "Name of collection you will be using?",
+          })
+        ).col;
+
       if (newType === "finder") {
         await newFinderCommandPipeline(name);
         writeFileSync(
           `src/pipeline/finders/${nameL}.finder.ts`,
           readFileSync(`src/templates/files/finder.template`, "utf-8")
             .replaceAll("{!template}", name)
-            .replaceAll("{template}", nameL),
+            .replaceAll("{template}", nameL)
+            .replaceAll("{collection}", collection),
           "utf-8"
         );
       } else if (newType === "stage") {
-        if (!collection)
-          collection = (
-            await inquirer.prompt({
-              name: "col",
-              type: "input",
-              message: "Name of collection this stage will be using?",
-            })
-          ).col;
         if (!finder)
           finder = (
             await inquirer.prompt({
