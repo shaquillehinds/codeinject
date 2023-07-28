@@ -12,7 +12,10 @@ class InjectionPipeline {
   protected ast?: Collection;
   protected asts: { location: string; ast: Collection }[] = [];
   protected updates: string[] = [];
-  constructor(protected fileLocation: string) {
+  constructor(
+    protected fileLocation: string,
+    public prettierOptions?: prettier.Options
+  ) {
     this.updates.push(`${chalk.yellow("[Updating]")}: ${fileLocation}`);
   }
 
@@ -52,9 +55,10 @@ class InjectionPipeline {
     }
     for (let ast of this.asts) {
       try {
-        const updatedSource = await prettier.format(ast.ast.toSource(), {
-          parser: "typescript",
-        });
+        const updatedSource = await prettier.format(
+          ast.ast.toSource(),
+          this.prettierOptions
+        );
         writeFileSync(ast.location, updatedSource, "utf-8");
         const updateString = this.updates.join("\n");
         console.info(updateString);

@@ -4,6 +4,7 @@ import arrToExp from "../parsers/arrToExp.parser";
 import funcToExp from "../parsers/funcToExp.parser";
 import { DebugLogger } from "@utils/Logger";
 import { StageOptions } from "@src/@types/stage";
+import { ExpressionKind } from "ast-types/gen/kinds";
 
 const log = DebugLogger("arrayElement.inject.stage.ts");
 
@@ -16,25 +17,21 @@ export default function injectArrayElementStage(
     log("error", "No expression collection passed to this stage.");
     return workingSource;
   }
-  let newElement;
+  let newElement: ExpressionKind;
   switch (typeof value) {
     case "object":
       if (value instanceof Array) newElement = arrToExp(jcs, value);
       else newElement = objToExp(jcs, value);
       break;
     case "function":
-      newElement = funcToExp(jcs, value);
+      newElement = funcToExp(jcs, value) as ExpressionKind;
       break;
     default:
       if (identifier) newElement = jcs.identifier(value);
       else newElement = jcs.literal(value);
   }
 
-  const elements = col.get().value.elements;
-
-  const newArr = jcs.arrayExpression([...elements, newElement]);
-
-  col.replaceWith(newArr);
+  col.forEach((path) => path.value.elements.push(newElement));
 
   return workingSource;
 }
