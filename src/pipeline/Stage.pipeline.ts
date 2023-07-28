@@ -4,14 +4,19 @@ import * as prettier from "prettier";
 import chalk from "chalk";
 import s from "./stages";
 import f from "./finders";
+import { Spinner, createSpinner } from "nanospinner";
 
 export default class StagePipeline {
   protected ast?: Collection;
   protected asts: { location: string; ast: Collection }[] = [];
+  protected updates: string[] = [];
+  private spinner: Spinner;
   constructor(
     protected j: JSCodeshift,
     protected fileLocation: string
-  ) {}
+  ) {
+    this.spinner = createSpinner(`Updating file: ${fileLocation}`);
+  }
 
   public parse(fileLocation?: string) {
     if (fileLocation) {
@@ -19,6 +24,9 @@ export default class StagePipeline {
         return this;
       }
       this.fileLocation = fileLocation;
+      this.spinner.stop();
+      this.spinner = createSpinner(`Updating file: ${fileLocation}`);
+      this.spinner.start();
     }
     const file = readFileSync(this.fileLocation, "utf-8");
     this.ast = this.j.withParser("tsx")(file);
@@ -44,7 +52,9 @@ export default class StagePipeline {
 
   public async finish() {
     if (this.asts.length === 0) {
-      console.error(chalk("You don't have any asts loaded."));
+      this.spinner.error({
+        text: chalk.bgRed("You don't have any asts loaded."),
+      });
       return this;
     }
     for (let ast of this.asts) {
@@ -53,12 +63,18 @@ export default class StagePipeline {
           parser: "typescript",
         });
         writeFileSync(ast.location, updatedSource, "utf-8");
+        const text = this.updates.join("\n");
+        this.spinner.success({ text });
       } catch (error) {
-        console.error(chalk.redBright(error));
+        this.spinner.error({ text: chalk.redBright(error) });
       }
     }
     this.asts = [];
     return this;
+  }
+
+  protected addUpdate(update: string) {
+    this.updates.push(`${chalk.cyanBright("[Update]")}: ${update}`);
   }
 
   public injectArrayElement(
@@ -68,6 +84,7 @@ export default class StagePipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.arrayVariableFinder(this.j, this.ast!, finderOptions);
     s.injectArrayElementStage(this.j, this.ast!, stageOptions);
+    this.addUpdate("Injected array element.");
     return this;
   }
 
@@ -78,6 +95,7 @@ export default class StagePipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.tsEnumFinder(this.j, this.ast!, finderOptions);
     s.injectTSEnumMemberStage(this.j, this.ast!, stageOptions);
+    this.addUpdate(`Injected injected enum member: ${stageOptions.key}`);
     return this;
   }
 
@@ -88,6 +106,7 @@ export default class StagePipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.tsTypeAliasFinder(this.j, this.ast!, finderOptions);
     s.injectTSTypeAliasConditionalStage(this.j, this.ast!, stageOptions);
+    this.addUpdate("Injected type alias condition.");
     return this;
   }
 
@@ -98,6 +117,7 @@ export default class StagePipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.objectVariableFinder(this.j, this.ast!, finderOptions);
     s.injectPropertyStage(this.j, this.ast!, stageOptions);
+    this.addUpdate(`Injected object property: ${stageOptions.key}`);
     return this;
   }
 
@@ -108,6 +128,7 @@ export default class StagePipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.switchFinder(this.j, this.ast!, finderOptions);
     s.injectSwitchCaseStage(this.j, this.ast!, stageOptions);
+    this.addUpdate(`Injected switch case: ${stageOptions.caseName}`);
     return this;
   }
 
@@ -118,6 +139,7 @@ export default class StagePipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.tsTypeAliasFinder(this.j, this.ast!, finderOptions);
     s.injectTSTypeAliasStage(this.j, this.ast!, stageOptions);
+    this.addUpdate(`Injected type alias: ${stageOptions.type}`);
     return this;
   }
 
@@ -128,6 +150,7 @@ export default class StagePipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.tsTypeLiteralFinder(this.j, this.ast!, finderOptions);
     s.injectTSTypeLiteralStage(this.j, this.ast!, stageOptions);
+    this.addUpdate(`Injected type literal`);
     return this;
   }
 
@@ -138,6 +161,7 @@ export default class StagePipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.classBodyFinder(this.j, this.ast!, finderOptions);
     s.injectClassMemberStage(this.j, this.ast!, stageOptions);
+    this.addUpdate(`Injected class member`);
     return this;
   }
 
@@ -152,6 +176,7 @@ export default class StagePipeline {
       finderOptions
     );
     s.injectTSInterfaceBodyStage(this.j, this.ast!, stageOptions);
+    this.addUpdate(`Injected interface body`);
     return this;
   }
 
@@ -159,6 +184,7 @@ export default class StagePipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.exportFinder(this.j, this.ast!);
     s.injectNamedExportStage(this.j, this.ast!, stageOptions);
+    this.addUpdate(`Injected named export: ${stageOptions.name}`);
     return this;
   }
 
@@ -166,6 +192,7 @@ export default class StagePipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.importFinder(this.j, this.ast!);
     s.injectImportStage(this.j, this.ast!, stageOptions);
+    this.addUpdate(`Injected import: ${stageOptions.importName}`);
     return this;
   }
 
@@ -173,6 +200,7 @@ export default class StagePipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.programFinder(this.j, this.ast!);
     s.injectStringTemplateStage(this.j, this.ast!, stageOptions);
+    this.addUpdate(`Injected string template code`);
     return this;
   }
 }
