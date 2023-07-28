@@ -19,3 +19,5 @@ interface CustomerUpdateDto extends CustomerUpdate {
 type Literal = string | number | boolean | RegExp | null;
 
 type Collection<T = any> = import("jscodeshift").Collection<T>;
+
+type YesOrNo = "Yes" | "No";
