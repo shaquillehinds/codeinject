@@ -3,6 +3,7 @@ import jcs from "jscodeshift";
 
 export default async function newStageCommandPipeline(
   name: string,
+  finderName: string,
   collection?: string
 ) {
   const nameL = name[0].toLowerCase() + name.slice(1);
@@ -37,6 +38,25 @@ export default async function newStageCommandPipeline(
     .injectProperty(
       { key: `inject${name}Stage`, value: `inject${name}Stage@jcs.identifier` },
       { name: "stages" }
+    )
+    .parse("src/pipeline/Stage.pipeline.ts")
+    .injectClassMember(
+      {
+        stringTemplate: `
+
+    public inject${name}(
+      stageOptions: StageOptions<"${nameL}">,
+      finderOptions: FinderOptions<"${finderName}">
+    ) {
+      if (!this.ast) this.parse();
+      stageOptions.col = f.${finderName}Finder(this.j, this.ast!, finderOptions);
+      s.inject${name}Stage(this.j, this.ast!, stageOptions);
+      return this;
+    }
+
+    `,
+      },
+      { name: "StagePipeline" }
     )
     .finish();
 }

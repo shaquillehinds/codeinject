@@ -5,6 +5,9 @@ import newFinderCommandPipeline from "./pipelines/newFinder.command.pipeline";
 import newStageCommandPipeline from "./pipelines/newStage.command.pipeline";
 import chalk from "chalk";
 import { FinderTypeE } from "@src/@types/finder.enums";
+import { DebugLogger } from "@utils/Logger";
+
+const log = DebugLogger("new.command.ts");
 
 type NewType = "stage" | "finder";
 
@@ -71,6 +74,11 @@ export default function newCommand(program: Command) {
               message: "Name of finder this stage will be using?",
             })
           ).finder;
+        if (!finder) {
+          log("error", "A finder is required to create a new stage");
+          process.exit(1);
+        }
+        const finderL = finder[0].toLowerCase() + finder.slice(1);
         if (finder && !FinderTypeE[finder as FinderType]) {
           console.info(
             chalk.cyanBright(
@@ -78,7 +86,7 @@ export default function newCommand(program: Command) {
             )
           );
           await newFinderCommandPipeline(finder);
-          const finderL = finder[0].toLowerCase() + finder.slice(1);
+
           writeFileSync(
             `src/pipeline/finders/${finderL}.finder.ts`,
             readFileSync(`src/templates/files/finder.template`, "utf-8")
@@ -88,7 +96,7 @@ export default function newCommand(program: Command) {
           );
         }
 
-        await newStageCommandPipeline(name, collection);
+        await newStageCommandPipeline(name, finder, collection);
         writeFileSync(
           `src/pipeline/stages/${nameL}.inject.stage.ts`,
           readFileSync(`src/templates/files/stage.template`, "utf-8")
