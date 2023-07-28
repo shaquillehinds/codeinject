@@ -4,18 +4,16 @@ import * as prettier from "prettier";
 import chalk from "chalk";
 import s from "./stages";
 import f from "./finders";
-import { Spinner, createSpinner } from "nanospinner";
 
 export default class StagePipeline {
   protected ast?: Collection;
   protected asts: { location: string; ast: Collection }[] = [];
   protected updates: string[] = [];
-  private spinner: Spinner;
   constructor(
     protected j: JSCodeshift,
     protected fileLocation: string
   ) {
-    this.spinner = createSpinner(`Updating file: ${fileLocation}`);
+    this.updates.push(`${chalk.yellow("[Updating]")}: ${fileLocation}`);
   }
 
   public parse(fileLocation?: string) {
@@ -24,9 +22,7 @@ export default class StagePipeline {
         return this;
       }
       this.fileLocation = fileLocation;
-      this.spinner.stop();
-      this.spinner = createSpinner(`Updating file: ${fileLocation}`);
-      this.spinner.start();
+      this.updates.push(`${chalk.yellow("[Updating]")}: ${fileLocation}`);
     }
     const file = readFileSync(this.fileLocation, "utf-8");
     this.ast = this.j.withParser("tsx")(file);
@@ -52,9 +48,7 @@ export default class StagePipeline {
 
   public async finish() {
     if (this.asts.length === 0) {
-      this.spinner.error({
-        text: chalk.bgRed("You don't have any asts loaded."),
-      });
+      console.error(chalk.bgRed("You don't have any asts loaded."));
       return this;
     }
     for (let ast of this.asts) {
@@ -63,10 +57,10 @@ export default class StagePipeline {
           parser: "typescript",
         });
         writeFileSync(ast.location, updatedSource, "utf-8");
-        const text = this.updates.join("\n");
-        this.spinner.success({ text });
+        const updateString = this.updates.join("\n");
+        console.info(updateString);
       } catch (error) {
-        this.spinner.error({ text: chalk.redBright(error) });
+        console.error(chalk.redBright(error));
       }
     }
     this.asts = [];
