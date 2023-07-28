@@ -6,7 +6,8 @@ const finder = (name: string, nameL: string, collection: string) =>
     readFileSync(`src/templates/files/finder.template`, "utf-8")
       .replaceAll("{!template}", name)
       .replaceAll("{template}", nameL)
-      .replaceAll("{collection}", collection),
+      .replaceAll("{collection}", collection)
+      .replace("{find}", collection ? `.find(jcs.${collection})` : ""),
     "utf-8"
   );
 

@@ -7,7 +7,7 @@ export default function {template}Finder<T>(
   options: {!template}FinderOptions
 ) {
   return singleNodeCollectionValidator(
-    collection.find(jcs.Identifier, options),
+    collection.find(jcs.Identifier, { name: options.name }){find},
     "{collection}"
   );
 }
