@@ -1,4 +1,5 @@
 import chalk from "chalk";
+import { execSync } from "child_process";
 import { readFileSync, writeFileSync } from "fs";
 
 interface InsertProps {
@@ -26,6 +27,7 @@ const finder = (props: InsertProps) => {
     "utf-8"
   );
   created(path);
+  execSync(`code ${path}`);
 };
 
 const stage = (props: InsertProps) => {
@@ -39,6 +41,7 @@ const stage = (props: InsertProps) => {
     "utf-8"
   );
   created(path);
+  execSync(`code ${path}`);
 };
 
 const newInserts = { finder, stage };

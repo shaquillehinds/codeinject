@@ -4,6 +4,7 @@ import * as prettier from "prettier";
 import chalk from "chalk";
 import s from "./stages";
 import f from "./finders";
+import { execSync } from "child_process";
 
 export default class StagePipeline {
   protected ast?: Collection;
@@ -46,7 +47,7 @@ export default class StagePipeline {
     return this;
   }
 
-  public async finish() {
+  public async finish(filesToOpen?: string[]) {
     if (this.asts.length === 0) {
       console.error(chalk.bgRed("You don't have any asts loaded."));
       return this;
@@ -59,6 +60,9 @@ export default class StagePipeline {
         writeFileSync(ast.location, updatedSource, "utf-8");
         const updateString = this.updates.join("\n");
         console.info(updateString);
+        if (filesToOpen && filesToOpen.length > 0) {
+          filesToOpen.forEach((file) => execSync(`code ${file}`));
+        }
       } catch (error) {
         console.error(chalk.redBright(error));
       }
