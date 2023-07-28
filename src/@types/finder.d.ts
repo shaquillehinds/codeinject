@@ -10,11 +10,14 @@ enum FinderTypeE {
   tsInterfaceBody = "tsInterfaceBody",
   tsTypeAlias = "tsTypeAlias",
   tsTypeLiteral = "tsTypeLiteral",
+  classBody = "classBody",
 }
 
 type FinderType = keyof typeof FinderTypeE;
 
-type FinderOptions<T extends FinderType> = T extends "variableObject"
+type FinderOptions<T extends FinderType> = T extends "classBody"
+  ? classBodyFinderOptions
+  : T extends "variableObject"
   ? VariableObjectFinderOptions
   : T extends "variableArray"
   ? VariableArrayFinderOptions
@@ -81,3 +84,7 @@ type ExportFinderOptions = BaseFinderOptions & {};
 type DefaultExportFinderOptions = BaseFinderOptions & {};
 
 type ProgramFinderOptions = BaseFinderOptions & {};
+
+type classBodyFinderOptions = BaseFinderOptions & {
+  name: string;
+};

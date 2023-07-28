@@ -8,9 +8,11 @@ import tsTypeLiteralFinder from "./tsTypeLiteral.finder";
 import exportDefaultFinder from "./defaultExport.finder";
 import arrayVariableFinder from "./variableArray.finder";
 import objectVariableFinder from "./variableObject.finder";
+import classBodyFinder from "./classBody.finder";
 import tsInterfaceBodyFinder from "./tsInterfaceBody.finder";
 
 const finders = {
+  classBodyFinder,
   importFinder,
   exportFinder,
   switchFinder,

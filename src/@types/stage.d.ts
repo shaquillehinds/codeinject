@@ -10,11 +10,14 @@ enum StageTypeE {
   tsTypeLiteral = "tsTypeLiteral",
   stringTemplate = "stringTemplate",
   namedExport = "namedExport",
+  classMember = "classMember",
 }
 
 type StageType = keyof typeof StageTypeE;
 
-type StageOptions<T extends StageType> = T extends "import"
+type StageOptions<T extends StageType> = T extends "classMember"
+  ? ClassMemberOptions
+  : T extends "import"
   ? ImportOptions
   : T extends "namedExport"
   ? NamedExportOptions
@@ -131,4 +134,9 @@ type StringTemplateOptions = {
   template: string;
   position?: StringTemplatePosition;
   col?: Collection<import("jscodeshift").Program>;
+} & BaseStageOptions;
+
+type ClassMemberOptions = {
+  stringTemplate: string;
+  col?: Collection<import("jscodeshift").ClassBody>;
 } & BaseStageOptions;

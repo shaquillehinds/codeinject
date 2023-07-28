@@ -10,6 +10,7 @@ export enum StageTypeE {
   tsTypeLiteral = "tsTypeLiteral",
   stringTemplate = "stringTemplate",
   namedExport = "namedExport",
+  classMember = "classMember",
 }
 export enum StageNameE {
   import = "injectImportStage",
@@ -23,4 +24,5 @@ export enum StageNameE {
   stringTemplate = "injectStringTemplateStage",
   tsInterfaceBody = "injectTSInterfaceBodyStage",
   tsTypeAliasConditional = "injectTSTypeAliasConditionalStage",
+  classMember = "injectClassMemberStage",
 }

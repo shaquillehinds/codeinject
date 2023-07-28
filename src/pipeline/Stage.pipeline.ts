@@ -131,6 +131,16 @@ export default class StagePipeline {
     return this;
   }
 
+  public injectClassMember(
+    stageOptions: StageOptions<"classMember">,
+    finderOptions: FinderOptions<"classBody">
+  ) {
+    if (!this.ast) this.parse();
+    stageOptions.col = f.classBodyFinder(this.j, this.ast!, finderOptions);
+    s.injectClassMemberStage(this.j, this.ast!, stageOptions);
+    return this;
+  }
+
   public injectTSInterfaceBody(
     stageOptions: StageOptions<"tsInterfaceBody">,
     finderOptions: FinderOptions<"tsInterfaceBody">

@@ -8,9 +8,11 @@ import injectTSEnumMemberStage from "./tsEnumMember.inject.stage";
 import injectTSTypeLiteralStage from "./tsTypeLiteral.inject.stage";
 import injectStringTemplateStage from "./stringTemplate.inject.stage";
 import injectTSInterfaceBodyStage from "./tsInterfaceBody.inject.stage";
+import injectClassMemberStage from "./classMember.inject.stage";
 import injectTSTypeAliasConditionalStage from "./tsTypeAliasConditional.inject.stage";
 
 const stages = {
+  injectClassMemberStage,
   injectImportStage,
   injectPropertyStage,
   injectSwitchCaseStage,
