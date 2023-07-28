@@ -1,11 +1,14 @@
 import InjectionPipeline from "@src/pipeline/Injection.pipeline";
+import config from "@src/../.prettierrc.cjs";
 
 export default async function newFinderCommandPipeline(
   name: string,
   finderOptions: string
 ) {
   const nameL = name[0].toLowerCase() + name.slice(1);
-  await new InjectionPipeline("src/@types/finder.ts")
+  console.log(config);
+
+  await new InjectionPipeline("src/@types/finder.ts", config)
     .injectTSEnumMember({ key: nameL, value: nameL }, { name: "FinderTypeE" })
     .injectStringTemplate({
       template: `
@@ -13,13 +16,13 @@ export default async function newFinderCommandPipeline(
       export type ${name}FinderOptions = BaseFinderOptions & {
         ${finderOptions}
       }
-    `,
+    `
     })
     .injectTSTypeAliasConditional(
       {
         extendee: "T",
         extender: nameL,
-        trueClause: `${name}FinderOptions`,
+        trueClause: `${name}FinderOptions`
       },
       { name: "FinderOptions" }
     )
@@ -29,12 +32,12 @@ export default async function newFinderCommandPipeline(
     .injectImport({
       importName: `${nameL}Finder`,
       source: `./${nameL}.finder`,
-      isDefault: true,
+      isDefault: true
     })
     .injectProperty(
       {
         key: `${nameL}Finder`,
-        value: `${nameL}Finder@jcs.identifier`,
+        value: `${nameL}Finder@jcs.identifier`
       },
       { name: "finders" }
     )

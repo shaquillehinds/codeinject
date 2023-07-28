@@ -18,7 +18,7 @@ export default async function newStageCommandPipeline(
         collection ? `<import("jscodeshift").${collection}>` : ""
       };
     } & BaseStageOptions
-  `,
+  `
     })
     .injectTSTypeAliasConditional(
       { extendee: "T", extender: nameL, trueClause: `${name}Options` },
@@ -34,7 +34,7 @@ export default async function newStageCommandPipeline(
     .injectImport({
       importName: `inject${name}Stage`,
       source: `./${nameL}.inject.stage`,
-      isDefault: true,
+      isDefault: true
     })
     .injectProperty(
       { key: `inject${name}Stage`, value: `inject${name}Stage@jcs.identifier` },
@@ -55,7 +55,7 @@ export default async function newStageCommandPipeline(
       return this;
     }
 
-    `,
+    `
       },
       { name: "InjectionPipeline" }
     )
