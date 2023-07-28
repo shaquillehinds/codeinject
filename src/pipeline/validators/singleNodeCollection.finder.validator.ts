@@ -9,7 +9,7 @@ export default function singleNodeCollectionValidator<T>(
   if (!col.size())
     throw new Error(
       chalkStderr.redBright(
-        `The collection ${collectionName} is empty, can't use in stage`
+        `The collection ${collectionName} is empty, check your injection pipeline finder options. If everything looks good, there might be an issue with the finder function itself.`
       )
     );
   return col;

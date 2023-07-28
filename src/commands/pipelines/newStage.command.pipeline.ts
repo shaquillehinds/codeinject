@@ -7,7 +7,7 @@ export default async function newStageCommandPipeline(
   collection: string = ""
 ) {
   const nameL = name[0].toLowerCase() + name.slice(1);
-  await new InjectionPipeline("src/@types/stage.d.ts")
+  await new InjectionPipeline("src/@types/stage.ts")
     .injectTSEnumMember({ key: nameL, value: nameL }, { name: "StageTypeE" })
     .injectStringTemplate({
       template: `
@@ -40,7 +40,7 @@ export default async function newStageCommandPipeline(
       { key: `inject${name}Stage`, value: `inject${name}Stage@jcs.identifier` },
       { name: "stages" }
     )
-    .parse("src/pipeline/Stage.pipeline.ts")
+    .parse("src/pipeline/Injection.pipeline.ts")
     .injectClassMember(
       {
         stringTemplate: `
@@ -57,7 +57,7 @@ export default async function newStageCommandPipeline(
 
     `,
       },
-      { name: "StagePipeline" }
+      { name: "InjectionPipeline" }
     )
     .finish();
 }

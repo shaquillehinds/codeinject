@@ -46,7 +46,7 @@ export default function newCommand(program: Command) {
         }
 
         const [finder, finderL] = handleName(f);
-        if (finder && !FinderTypeE[finder as FinderType]) {
+        if (finder && !FinderTypeE[finderL as FinderType]) {
           console.info(
             chalk.cyanBright(
               "This finder does not exist, so it will be created"
