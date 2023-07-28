@@ -42,7 +42,6 @@ export default function newCommand(program: Command) {
 
         if (!f) {
           log("error", "A finder is required to create a new stage");
-          process.exit(1);
         }
 
         const [finder, finderL] = handleName(f);
