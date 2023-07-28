@@ -8,7 +8,9 @@ export default function tsEnumFinder<T>(
   { name }: TSEnumFinderOptions
 ) {
   return singleNodeCollectionValidator(
-    collection.find(jcs.Identifier, { name }).closest(jcs.TSEnumDeclaration),
+    collection.find(jcs.TSEnumDeclaration, {
+      id: { type: "Identifier", name },
+    }),
     "TSEnumDeclaration"
   );
 }

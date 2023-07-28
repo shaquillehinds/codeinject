@@ -8,7 +8,9 @@ export default function tsTypeLiteralFinder<T>(
   { name }: TSTypeLiteralFinderOptions
 ) {
   return singleNodeCollectionValidator(
-    collection.find(jcs.Identifier, { name }).closest(jcs.TSTypeLiteral),
+    collection
+      .find(jcs.TSTypeAliasDeclaration, { id: { type: "Identifier", name } })
+      .find(jcs.TSTypeLiteral),
     "TSTypeLiteral"
   );
 }

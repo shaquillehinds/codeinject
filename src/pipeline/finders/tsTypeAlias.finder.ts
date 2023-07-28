@@ -8,9 +8,9 @@ export default function tsTypeAliasFinder<T>(
   { name }: TSTypeAliasFinderOptions
 ) {
   return singleNodeCollectionValidator(
-    collection
-      .find(jcs.Identifier, { name })
-      .closest(jcs.TSTypeAliasDeclaration),
+    collection.find(jcs.TSTypeAliasDeclaration, {
+      id: { type: "Identifier", name },
+    }),
     "TSTypeAliasDeclaration"
   );
 }

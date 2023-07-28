@@ -9,8 +9,7 @@ export default function tsInterfaceBodyFinder<T>(
 ) {
   return singleNodeCollectionValidator(
     collection
-      .find(jcs.Identifier, { name })
-      .closest(jcs.TSInterfaceDeclaration)
+      .find(jcs.TSInterfaceDeclaration, { id: { type: "Identifier", name } })
       .find(jcs.TSInterfaceBody),
     "TSInterfaceBody"
   );

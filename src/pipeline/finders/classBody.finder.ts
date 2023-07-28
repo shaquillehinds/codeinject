@@ -5,12 +5,11 @@ import { classBodyFinderOptions } from "@src/@types/finder";
 export default function classBodyFinder<T>(
   jcs: JSCodeshift,
   collection: Collection<T>,
-  options: classBodyFinderOptions
+  { name }: classBodyFinderOptions
 ) {
   return singleNodeCollectionValidator(
     collection
-      .find(jcs.Identifier, options)
-      .closest(jcs.ClassDeclaration)
+      .find(jcs.ClassDeclaration, { id: { type: "Identifier", name } })
       .find(jcs.ClassBody),
     "ClassBody"
   );
