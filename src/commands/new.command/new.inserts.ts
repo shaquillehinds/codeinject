@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import { readFileSync, writeFileSync } from "fs";
 
 interface InsertProps {
@@ -6,9 +7,14 @@ interface InsertProps {
   collection: string;
 }
 
-const finder = (props: InsertProps) =>
+function created(path: string) {
+  console.info(`${chalk.greenBright("[Create]")}: ${path}`);
+}
+
+const finder = (props: InsertProps) => {
+  const path = `src/pipeline/finders/${props.nameL}.finder.ts`;
   writeFileSync(
-    `src/pipeline/finders/${props.nameL}.finder.ts`,
+    path,
     readFileSync(`src/templates/files/finder.template`, "utf-8")
       .replaceAll("{!template}", props.name)
       .replaceAll("{template}", props.nameL)
@@ -19,16 +25,21 @@ const finder = (props: InsertProps) =>
       ),
     "utf-8"
   );
+  created(path);
+};
 
-const stage = (props: InsertProps) =>
+const stage = (props: InsertProps) => {
+  const path = `src/pipeline/stages/${props.nameL}.inject.stage.ts`;
   writeFileSync(
-    `src/pipeline/stages/${props.nameL}.inject.stage.ts`,
+    path,
     readFileSync(`src/templates/files/stage.template`, "utf-8")
       .replaceAll("{!template}", props.name)
       .replaceAll("{template}", props.nameL)
       .replaceAll("{collection}", props.collection),
     "utf-8"
   );
+  created(path);
+};
 
 const newInserts = { finder, stage };
 
