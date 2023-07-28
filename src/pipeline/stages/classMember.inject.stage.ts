@@ -15,7 +15,7 @@ export default function injectClassMemberStage(
 
   const originalNodes = col.get().value.body;
 
-  const ast2 = jcs(
+  const ast2 = jcs.withParser("tsx")(
     `class Template{
 
     ${stringTemplate}
