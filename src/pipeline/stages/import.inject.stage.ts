@@ -1,5 +1,6 @@
 import { Collection, ImportDeclaration, JSCodeshift } from "jscodeshift";
 import { DebugLogger } from "@utils/Logger";
+import { StageOptions } from "@src/@types/stage";
 
 const log = DebugLogger("import.inject.stage.ts");
 

@@ -1,5 +1,6 @@
 import { Collection, JSCodeshift, TSEnumDeclaration } from "jscodeshift";
 import { DebugLogger } from "@utils/Logger";
+import { StageOptions } from "@src/@types/stage";
 
 const log = DebugLogger("tsEnumMember.inject.stage.ts");
 

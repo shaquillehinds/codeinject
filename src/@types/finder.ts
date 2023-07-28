@@ -1,4 +1,4 @@
-enum FinderTypeE {
+export enum FinderTypeE {
   variableObject = "variableObject",
   variableArray = "variableArray",
   switch = "switch",
@@ -13,9 +13,9 @@ enum FinderTypeE {
   classBody = "classBody",
 }
 
-type FinderType = keyof typeof FinderTypeE;
+export type FinderType = keyof typeof FinderTypeE;
 
-type FinderOptions<T extends FinderType> = T extends "classBody"
+export type FinderOptions<T extends FinderType> = T extends "classBody"
   ? classBodyFinderOptions
   : T extends "variableObject"
   ? VariableObjectFinderOptions
@@ -41,50 +41,50 @@ type FinderOptions<T extends FinderType> = T extends "classBody"
   ? ProgramFinderOptions
   : BaseFinderOptions;
 
-type Finder = (
-  j: JSCodeshift,
+export type Finder = (
+  j: import("jscodeshift").JSCodeshift,
   col: Collection,
-  opts: FinderOptions
+  opts: FinderOptions<FinderType>
 ) => Collection;
 
-type BaseFinderOptions = {};
+export type BaseFinderOptions = {};
 
-type VariableObjectFinderOptions = BaseFinderOptions & {
+export type VariableObjectFinderOptions = BaseFinderOptions & {
   name: string;
 };
 
-type VariableArrayFinderOptions = BaseFinderOptions & {
+export type VariableArrayFinderOptions = BaseFinderOptions & {
   name: string;
 };
 
-type SwitchFinderOptions = BaseFinderOptions & {
+export type SwitchFinderOptions = BaseFinderOptions & {
   name: string;
 };
 
-type TSEnumFinderOptions = BaseFinderOptions & {
+export type TSEnumFinderOptions = BaseFinderOptions & {
   name: string;
 };
 
-type InterfaceFinderBodyOptions = BaseFinderOptions & {
+export type InterfaceFinderBodyOptions = BaseFinderOptions & {
   name: string;
 };
 
-type TSTypeAliasFinderOptions = BaseFinderOptions & {
+export type TSTypeAliasFinderOptions = BaseFinderOptions & {
   name: string;
 };
 
-type TSTypeLiteralFinderOptions = BaseFinderOptions & {
+export type TSTypeLiteralFinderOptions = BaseFinderOptions & {
   name: string;
 };
 
-type ImportFinderOptions = BaseFinderOptions & {};
+export type ImportFinderOptions = BaseFinderOptions & {};
 
-type ExportFinderOptions = BaseFinderOptions & {};
+export type ExportFinderOptions = BaseFinderOptions & {};
 
-type DefaultExportFinderOptions = BaseFinderOptions & {};
+export type DefaultExportFinderOptions = BaseFinderOptions & {};
 
-type ProgramFinderOptions = BaseFinderOptions & {};
+export type ProgramFinderOptions = BaseFinderOptions & {};
 
-type classBodyFinderOptions = BaseFinderOptions & {
+export type classBodyFinderOptions = BaseFinderOptions & {
   name: string;
 };

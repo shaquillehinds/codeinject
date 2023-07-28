@@ -1,5 +1,6 @@
 import { JSCodeshift } from "jscodeshift";
 import singleNodeCollectionValidator from "../validators/singleNodeCollection.finder.validator";
+import { VariableObjectFinderOptions } from "@src/@types/finder";
 
 export default function variableObjectFinder<T>(
   jcs: JSCodeshift,

@@ -1,6 +1,7 @@
 import { Collection, JSCodeshift } from "jscodeshift";
 import objToExp from "../parsers/objToExp.parser";
 import { DebugLogger } from "@utils/Logger";
+import { StageOptions } from "@src/@types/stage";
 
 const log = DebugLogger("property.inject.stage.ts");
 

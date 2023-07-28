@@ -1,7 +1,7 @@
 import { JSCodeshift } from "jscodeshift";
 import objToExp from "../../pipeline/parsers/objToExp.parser";
 
-export default function reducerStateReturnStatement(
+function reducerStateReturnStatement(
   jcs: JSCodeshift,
   payload: { [key: string]: any }
 ) {
@@ -13,3 +13,5 @@ export default function reducerStateReturnStatement(
     objExp.properties.push(value.properties[prop]);
   return jcs.returnStatement(objExp);
 }
+
+export default reducerStateReturnStatement;

@@ -1,20 +1,32 @@
 {
-  "name": "codeinject",
-  "version": "1.0.0",
-  "description": "",
+  "name": "tscodeinject",
+  "version": "1.1.0",
+  "description": "Inject code into your typescript files",
   "main": "dist/index.js",
   "keywords": [],
-  "author": "Shaquille Hinds",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shaquillehinds/codeinject"
+  },
+  "author": {
+    "name": "Shaquille Hinds",
+    "email": "shaquillehinds72@hotmail.com",
+    "url": "https://github.com/shaquillehinds"
+  },
+  "files": [
+    "dist/**/*"
+  ],
   "license": "ISC",
   "private": false,
   "type": "module",
-  "bin": "./dist/index.js",
+  "bin": "./dist/index.bin.js",
   "scripts": {
     "deploy": "bash scripts/deploy.sh",
     "build": "rm -rf dist && tsc -p ./ && tsc-alias -p ./tsconfig.json && chmod +x dist/index.js",
     "pre:start": "yarn build",
     "start": "node --experimental-specifier-resolution=node dist/",
-    "start:dev": "yarn build && concurrently \"tsc -w\" \"tsc-alias -w\""
+    "start:dev": "yarn build && concurrently \"tsc -w\" \"tsc-alias -w\"",
+    "npm-pub": "yarn build && npm publish --access public"
   },
   "dependencies": {
     "chalk": "^5.3.0",

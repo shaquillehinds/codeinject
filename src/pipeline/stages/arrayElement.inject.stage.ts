@@ -3,6 +3,7 @@ import objToExp from "../parsers/objToExp.parser";
 import arrToExp from "../parsers/arrToExp.parser";
 import funcToExp from "../parsers/funcToExp.parser";
 import { DebugLogger } from "@utils/Logger";
+import { StageOptions } from "@src/@types/stage";
 
 const log = DebugLogger("arrayElement.inject.stage.ts");
 

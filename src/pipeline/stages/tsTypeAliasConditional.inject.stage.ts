@@ -2,6 +2,7 @@ import { Collection, JSCodeshift } from "jscodeshift";
 import { TSTypeKind } from "ast-types/gen/kinds";
 import stringToASTType from "../parsers/stringToASTType.parser";
 import { DebugLogger } from "@utils/Logger";
+import { StageOptions } from "@src/@types/stage";
 
 const log = DebugLogger("tsTypeAliasConditional.inject.stage.ts");
 /**

@@ -1,3 +1,5 @@
-import StagePipeline from "./Stage.pipeline";
+import InjectionPipeline from "./Injection.pipeline";
 
-export { StagePipeline };
+const pipelines = { InjectionPipeline };
+
+export default pipelines;

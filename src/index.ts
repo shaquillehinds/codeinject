@@ -1,14 +1,7 @@
 #!/usr/bin/env node --experimental-specifier-resolution=node
 
-import { program } from "commander";
-import * as commands from "./commands";
+import InjectionPipeline from "./pipeline/Injection.pipeline";
+import reducerStateReturnStatement from "./templates/statements/reducerState.return.statement";
 
-program.version("1.0.0").description("Client Management System CLI");
-
-// Adding commands to program
-for (let command in commands) {
-  const commandKey = command as keyof typeof commands;
-  commands[commandKey](program);
-}
-
-program.parse(process.argv);
+export { reducerStateReturnStatement };
+export default InjectionPipeline;

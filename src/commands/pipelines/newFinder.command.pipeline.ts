@@ -1,12 +1,11 @@
-import { StagePipeline } from "../../pipeline";
-import jcs from "jscodeshift";
+import InjectionPipeline from "@src/pipeline/Injection.pipeline";
 
 export default async function newFinderCommandPipeline(
   name: string,
   finderOptions: string
 ) {
   const nameL = name[0].toLowerCase() + name.slice(1);
-  await new StagePipeline(jcs, "src/@types/finder.d.ts")
+  await new InjectionPipeline("src/@types/finder.d.ts")
     .injectTSEnumMember({ key: nameL, value: nameL }, { name: "FinderTypeE" })
     .injectStringTemplate({
       template: `

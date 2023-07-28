@@ -1,23 +1,23 @@
-interface Customer {
+declare interface Customer {
   firstName: string;
   lastName: string;
   phone: string;
   email: string;
 }
 
-interface CustomerUpdate {
+declare interface CustomerUpdate {
   firstName?: string;
   lastName?: string;
   phone?: string;
   email?: string;
 }
 
-interface CustomerUpdateDto extends CustomerUpdate {
+declare interface CustomerUpdateDto extends CustomerUpdate {
   id: string;
 }
 
-type Literal = string | number | boolean | RegExp | null;
+declare type Literal = string | number | boolean | RegExp | null;
 
-type Collection<T = any> = import("jscodeshift").Collection<T>;
+declare type Collection<T = any> = import("jscodeshift").Collection<T>;
 
-type YesOrNo = "Yes" | "No";
+declare type YesOrNo = "Yes" | "No";

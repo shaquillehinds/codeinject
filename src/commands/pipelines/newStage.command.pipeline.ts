@@ -1,5 +1,4 @@
-import { StagePipeline } from "../../pipeline";
-import jcs from "jscodeshift";
+import InjectionPipeline from "@src/pipeline/Injection.pipeline";
 
 export default async function newStageCommandPipeline(
   name: string,
@@ -8,7 +7,7 @@ export default async function newStageCommandPipeline(
   collection: string = ""
 ) {
   const nameL = name[0].toLowerCase() + name.slice(1);
-  await new StagePipeline(jcs, "src/@types/stage.d.ts")
+  await new InjectionPipeline("src/@types/stage.d.ts")
     .injectTSEnumMember({ key: nameL, value: nameL }, { name: "StageTypeE" })
     .injectStringTemplate({
       template: `

@@ -1,4 +1,7 @@
-enum StageTypeE {
+import { JSCodeshift } from "jscodeshift";
+import { Finder, FinderOptions, FinderType } from "./finder";
+
+export enum StageTypeE {
   property = "property",
   arrayElement = "arrayElement",
   case = "case",
@@ -13,9 +16,9 @@ enum StageTypeE {
   classMember = "classMember",
 }
 
-type StageType = keyof typeof StageTypeE;
+export type StageType = keyof typeof StageTypeE;
 
-type StageOptions<T extends StageType> = T extends "classMember"
+export type StageOptions<T extends StageType> = T extends "classMember"
   ? ClassMemberOptions
   : T extends "import"
   ? ImportOptions
@@ -41,38 +44,38 @@ type StageOptions<T extends StageType> = T extends "classMember"
   ? StringTemplateOptions
   : BaseStageOptions;
 
-type Stage<T extends StageType> = (
+export type Stage<T extends StageType> = (
   j: JSCodeshift,
   col: Collection,
   opts: StageOptions<T>
 ) => Collection;
 
-type StageFinder<T = FinderType> = {
+export type StageFinder<T extends FinderType = FinderType> = {
   func: Finder;
   options: FinderOptions<T>;
 };
 
-type BaseStageOptions = {};
+export type BaseStageOptions = {};
 
-type ImportOptions = {
+export type ImportOptions = {
   isDefault?: boolean;
   source: string;
   importName: string;
   col?: Collection<import("jscodeshift").ImportDeclaration>;
 } & BaseStageOptions;
 
-type NamedExportOptions = {
+export type NamedExportOptions = {
   name: string;
   col?: Collection<import("jscodeshift").ExportNamedDeclaration>;
 } & BaseStageOptions;
 
-type PropertyOptions = {
+export type PropertyOptions = {
   key: string;
   value: any;
   col?: Collection<import("jscodeshift").ObjectExpression>;
 } & BaseStageOptions;
 
-type ArrayElementOptions = {
+export type ArrayElementOptions = {
   identifier?: boolean;
   col?: Collection<import("jscodeshift").ArrayExpression>;
 } & (
@@ -82,25 +85,25 @@ type ArrayElementOptions = {
 ) &
   BaseStageOptions;
 
-type CaseOptions = {
+export type CaseOptions = {
   caseName: string;
   identifier?: boolean;
   statements: import("ast-types/gen/kinds").StatementKind[];
   col?: Collection<import("jscodeshift").SwitchStatement>;
 } & BaseStageOptions;
 
-type TSEnumMemberOptions = {
+export type TSEnumMemberOptions = {
   key: string;
   value: string | number;
   col?: Collection<import("jscodeshift").TSEnumDeclaration>;
 } & BaseStageOptions;
 
-type TSInterfaceBodyOptions = {
+export type TSInterfaceBodyOptions = {
   bodyStringTemplate: string;
   col?: Collection<import("jscodeshift").TSInterfaceBody>;
 } & BaseStageOptions;
 
-type TSTypeAliasOptions = {
+export type TSTypeAliasOptions = {
   type:
     | "union"
     | "intersection"
@@ -111,7 +114,7 @@ type TSTypeAliasOptions = {
   col?: Collection<import("jscodeshift").TSTypeAliasDeclaration>;
 } & BaseStageOptions;
 
-type TSTypeAliasConditionalOptions = {
+export type TSTypeAliasConditionalOptions = {
   extendee: string;
   extender: string;
   trueClause: string;
@@ -119,24 +122,24 @@ type TSTypeAliasConditionalOptions = {
   col?: Collection<import("jscodeshift").TSTypeAliasDeclaration>;
 } & BaseStageOptions;
 
-type TSTypeLiteralOptions = {
+export type TSTypeLiteralOptions = {
   stringTemplate: string;
   col?: Collection<import("jscodeshift").TSTypeLiteral>;
 } & BaseStageOptions;
 
-type StringTemplatePosition =
+export type StringTemplatePosition =
   | "afterImport"
   | "beforeImport"
   | "firstLine"
   | "lastLine";
 
-type StringTemplateOptions = {
+export type StringTemplateOptions = {
   template: string;
   position?: StringTemplatePosition;
   col?: Collection<import("jscodeshift").Program>;
 } & BaseStageOptions;
 
-type ClassMemberOptions = {
+export type ClassMemberOptions = {
   stringTemplate: string;
   col?: Collection<import("jscodeshift").ClassBody>;
 } & BaseStageOptions;

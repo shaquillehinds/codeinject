@@ -1,5 +1,6 @@
 import { Collection, JSCodeshift } from "jscodeshift";
 import { DebugLogger } from "@utils/Logger";
+import { StageOptions } from "@src/@types/stage";
 
 const log = DebugLogger("namedExport.inject.stage.ts");
 

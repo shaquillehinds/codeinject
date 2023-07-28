@@ -1,5 +1,6 @@
 import { Collection, JSCodeshift, SwitchStatement } from "jscodeshift";
 import { DebugLogger } from "@utils/Logger";
+import { StageOptions } from "@src/@types/stage";
 
 const log = DebugLogger("switchCase.inject.stage.ts");
 

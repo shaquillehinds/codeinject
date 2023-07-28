@@ -7,6 +7,7 @@ import {
 } from "jscodeshift";
 import { TSTypeKind } from "ast-types/gen/kinds";
 import { DebugLogger } from "@utils/Logger";
+import { StageOptions } from "@src/@types/stage";
 
 const log = DebugLogger("tsTypeAlias.inject.stage.ts");
 /**

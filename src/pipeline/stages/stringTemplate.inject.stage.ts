@@ -1,6 +1,7 @@
 import { Collection, JSCodeshift, Program } from "jscodeshift";
 import importFinder from "../finders/import.finder";
 import { DebugLogger } from "@utils/Logger";
+import { StageOptions } from "@src/@types/stage";
 
 const log = DebugLogger("stringTemplate.inject.stage.ts");
 /**

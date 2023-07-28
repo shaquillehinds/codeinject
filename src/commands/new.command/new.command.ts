@@ -7,6 +7,7 @@ import newStageCommandPipeline from "../pipelines/newStage.command.pipeline";
 import newCommandPrompts from "./new.prompts";
 import newInserts from "./new.inserts";
 import utilities, { handleName } from "./new.utilities";
+import { FinderType } from "@src/@types/finder";
 
 const log = DebugLogger("new.command.ts");
 
