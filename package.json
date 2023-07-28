@@ -11,10 +11,10 @@
   "bin": "./dist/index.js",
   "scripts": {
     "deploy": "bash scripts/deploy.sh",
-    "build": "tsc -p ./ && tsc-alias -p ./tsconfig.json ",
+    "build": "rm -rf dist && tsc -p ./ && tsc-alias -p ./tsconfig.json && chmod +x dist/index.js",
     "pre:start": "yarn build",
     "start": "node --experimental-specifier-resolution=node dist/",
-    "start:dev": "concurrently \"tsc -w\" \"tsc-alias -w\""
+    "start:dev": "yarn build && concurrently \"tsc -w\" \"tsc-alias -w\""
   },
   "dependencies": {
     "chalk": "^5.3.0",
