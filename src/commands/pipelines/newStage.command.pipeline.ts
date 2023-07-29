@@ -30,6 +30,7 @@ export default async function newStageCommandPipeline(
       { key: nameL, value: `inject${name}Stage` },
       { name: "StageNameE" }
     )
+
     .parse("src/pipeline/stages/index.ts")
     .injectImport({
       importName: `inject${name}Stage`,
@@ -59,5 +60,15 @@ export default async function newStageCommandPipeline(
       },
       { name: "InjectionPipeline" }
     )
+
+    .injectFileFromTemplate({
+      templatePath: "src/templates/files/stage.template",
+      newFilePath: `src/pipeline/stages/${nameL}.inject.stage.ts`,
+      replaceKeywords: [
+        { keyword: "{!template}", replacement: name },
+        { keyword: "{template}", replacement: nameL },
+        { keyword: "{collection}", replacement: collection || "" }
+      ]
+    })
     .finish();
 }

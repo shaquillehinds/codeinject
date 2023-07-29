@@ -5,18 +5,27 @@ import chalk from "chalk";
 import s from "./stages";
 import f from "./finders";
 import { execSync } from "child_process";
-import { Stage, StageFinder, StageOptions, StageType } from "@src/@types/stage";
+import {
+  Stage,
+  StageFinder,
+  StageLogType,
+  StageOptions,
+  StageType
+} from "@src/@types/stage";
 import { FinderOptions, FinderType } from "@src/@types/finder";
+import { FileFromTemplateOptions } from "@src/@types";
 
 class InjectionPipeline {
   protected ast?: Collection;
   protected asts: { location: string; ast: Collection }[] = [];
-  protected updates: string[] = [];
+  protected newFiles: { location: string; content: string }[] = [];
+  protected updated: string[] = [];
+  protected created: string[] = [];
   constructor(
     protected fileLocation: string,
     public prettierOptions?: prettier.Options
   ) {
-    this.updates.push(`${chalk.yellow("[Updating]")}: ${fileLocation}`);
+    this.updated.push(`${chalk.yellow("[Updating]")}: ${fileLocation}`);
   }
 
   public parse(fileLocation?: string) {
@@ -25,7 +34,7 @@ class InjectionPipeline {
         return this;
       }
       this.fileLocation = fileLocation;
-      this.updates.push(`${chalk.yellow("[Updating]")}: ${fileLocation}`);
+      this.updated.push(`${chalk.yellow("[Updating]")}: ${fileLocation}`);
     }
     const file = readFileSync(this.fileLocation, "utf-8");
     this.ast = j.withParser("tsx")(file);
@@ -36,7 +45,7 @@ class InjectionPipeline {
   public stage<T extends StageType, F extends FinderType = FinderType>({
     finder,
     stage,
-    options,
+    options
   }: {
     stage: Stage<T>;
     options: StageOptions<T> & { col?: Collection };
@@ -53,28 +62,56 @@ class InjectionPipeline {
       console.error(chalk.bgRed("You don't have any asts loaded."));
       return this;
     }
+
     for (let ast of this.asts) {
       try {
         const updatedSource = await prettier.format(ast.ast.toSource(), {
           parser: "typescript",
-          ...this.prettierOptions,
+          ...this.prettierOptions
         });
         writeFileSync(ast.location, updatedSource, "utf-8");
-        const updateString = this.updates.join("\n");
-        console.info(updateString);
-        if (filesToOpen && filesToOpen.length > 0) {
-          filesToOpen.forEach((file) => execSync(`code ${file}`));
-        }
       } catch (error) {
-        console.error(chalk.redBright(error));
+        console.error(`${chalk.bgRed("[Error]")}: ${error}`);
       }
     }
+
+    const updateString = this.updated.join("\n");
+    console.info(updateString);
+
+    this.newFiles.forEach((newFile, index) => {
+      try {
+        writeFileSync(newFile.location, newFile.content, "utf-8");
+        console.info(this.created[index]);
+      } catch (error) {
+        console.error(`${chalk.bgRed("[Error]")}: ${error}`);
+      }
+    });
+
+    if (filesToOpen && filesToOpen.length > 0) {
+      filesToOpen.forEach(file => execSync(`code ${file}`));
+    }
     this.asts = [];
+    this.newFiles = [];
+    this.updated = [];
+    this.created = [];
     return this;
   }
 
-  protected addUpdate(update: string) {
-    this.updates.push(`${chalk.cyanBright("[Update]")}: ${update}`);
+  protected addLog(log: string, type: StageLogType = "update") {
+    if (type === "update")
+      this.updated.push(`${chalk.cyanBright("[Update]")}: ${log}`);
+    else if (type === "create")
+      this.created.push(`${chalk.greenBright("[Create]")}: ${log}`);
+  }
+
+  public injectFileFromTemplate(options: FileFromTemplateOptions) {
+    let content = readFileSync(options.templatePath, "utf-8");
+    for (let { keyword, replacement } of options.replaceKeywords) {
+      content = content.replaceAll(keyword, replacement);
+    }
+    this.newFiles.push({ content, location: options.newFilePath });
+    this.addLog(options.newFilePath, "create");
+    return this;
   }
 
   public injectArrayElement(
@@ -84,7 +121,7 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.arrayVariableFinder(j, this.ast!, finderOptions);
     s.injectArrayElementStage(j, this.ast!, stageOptions);
-    this.addUpdate("Injected array element.");
+    this.addLog("Injected array element.");
     return this;
   }
 
@@ -95,7 +132,7 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.tsEnumFinder(j, this.ast!, finderOptions);
     s.injectTSEnumMemberStage(j, this.ast!, stageOptions);
-    this.addUpdate(`Injected injected enum member: ${stageOptions.key}`);
+    this.addLog(`Injected injected enum member: ${stageOptions.key}`);
     return this;
   }
 
@@ -106,7 +143,7 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.tsTypeAliasFinder(j, this.ast!, finderOptions);
     s.injectTSTypeAliasConditionalStage(j, this.ast!, stageOptions);
-    this.addUpdate("Injected type alias condition.");
+    this.addLog("Injected type alias condition.");
     return this;
   }
 
@@ -117,7 +154,7 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.objectVariableFinder(j, this.ast!, finderOptions);
     s.injectPropertyStage(j, this.ast!, stageOptions);
-    this.addUpdate(`Injected object property: ${stageOptions.key}`);
+    this.addLog(`Injected object property: ${stageOptions.key}`);
     return this;
   }
 
@@ -128,7 +165,7 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.switchFinder(j, this.ast!, finderOptions);
     s.injectSwitchCaseStage(j, this.ast!, stageOptions);
-    this.addUpdate(`Injected switch case: ${stageOptions.caseName}`);
+    this.addLog(`Injected switch case: ${stageOptions.caseName}`);
     return this;
   }
 
@@ -139,7 +176,7 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.tsTypeAliasFinder(j, this.ast!, finderOptions);
     s.injectTSTypeAliasStage(j, this.ast!, stageOptions);
-    this.addUpdate(`Injected type alias: ${stageOptions.type}`);
+    this.addLog(`Injected type alias: ${stageOptions.type}`);
     return this;
   }
 
@@ -150,7 +187,7 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.tsTypeLiteralFinder(j, this.ast!, finderOptions);
     s.injectTSTypeLiteralStage(j, this.ast!, stageOptions);
-    this.addUpdate(`Injected type literal`);
+    this.addLog(`Injected type literal`);
     return this;
   }
 
@@ -161,7 +198,7 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.classBodyFinder(j, this.ast!, finderOptions);
     s.injectClassMemberStage(j, this.ast!, stageOptions);
-    this.addUpdate(`Injected class member`);
+    this.addLog(`Injected class member`);
     return this;
   }
 
@@ -172,7 +209,7 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.tsInterfaceBodyFinder(j, this.ast!, finderOptions);
     s.injectTSInterfaceBodyStage(j, this.ast!, stageOptions);
-    this.addUpdate(`Injected interface body`);
+    this.addLog(`Injected interface body`);
     return this;
   }
 
@@ -180,7 +217,7 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.exportFinder(j, this.ast!);
     s.injectNamedExportStage(j, this.ast!, stageOptions);
-    this.addUpdate(`Injected named export: ${stageOptions.name}`);
+    this.addLog(`Injected named export: ${stageOptions.name}`);
     return this;
   }
 
@@ -188,7 +225,7 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.importFinder(j, this.ast!);
     s.injectImportStage(j, this.ast!, stageOptions);
-    this.addUpdate(`Injected import: ${stageOptions.importName}`);
+    this.addLog(`Injected import: ${stageOptions.importName}`);
     return this;
   }
 
@@ -196,7 +233,7 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.programFinder(j, this.ast!);
     s.injectStringTemplateStage(j, this.ast!, stageOptions);
-    this.addUpdate(`Injected string template code`);
+    this.addLog(`Injected string template code`);
     return this;
   }
 }

@@ -1,6 +1,8 @@
 import { Collection, JSCodeshift } from "jscodeshift";
 import { Finder, FinderOptions, FinderType } from "./finder";
 
+export type StageLogType = "update" | "create";
+
 export enum StageTypeE {
   property = "property",
   arrayElement = "arrayElement",
@@ -13,7 +15,7 @@ export enum StageTypeE {
   tsTypeLiteral = "tsTypeLiteral",
   stringTemplate = "stringTemplate",
   namedExport = "namedExport",
-  classMember = "classMember",
+  classMember = "classMember"
 }
 
 export type StageType = keyof typeof StageTypeE;

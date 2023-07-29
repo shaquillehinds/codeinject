@@ -3,7 +3,8 @@ import config from "@src/../.prettierrc.cjs";
 
 export default async function newFinderCommandPipeline(
   name: string,
-  finderOptions: string
+  finderOptions: string,
+  collection?: string
 ) {
   const nameL = name[0].toLowerCase() + name.slice(1);
   console.log(config);
@@ -26,6 +27,7 @@ export default async function newFinderCommandPipeline(
       },
       { name: "FinderOptions" }
     )
+
     .parse("src/@types/finder.enums.ts")
     .injectTSEnumMember({ key: nameL, value: nameL }, { name: "FinderTypeE" })
     .parse("src/pipeline/finders/index.ts")
@@ -41,5 +43,19 @@ export default async function newFinderCommandPipeline(
       },
       { name: "finders" }
     )
+
+    .injectFileFromTemplate({
+      templatePath: "src/templates/files/finder.template",
+      newFilePath: `src/pipeline/finders/${nameL}.finder.ts`,
+      replaceKeywords: [
+        { keyword: "{!template}", replacement: name },
+        { keyword: "{template}", replacement: nameL },
+        { keyword: "{collection}", replacement: collection || "" },
+        {
+          keyword: "{find}",
+          replacement: collection ? `.find(jcs.${collection})` : ""
+        }
+      ]
+    })
     .finish();
 }

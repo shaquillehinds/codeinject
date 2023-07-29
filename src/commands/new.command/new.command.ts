@@ -36,8 +36,7 @@ export default function newCommand(program: Command) {
 
       if (newType === "finder") {
         const finderOpts = await newCommandPrompts.options("finder");
-        await newFinderCommandPipeline(name, finderOpts);
-        newInserts.finder({ name, nameL, collection });
+        await newFinderCommandPipeline(name, finderOpts, collection);
       } else if (newType === "stage") {
         if (!f) f = await newCommandPrompts.finder();
 
@@ -54,15 +53,13 @@ export default function newCommand(program: Command) {
           );
 
           const finderOpts = await newCommandPrompts.options("finder");
-          await newFinderCommandPipeline(finder, finderOpts);
-
-          newInserts.finder({ name: finder, nameL: finderL, collection });
+          await newFinderCommandPipeline(finder, finderOpts, collection);
         }
 
         const stageOpts = await newCommandPrompts.options("stage");
         await newStageCommandPipeline(name, finderL, stageOpts, collection);
 
-        newInserts.stage({ name, nameL, collection });
+        // newInserts.stage({ name, nameL, collection });
       }
       process.exit(0);
     });
