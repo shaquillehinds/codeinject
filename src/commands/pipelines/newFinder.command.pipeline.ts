@@ -7,7 +7,6 @@ export default async function newFinderCommandPipeline(
   collection?: string
 ) {
   const nameL = name[0].toLowerCase() + name.slice(1);
-  console.log(config);
 
   await new InjectionPipeline("src/@types/finder.ts", config)
     .injectTSEnumMember({ key: nameL, value: nameL }, { name: "FinderTypeE" })
