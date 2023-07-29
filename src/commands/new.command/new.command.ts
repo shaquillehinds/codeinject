@@ -5,7 +5,6 @@ import { DebugLogger } from "@utils/Logger";
 import newFinderCommandPipeline from "../pipelines/newFinder.command.pipeline";
 import newStageCommandPipeline from "../pipelines/newStage.command.pipeline";
 import newCommandPrompts from "./new.prompts";
-import newInserts from "./new.inserts";
 import utilities, { handleName } from "./new.utilities";
 import { FinderType } from "@src/@types/finder";
 
@@ -58,8 +57,6 @@ export default function newCommand(program: Command) {
 
         const stageOpts = await newCommandPrompts.options("stage");
         await newStageCommandPipeline(name, finderL, stageOpts, collection);
-
-        // newInserts.stage({ name, nameL, collection });
       }
       process.exit(0);
     });
