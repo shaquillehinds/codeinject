@@ -84,5 +84,9 @@ export default async function newStageCommandPipeline(
     });
     `
     })
-    .finish();
+    .finish([
+      "tests/stages.test.ts",
+      "src/@types/stage.ts",
+      `src/pipeline/stages/${nameL}.inject.stage.ts`
+    ]);
 }
