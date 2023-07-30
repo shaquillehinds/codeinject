@@ -18,7 +18,7 @@
       "@src/*": ["./src/*"],
       "@utils/*": ["./src/utils/*"],
       "@commands/*": ["./src/commands/*"],
-      "@templates/*": ["./src/tempaltes/*"],
+      "@templates/*": ["./src/templates/*"],
       "@pipeline/*": ["./src/pipeline/*"]
     },
     "typeRoots": ["./src/@types"]
