@@ -1,3 +1,5 @@
+import { finderTestConst } from "./test.import";
+
 class TestClass {
   private _testProperty: string = "test value";
   constructor() {}

@@ -261,9 +261,9 @@ describe("injectImport", () => {
   test(`Should add a named import to the top of the file.`, () => {
     const stageOptions: StageOptions<"import"> = {
       importName: "testImportConst",
-      source: "./test.import.ts"
+      source: "./test.import"
     };
-    const expectedInjection = `import { testImportConst } from "./test.import.ts";`;
+    const expectedInjection = `import { testImportConst } from "./test.import";`;
     pipeline.injectImport(stageOptions);
     testSourceForInjection(expectedInjection, "toBeTruthy");
   });

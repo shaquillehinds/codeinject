@@ -1,6 +1,7 @@
 const testImportConst = "testImportConst";
 const testImportDefaultConst = "testImportDefaultConst";
+const finderTestConst = "finderTestConst";
 
-export { testImportConst };
+export { testImportConst, finderTestConst };
 
 export default testImportDefaultConst;

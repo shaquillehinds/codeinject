@@ -60,8 +60,8 @@ describe("importFinder", () => {
   const type = "ImportDeclaration";
   const col = finders.importFinder(jcs, ast);
 
-  test(`${type}: Should return a ${type} collection with 2 paths.`, () => {
-    expect(col.size()).toBe(2);
+  test(`${type}: Should return a ${type} collection with 1 path.`, () => {
+    expect(col.size()).toBe(1);
     expect(col.getTypes()[0]).toBe(type);
   });
 });
