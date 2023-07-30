@@ -1,16 +1,16 @@
 import { Collection, JSCodeshift } from "jscodeshift";
-import singleNodeCollectionValidator from "../validators/singleNodeCollection.finder.validator";
 import { TSTypeLiteralFinderOptions } from "@src/@types/finder";
+import optionalNodeCollectionValidator from "../validators/optionalNodeCollection.finder.validator";
 
 export default function tsTypeLiteralFinder<T>(
   jcs: JSCodeshift,
   collection: Collection<T>,
   { name }: TSTypeLiteralFinderOptions
 ) {
-  return singleNodeCollectionValidator(
+  return optionalNodeCollectionValidator(
     collection
       .find(jcs.TSTypeAliasDeclaration, { id: { type: "Identifier", name } })
       .find(jcs.TSTypeLiteral),
-    "TSTypeLiteral"
+    name
   );
 }

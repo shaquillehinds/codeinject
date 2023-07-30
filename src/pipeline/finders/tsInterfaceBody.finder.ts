@@ -11,6 +11,6 @@ export default function tsInterfaceBodyFinder<T>(
     collection
       .find(jcs.TSInterfaceDeclaration, { id: { type: "Identifier", name } })
       .find(jcs.TSInterfaceBody),
-    "TSInterfaceBody"
+    name
   );
 }

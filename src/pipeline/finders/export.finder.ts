@@ -1,12 +1,23 @@
 import { Collection, JSCodeshift } from "jscodeshift";
-import singleNodeCollectionValidator from "../validators/singleNodeCollection.finder.validator";
+import optionalNodeCollectionValidator from "../validators/optionalNodeCollection.finder.validator";
+
+/**
+ * Finds undeclared export
+ *
+ * @example
+ * ```
+ * export {
+ *   example
+ * }
+ * ```
+ */
 
 export default function exportFinder<T>(
   jcs: JSCodeshift,
   collection: Collection<T>
 ) {
-  return singleNodeCollectionValidator(
-    collection.find(jcs.ExportNamedDeclaration),
+  return optionalNodeCollectionValidator(
+    collection.find(jcs.ExportNamedDeclaration, { declaration: null }),
     "ExportNamedCollection"
   );
 }

@@ -1,16 +1,16 @@
 import { Collection, JSCodeshift } from "jscodeshift";
-import singleNodeCollectionValidator from "../validators/singleNodeCollection.finder.validator";
 import { TSEnumFinderOptions } from "@src/@types/finder";
+import optionalNodeCollectionValidator from "../validators/optionalNodeCollection.finder.validator";
 
 export default function tsEnumFinder<T>(
   jcs: JSCodeshift,
   collection: Collection<T>,
   { name }: TSEnumFinderOptions
 ) {
-  return singleNodeCollectionValidator(
+  return optionalNodeCollectionValidator(
     collection.find(jcs.TSEnumDeclaration, {
-      id: { type: "Identifier", name },
+      id: { type: "Identifier", name }
     }),
-    "TSEnumDeclaration"
+    name
   );
 }
