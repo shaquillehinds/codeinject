@@ -86,6 +86,7 @@ export default async function newStageCommandPipeline(
     })
     .finish([
       "tests/stages.test.ts",
+      "tests/test.template.ts",
       "src/@types/stage.ts",
       `src/pipeline/stages/${nameL}.inject.stage.ts`
     ]);

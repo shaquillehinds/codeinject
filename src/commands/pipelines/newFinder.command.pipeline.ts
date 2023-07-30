@@ -72,6 +72,7 @@ export default async function newFinderCommandPipeline(
     })
     .finish([
       "tests/finders.test.ts",
+      "tests/test.template.ts",
       `src/pipeline/finders/${nameL}.finder.ts`,
       "src/@types/finder.ts"
     ]);
