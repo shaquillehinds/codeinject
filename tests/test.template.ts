@@ -32,6 +32,8 @@ export enum TestEnum {
 
 export { testObject, testArray };
 
+export default TestClass;
+
 const testSwitch: TestAlias = "a";
 
 switch (testSwitch) {
