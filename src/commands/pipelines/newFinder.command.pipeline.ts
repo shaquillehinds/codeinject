@@ -1,5 +1,5 @@
 import InjectionPipeline from "@src/pipeline/Injection.pipeline";
-import config from "@src/../.prettierrc.cjs";
+import config from "@src/../.prettierrc.js";
 
 export default async function newFinderCommandPipeline(
   name: string,
@@ -55,6 +55,20 @@ export default async function newFinderCommandPipeline(
           replacement: collection ? `.find(jcs.${collection})` : ""
         }
       ]
+    })
+    .parse("tests/finders.test.ts")
+    .injectStringTemplate({
+      template: `
+   describe("${nameL}Finder", () => {
+     const type = "${collection}";
+     const col = finders.${nameL}Finder(jcs, ast, { name: "[identifierName]" });
+   
+     test("${collection}: Should return a ${collection} collection with 1 path.", () => {
+       expect(col.size()).toBe(1);
+       expect(col.getTypes()[0]).toBe(type);
+     });
+   });
+   `
     })
     .finish();
 }
