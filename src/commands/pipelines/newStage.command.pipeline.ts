@@ -70,5 +70,19 @@ export default async function newStageCommandPipeline(
         { keyword: "{collection}", replacement: collection || "" }
       ]
     })
+    .parse("tests/stages.test.ts")
+    .injectStringTemplate({
+      template: `
+    describe("inject${name}", () => {
+      const finderOptions: FinderOptions<"${finderName}"> = { name: "[identifierName]" };
+      const stageOptions: StageOptions<"${nameL}"> = {${options}};
+      const expectedInjection = '';
+      test('Should ', () => {
+        pipeline.inject${name}(stageOptions, finderOptions);
+        testSourceForInjection(expectedInjection, "toBeTruthy");
+      });
+    });
+    `
+    })
     .finish();
 }

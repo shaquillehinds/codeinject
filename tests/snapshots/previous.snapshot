@@ -1,5 +1,5 @@
 import testImportDefaultConst from "./test.import";
-import { testImportConst } from "./test.import.ts";
+import { testImportConst } from "./test.import";
 import { finderTestConst } from "./test.import";
 
 class TestClass {
