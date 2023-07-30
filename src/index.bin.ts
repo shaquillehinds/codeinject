@@ -2,7 +2,7 @@
 import { program } from "commander";
 import * as commands from "./commands";
 
-program.version("1.0.0").description("Client Management System CLI");
+program.version("1.0.0").description("tscodeinject dev kit");
 
 // Adding commands to program
 for (let command in commands) {
