@@ -14,7 +14,7 @@ export enum StageTypeE {
   tsTypeAliasConditional = "tsTypeAliasConditional",
   tsTypeLiteral = "tsTypeLiteral",
   stringTemplate = "stringTemplate",
-  namedExport = "namedExport",
+  namedExportProperty = "namedExportProperty",
   classMember = "classMember"
 }
 
@@ -24,8 +24,8 @@ export type StageOptions<T extends StageType> = T extends "classMember"
   ? ClassMemberOptions
   : T extends "import"
   ? ImportOptions
-  : T extends "namedExport"
-  ? NamedExportOptions
+  : T extends "namedExportProperty"
+  ? NamedExportPropertyOptions
   : T extends "property"
   ? PropertyOptions
   : T extends "arrayElement"
@@ -46,6 +46,10 @@ export type StageOptions<T extends StageType> = T extends "classMember"
   ? StringTemplateOptions
   : BaseStageOptions;
 
+export type StageOptionsAndIdName<T extends StageType> = StageOptions<T> & {
+  idName: string;
+};
+
 export type Stage<T extends StageType> = (
   j: JSCodeshift,
   col: Collection,
@@ -57,7 +61,7 @@ export type StageFinder<T extends FinderType = FinderType> = {
   options: FinderOptions<T>;
 };
 
-export type BaseStageOptions = {};
+export type BaseStageOptions = { forceInject?: boolean };
 
 export type ImportOptions = {
   isDefault?: boolean;
@@ -66,7 +70,7 @@ export type ImportOptions = {
   col?: Collection<import("jscodeshift").ImportDeclaration>;
 } & BaseStageOptions;
 
-export type NamedExportOptions = {
+export type NamedExportPropertyOptions = {
   name: string;
   col?: Collection<import("jscodeshift").ExportNamedDeclaration>;
 } & BaseStageOptions;
@@ -121,6 +125,7 @@ export type TSTypeAliasConditionalOptions = {
   extender: string;
   trueClause: string;
   falseClause?: string;
+  constraint?: string;
   col?: Collection<import("jscodeshift").TSTypeAliasDeclaration>;
 } & BaseStageOptions;
 

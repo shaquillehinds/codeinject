@@ -1,0 +1,70 @@
+import { testImportConst } from "./test.import.ts";
+import testImportDefaultConst from "./test.import";
+class TestClass {
+  private _testProperty: string = "test value";
+  constructor() {}
+
+  public testMethod(testArg: string) {
+    return testArg;
+  }
+
+  protected _jestProperty: string | undefined;
+
+  public set jestProperty(name: string){
+    this._jestProperty = name;
+  }
+  public get jestProperty(){
+    return this._jestProperty;
+  }
+}
+
+const testObject = {
+  jest: {
+    nested: true,
+    using: "ts",
+    time: 0
+  },
+
+  testProperty: "test value"
+};
+
+const testArray = ["test value", {
+  hello: "world"
+}];
+
+export type TestTypeLiteral = {
+  testProperty: "test value";
+  cat: "Jasmine";
+};
+
+export type TestAlias = Alphabet;
+
+export interface TestInterface {
+  testProperty: "test value";
+  hello: "world";
+  number: 1;
+  items: [];
+  object: {};
+}
+
+export enum TestEnum {
+  TEST_PROPERTY = "TEST_PROPERTY",
+  JEST_TEST = "JEST_TEST"
+}
+
+export { testObject, testArray, TestAlias };
+
+export default TestClass;
+
+const testSwitch: TestAlias = "a";
+
+switch (testSwitch) {
+case "a":
+  break;
+default:
+  break;
+}
+export type TestConditionalType<T> = T extends "b" ? "b" : T extends "a" ? "a" : undefined;
+
+const jestStringTemplate = "hello from jest test";
+console.log(jestStringTemplate);

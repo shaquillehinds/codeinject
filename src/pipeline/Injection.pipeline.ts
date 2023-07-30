@@ -1,6 +1,6 @@
 import j, { Collection } from "jscodeshift";
 import { readFileSync, writeFileSync } from "fs";
-import * as prettier from "prettier";
+// import { Options, format } from "prettier";
 import chalk from "chalk";
 import s from "./stages";
 import f from "./finders";
@@ -23,9 +23,13 @@ class InjectionPipeline {
   protected created: string[] = [];
   constructor(
     protected fileLocation: string,
-    public prettierOptions?: prettier.Options
+    public prettierOptions?: any
   ) {
     this.updated.push(`${chalk.yellow("[Updating]")}: ${fileLocation}`);
+  }
+
+  public get _ast() {
+    return this.ast;
   }
 
   public parse(fileLocation?: string) {
@@ -65,10 +69,13 @@ class InjectionPipeline {
 
     for (let ast of this.asts) {
       try {
-        const updatedSource = await prettier.format(ast.ast.toSource(), {
-          parser: "typescript",
-          ...this.prettierOptions
-        });
+        const updatedSource =
+          // await format(
+          ast.ast.toSource();
+        //   , {
+        //   parser: "typescript",
+        //   ...this.prettierOptions
+        // });
         writeFileSync(ast.location, updatedSource, "utf-8");
       } catch (error) {
         console.error(`${chalk.bgRed("[Error]")}: ${error}`);
@@ -130,8 +137,10 @@ class InjectionPipeline {
     finderOptions: FinderOptions<"tsEnum">
   ) {
     if (!this.ast) this.parse();
-    stageOptions.col = f.tsEnumFinder(j, this.ast!, finderOptions);
-    s.injectTSEnumMemberStage(j, this.ast!, stageOptions);
+    s.injectTSEnumMemberStage(j, this.ast!, {
+      ...stageOptions,
+      ...f.tsEnumFinder(j, this.ast!, finderOptions)
+    });
     this.addLog(`Injected injected enum member: ${stageOptions.key}`);
     return this;
   }
@@ -141,8 +150,10 @@ class InjectionPipeline {
     finderOptions: FinderOptions<"tsTypeAlias">
   ) {
     if (!this.ast) this.parse();
-    stageOptions.col = f.tsTypeAliasFinder(j, this.ast!, finderOptions);
-    s.injectTSTypeAliasConditionalStage(j, this.ast!, stageOptions);
+    s.injectTSTypeAliasConditionalStage(j, this.ast!, {
+      ...stageOptions,
+      ...f.tsTypeAliasFinder(j, this.ast!, finderOptions)
+    });
     this.addLog("Injected type alias condition.");
     return this;
   }
@@ -174,8 +185,10 @@ class InjectionPipeline {
     finderOptions: FinderOptions<"tsTypeAlias">
   ) {
     if (!this.ast) this.parse();
-    stageOptions.col = f.tsTypeAliasFinder(j, this.ast!, finderOptions);
-    s.injectTSTypeAliasStage(j, this.ast!, stageOptions);
+    s.injectTSTypeAliasStage(j, this.ast!, {
+      ...stageOptions,
+      ...f.tsTypeAliasFinder(j, this.ast!, finderOptions)
+    });
     this.addLog(`Injected type alias: ${stageOptions.type}`);
     return this;
   }
@@ -185,8 +198,10 @@ class InjectionPipeline {
     finderOptions: FinderOptions<"tsTypeLiteral">
   ) {
     if (!this.ast) this.parse();
-    stageOptions.col = f.tsTypeLiteralFinder(j, this.ast!, finderOptions);
-    s.injectTSTypeLiteralStage(j, this.ast!, stageOptions);
+    s.injectTSTypeLiteralStage(j, this.ast!, {
+      ...stageOptions,
+      ...f.tsTypeLiteralFinder(j, this.ast!, finderOptions)
+    });
     this.addLog(`Injected type literal`);
     return this;
   }
@@ -213,18 +228,24 @@ class InjectionPipeline {
     return this;
   }
 
-  public injectNamedExport(stageOptions: StageOptions<"namedExport">) {
+  public injectNamedExportProperty(
+    stageOptions: StageOptions<"namedExportProperty">
+  ) {
     if (!this.ast) this.parse();
-    stageOptions.col = f.exportFinder(j, this.ast!);
-    s.injectNamedExportStage(j, this.ast!, stageOptions);
+    s.injectNamedExportPropertyStage(j, this.ast!, {
+      ...stageOptions,
+      ...f.exportFinder(j, this.ast!)
+    });
     this.addLog(`Injected named export: ${stageOptions.name}`);
     return this;
   }
 
   public injectImport(stageOptions: StageOptions<"import">) {
     if (!this.ast) this.parse();
-    stageOptions.col = f.importFinder(j, this.ast!);
-    s.injectImportStage(j, this.ast!, stageOptions);
+    s.injectImportStage(j, this.ast!, {
+      ...stageOptions,
+      col: f.importFinder(j, this.ast!)
+    });
     this.addLog(`Injected import: ${stageOptions.importName}`);
     return this;
   }

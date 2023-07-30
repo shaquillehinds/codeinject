@@ -3,11 +3,12 @@ import {
   JSCodeshift,
   TSIntersectionType,
   TSTypeAliasDeclaration,
-  TSUnionType,
+  TSUnionType
 } from "jscodeshift";
 import { TSTypeKind } from "ast-types/gen/kinds";
 import { DebugLogger } from "@utils/Logger";
-import { StageOptions } from "@src/@types/stage";
+import { StageOptionsAndIdName } from "@src/@types/stage";
+import injectToProgram from "@src/utils/injectToProgram.inject";
 
 const log = DebugLogger("tsTypeAlias.inject.stage.ts");
 /**
@@ -23,16 +24,31 @@ const log = DebugLogger("tsTypeAlias.inject.stage.ts");
 export default function injectTSTypeAliasStage<T extends "tsTypeAlias">(
   jcs: JSCodeshift,
   workingSource: Collection,
-  { type, stringTemplate, col }: StageOptions<T>
+  options: StageOptionsAndIdName<T>
 ) {
+  const { col, stringTemplate, forceInject, idName, type } = options;
   if (!col) {
     log("error", "No expression collection passed to this stage.");
     return workingSource;
   }
+
   const template = `type Template = ${stringTemplate}`;
   const ast = jcs.withParser("tsx")(template);
   const tsType = ast.find(jcs.TSTypeAliasDeclaration).get().value
     .typeAnnotation as TSTypeKind;
+
+  if (col.size() === 0) {
+    if (!forceInject) log("error", `Type alias ${idName} was not found.`);
+    injectToProgram(workingSource, [
+      {
+        statement: jcs.exportNamedDeclaration(
+          jcs.tsTypeAliasDeclaration(jcs.identifier(idName), tsType)
+        )
+      }
+    ]);
+    return workingSource;
+  }
+
   const tsTypeAlias = col.get().value as TSTypeAliasDeclaration;
   const isUnion = tsTypeAlias.typeAnnotation.type === "TSUnionType";
   const isIntersection =
@@ -43,7 +59,7 @@ export default function injectTSTypeAliasStage<T extends "tsTypeAlias">(
         const unionCol = col.find(jcs.TSUnionType);
         const union = unionCol.get().value as TSUnionType;
         union.types.push(tsType);
-        unionCol.forEach((u) => u.replace(union));
+        unionCol.forEach(u => u.replace(union));
       } else {
         let prevType = tsTypeAlias.typeAnnotation;
         if (isIntersection) {
@@ -53,7 +69,7 @@ export default function injectTSTypeAliasStage<T extends "tsTypeAlias">(
         const newTypeDec = jcs.tsTypeAliasDeclaration.from({
           typeParameters: col.get().value.typeParameters,
           id: col.get().value.id,
-          typeAnnotation: union,
+          typeAnnotation: union
         });
         col.replaceWith(newTypeDec);
       }
@@ -62,12 +78,12 @@ export default function injectTSTypeAliasStage<T extends "tsTypeAlias">(
     case "unionGroup": {
       const union = jcs.tsUnionType([
         jcs.tsParenthesizedType(tsTypeAlias.typeAnnotation),
-        tsType,
+        tsType
       ]);
       const newTypeDec = jcs.tsTypeAliasDeclaration.from({
         typeParameters: col.get().value.typeParameters,
         id: col.get().value.id,
-        typeAnnotation: union,
+        typeAnnotation: union
       });
       col.replaceWith(newTypeDec);
       break;
@@ -77,7 +93,7 @@ export default function injectTSTypeAliasStage<T extends "tsTypeAlias">(
         const interCol = col.find(jcs.TSIntersectionType);
         const intersection = interCol.get().value as TSIntersectionType;
         intersection.types.push(tsType);
-        interCol.forEach((i) => i.replace(intersection));
+        interCol.forEach(i => i.replace(intersection));
       } else {
         let prevType = tsTypeAlias.typeAnnotation;
         if (isUnion) {
@@ -87,7 +103,7 @@ export default function injectTSTypeAliasStage<T extends "tsTypeAlias">(
         const newTypeDec = jcs.tsTypeAliasDeclaration.from({
           typeParameters: col.get().value.typeParameters,
           id: col.get().value.id,
-          typeAnnotation: intersection,
+          typeAnnotation: intersection
         });
         col.replaceWith(newTypeDec);
       }
@@ -96,12 +112,12 @@ export default function injectTSTypeAliasStage<T extends "tsTypeAlias">(
     case "intersectionGroup": {
       const intersection = jcs.tsIntersectionType([
         jcs.tsParenthesizedType(tsTypeAlias.typeAnnotation),
-        tsType,
+        tsType
       ]);
       const newTypeDec = jcs.tsTypeAliasDeclaration.from({
         typeParameters: col.get().value.typeParameters,
         id: col.get().value.id,
-        typeAnnotation: intersection,
+        typeAnnotation: intersection
       });
       col.replaceWith(newTypeDec);
       break;
@@ -110,7 +126,7 @@ export default function injectTSTypeAliasStage<T extends "tsTypeAlias">(
       const newTypeDec = jcs.tsTypeAliasDeclaration.from({
         typeParameters: col.get().value.typeParameters,
         id: col.get().value.id,
-        typeAnnotation: tsType,
+        typeAnnotation: tsType
       });
       col.replaceWith(newTypeDec);
       break;

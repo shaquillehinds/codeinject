@@ -9,14 +9,14 @@ export enum StageTypeE {
   tsTypeAliasConditional = "tsTypeAliasConditional",
   tsTypeLiteral = "tsTypeLiteral",
   stringTemplate = "stringTemplate",
-  namedExport = "namedExport",
-  classMember = "classMember",
+  namedExportProperty = "namedExportProperty",
+  classMember = "classMember"
 }
 export enum StageNameE {
   import = "injectImportStage",
   property = "injectPropertyStage",
   case = "injectSwitchCaseStage",
-  namedExport = "injectNamedExportStage",
+  namedExportProperty = "injectNamedExportPropertyStage",
   tsTypeAlias = "injectTSTypeAliasStage",
   arrayElement = "injectArrayElementStage",
   tsEnumMember = "injectTSEnumMemberStage",
@@ -24,5 +24,5 @@ export enum StageNameE {
   stringTemplate = "injectStringTemplateStage",
   tsInterfaceBody = "injectTSInterfaceBodyStage",
   tsTypeAliasConditional = "injectTSTypeAliasConditionalStage",
-  classMember = "injectClassMemberStage",
+  classMember = "injectClassMemberStage"
 }

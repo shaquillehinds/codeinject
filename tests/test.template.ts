@@ -1,8 +1,5 @@
-import { testImportConst } from "./test.import";
-import testImportDefaultConst from "./test.import";
-
 class TestClass {
-  private testProperty: string = "test value";
+  private _testProperty: string = "test value";
   constructor() {}
 
   public testMethod(testArg: string) {
