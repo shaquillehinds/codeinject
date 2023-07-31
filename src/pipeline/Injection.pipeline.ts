@@ -111,6 +111,7 @@ class InjectionPipeline {
   public injectFolder(path: string) {
     if (!this.ast) this.parse();
     mkdirSync(path);
+    this.addLog(path, "create");
     return this;
   }
 
