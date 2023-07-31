@@ -3,7 +3,7 @@ import objToExp from "../parsers/objToExp.parser";
 import arrToExp from "../parsers/arrToExp.parser";
 import funcToExp from "../parsers/funcToExp.parser";
 import { DebugLogger } from "@utils/Logger";
-import { StageOptions } from "@src/@types/stage";
+import { StageOptionsAndIdName } from "@src/@types/stage";
 import { ExpressionKind } from "ast-types/gen/kinds";
 
 const log = DebugLogger("arrayElement.inject.stage.ts");
@@ -11,7 +11,7 @@ const log = DebugLogger("arrayElement.inject.stage.ts");
 export default function injectArrayElementStage(
   jcs: JSCodeshift,
   workingSource: Collection,
-  { value, identifier, col }: StageOptions<"arrayElement">
+  { value, identifier, col }: StageOptionsAndIdName<"arrayElement">
 ) {
   if (!col) {
     log("error", "No expression collection passed to this stage.");
@@ -31,7 +31,7 @@ export default function injectArrayElementStage(
       else newElement = jcs.literal(value);
   }
 
-  col.forEach((path) => path.value.elements.push(newElement));
+  col.forEach(path => path.value.elements.push(newElement));
 
   return workingSource;
 }

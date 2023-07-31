@@ -1,13 +1,13 @@
 import { Collection, JSCodeshift, SwitchStatement } from "jscodeshift";
 import { DebugLogger } from "@utils/Logger";
-import { StageOptions } from "@src/@types/stage";
+import { StageOptionsAndIdName } from "@src/@types/stage";
 
 const log = DebugLogger("switchCase.inject.stage.ts");
 
 export default function injectSwitchCaseStage(
   jcs: JSCodeshift,
   workingSource: Collection,
-  { caseName, statements, col, identifier }: StageOptions<"case">
+  { caseName, statements, col, identifier }: StageOptionsAndIdName<"case">
 ) {
   if (!col) {
     log("error", "No expression collection passed to this stage.");
@@ -22,7 +22,7 @@ export default function injectSwitchCaseStage(
 
   switchStatement.cases.unshift(newCase);
 
-  col.forEach((p) => p.replace(switchStatement));
+  col.forEach(p => p.replace(switchStatement));
 
   return workingSource;
 }

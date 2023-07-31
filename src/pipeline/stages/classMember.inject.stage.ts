@@ -1,13 +1,13 @@
 import { Collection, JSCodeshift } from "jscodeshift";
 import { DebugLogger } from "@utils/Logger";
-import { StageOptions } from "@src/@types/stage";
+import { StageOptionsAndIdName } from "@src/@types/stage";
 
 const log = DebugLogger("classMember.inject.stage.ts");
 
 export default function injectClassMemberStage(
   jcs: JSCodeshift,
   workingSource: Collection,
-  { col, stringTemplate }: StageOptions<"classMember">
+  { col, stringTemplate }: StageOptionsAndIdName<"classMember">
 ) {
   if (!col) {
     log("error", "No expression collection passed to this stage.");

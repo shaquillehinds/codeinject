@@ -145,108 +145,115 @@ class InjectionPipeline {
 
   public injectArrayElement(
     stageOptions: StageOptions<"arrayElement">,
-    finderOptions: FinderOptions<"variableArray">
+    finderOpts: FinderOptions<"variableArray">
   ) {
     if (!this.ast) this.parse();
-    stageOptions.col = f.arrayVariableFinder(j, this.ast!, finderOptions);
-    s.injectArrayElementStage(j, this.ast!, stageOptions);
-    this.addLog("Injected array element.");
+    const found = f.arrayVariableFinder(j, this.ast!, finderOpts);
+    const newStageOpts = { ...stageOptions, ...found };
+    s.injectArrayElementStage(j, this.ast!, newStageOpts);
+    this.addLog(`Injected array element to array: ${found.idName}`);
     return this;
   }
 
   public injectTSEnumMember(
     stageOptions: StageOptions<"tsEnumMember">,
-    finderOptions: FinderOptions<"tsEnum">
+    finderOpts: FinderOptions<"tsEnum">
   ) {
     if (!this.ast) this.parse();
-    s.injectTSEnumMemberStage(j, this.ast!, {
-      ...stageOptions,
-      ...f.tsEnumFinder(j, this.ast!, finderOptions)
-    });
-    this.addLog(`Injected injected enum member: ${stageOptions.key}`);
+    const found = f.tsEnumFinder(j, this.ast!, finderOpts);
+    const newStageOpts = { ...stageOptions, ...found };
+    s.injectTSEnumMemberStage(j, this.ast!, newStageOpts);
+    this.addLog(
+      `Injected enum member ${stageOptions.key} to enum: ${found.idName}`
+    );
     return this;
   }
 
   public injectTSTypeAliasConditional(
     stageOptions: StageOptions<"tsTypeAliasConditional">,
-    finderOptions: FinderOptions<"tsTypeAlias">
+    finderOpts: FinderOptions<"tsTypeAlias">
   ) {
     if (!this.ast) this.parse();
-    s.injectTSTypeAliasConditionalStage(j, this.ast!, {
-      ...stageOptions,
-      ...f.tsTypeAliasFinder(j, this.ast!, finderOptions)
-    });
-    this.addLog("Injected type alias condition.");
+    const found = f.tsTypeAliasFinder(j, this.ast!, finderOpts);
+    const newStageOpts = { ...stageOptions, ...found };
+    s.injectTSTypeAliasConditionalStage(j, this.ast!, newStageOpts);
+    this.addLog(`Injected type conditional to type alias: ${found.idName}`);
     return this;
   }
 
   public injectProperty(
     stageOptions: StageOptions<"property">,
-    finderOptions: FinderOptions<"variableObject">
+    finderOpts: FinderOptions<"variableObject">
   ) {
     if (!this.ast) this.parse();
-    stageOptions.col = f.objectVariableFinder(j, this.ast!, finderOptions);
-    s.injectPropertyStage(j, this.ast!, stageOptions);
-    this.addLog(`Injected object property: ${stageOptions.key}`);
+    const found = f.objectVariableFinder(j, this.ast!, finderOpts);
+    const newStageOpts = { ...stageOptions, ...found };
+    s.injectPropertyStage(j, this.ast!, newStageOpts);
+    this.addLog(
+      `Injected object property ${stageOptions.key} to: ${found.idName}`
+    );
     return this;
   }
 
   public injectSwitchCase(
     stageOptions: StageOptions<"case">,
-    finderOptions: FinderOptions<"switch">
+    finderOpts: FinderOptions<"switch">
   ) {
     if (!this.ast) this.parse();
-    stageOptions.col = f.switchFinder(j, this.ast!, finderOptions);
-    s.injectSwitchCaseStage(j, this.ast!, stageOptions);
-    this.addLog(`Injected switch case: ${stageOptions.caseName}`);
+    const found = f.switchFinder(j, this.ast!, finderOpts);
+    const newStageOpts = { ...stageOptions, ...found };
+    s.injectSwitchCaseStage(j, this.ast!, newStageOpts);
+    this.addLog(
+      `Injected switch case ${stageOptions.caseName} to switch statement: ${found.idName}`
+    );
     return this;
   }
 
   public injectTSTypeAlias(
     stageOptions: StageOptions<"tsTypeAlias">,
-    finderOptions: FinderOptions<"tsTypeAlias">
+    finderOpts: FinderOptions<"tsTypeAlias">
   ) {
     if (!this.ast) this.parse();
-    s.injectTSTypeAliasStage(j, this.ast!, {
-      ...stageOptions,
-      ...f.tsTypeAliasFinder(j, this.ast!, finderOptions)
-    });
+    const found = f.tsTypeAliasFinder(j, this.ast!, finderOpts);
+    const newStageOpts = { ...stageOptions, ...found };
+    s.injectTSTypeAliasStage(j, this.ast!, newStageOpts);
     this.addLog(`Injected type alias: ${stageOptions.type}`);
     return this;
   }
 
   public injectTSTypeLiteral(
     stageOptions: StageOptions<"tsTypeLiteral">,
-    finderOptions: FinderOptions<"tsTypeLiteral">
+    finderOpts: FinderOptions<"tsTypeLiteral">
   ) {
     if (!this.ast) this.parse();
-    s.injectTSTypeLiteralStage(j, this.ast!, {
-      ...stageOptions,
-      ...f.tsTypeLiteralFinder(j, this.ast!, finderOptions)
-    });
-    this.addLog(`Injected type literal`);
+    const found = f.tsTypeLiteralFinder(j, this.ast!, finderOpts);
+    const newStageOpts = { ...stageOptions, ...found };
+    s.injectTSTypeLiteralStage(j, this.ast!, newStageOpts);
+    this.addLog(`Injected to type literal: ${found.idName}`);
     return this;
   }
 
   public injectClassMember(
     stageOptions: StageOptions<"classMember">,
-    finderOptions: FinderOptions<"classBody">
+    finderOpts: FinderOptions<"classBody">
   ) {
     if (!this.ast) this.parse();
-    stageOptions.col = f.classBodyFinder(j, this.ast!, finderOptions);
-    s.injectClassMemberStage(j, this.ast!, stageOptions);
-    this.addLog(`Injected class member`);
+    const found = f.classBodyFinder(j, this.ast!, finderOpts);
+    const newStageOpts = { ...stageOptions, ...found };
+    s.injectClassMemberStage(j, this.ast!, newStageOpts);
+    this.addLog(`Injected a class member to class: ${found.idName}`);
     return this;
   }
 
   public injectTSInterfaceBody(
     stageOptions: StageOptions<"tsInterfaceBody">,
-    finderOptions: FinderOptions<"tsInterfaceBody">
+    finderOpts: FinderOptions<"tsInterfaceBody">
   ) {
     if (!this.ast) this.parse();
-    stageOptions.col = f.tsInterfaceBodyFinder(j, this.ast!, finderOptions);
-    s.injectTSInterfaceBodyStage(j, this.ast!, stageOptions);
-    this.addLog(`Injected interface body`);
+    const found = f.tsInterfaceBodyFinder(j, this.ast!, finderOpts);
+    const newStageOpts = { ...stageOptions, ...found };
+    s.injectTSInterfaceBodyStage(j, this.ast!, newStageOpts);
+    this.addLog(`Injected to interface: ${found.idName}`);
     return this;
   }
 
@@ -258,7 +265,7 @@ class InjectionPipeline {
       ...stageOptions,
       ...f.exportFinder(j, this.ast!)
     });
-    this.addLog(`Injected named export: ${stageOptions.name}`);
+    this.addLog(`Injected export property: ${stageOptions.name}`);
     return this;
   }
 
@@ -268,7 +275,11 @@ class InjectionPipeline {
       ...stageOptions,
       col: f.importFinder(j, this.ast!)
     });
-    this.addLog(`Injected import: ${stageOptions.importName}`);
+    this.addLog(
+      `Injected ${stageOptions.importName ? "default" : ""}import: ${
+        stageOptions.importName
+      }`
+    );
     return this;
   }
 
@@ -276,7 +287,7 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.programFinder(j, this.ast!);
     s.injectStringTemplateStage(j, this.ast!, stageOptions);
-    this.addLog(`Injected string template code`);
+    this.addLog(`Injected string template code: \n ${stageOptions.template}`);
     return this;
   }
 }

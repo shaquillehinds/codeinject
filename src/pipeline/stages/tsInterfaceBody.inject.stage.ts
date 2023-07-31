@@ -1,6 +1,6 @@
 import { Collection, JSCodeshift, TSInterfaceBody } from "jscodeshift";
 import { DebugLogger } from "@utils/Logger";
-import { StageOptions } from "@src/@types/stage";
+import { StageOptionsAndIdName } from "@src/@types/stage";
 
 const log = DebugLogger("tsInterfaceBody.inject.stage.ts");
 /**
@@ -17,7 +17,7 @@ export default function injectTSInterfaceBodyStage(
   jcs: JSCodeshift,
   workingSource: Collection,
 
-  { bodyStringTemplate, col }: StageOptions<"tsInterfaceBody">
+  { bodyStringTemplate, col }: StageOptionsAndIdName<"tsInterfaceBody">
 ) {
   if (!col) {
     log("error", "No expression collection passed to this stage.");
@@ -29,7 +29,7 @@ export default function injectTSInterfaceBodyStage(
   const tsInterfaceBody = col.get().value as TSInterfaceBody;
   for (let signature in body.body)
     tsInterfaceBody.body.push(body.body[signature]);
-  col.forEach((p) => p.replace(tsInterfaceBody));
+  col.forEach(p => p.replace(tsInterfaceBody));
 
   return workingSource;
 }

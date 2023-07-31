@@ -13,9 +13,9 @@ const ast = jcs.withParser("tsx")(sourceContent);
 
 describe("classBodyFinder", () => {
   test("ClassBody: Should return a ClassBody collection with 1 path.", () => {
-    const collection = finders.classBodyFinder(jcs, ast, { name: "TestClass" });
-    expect(collection.getTypes()[0]).toBe("ClassBody");
-    expect(collection.size()).toBe(1);
+    const found = finders.classBodyFinder(jcs, ast, { name: "TestClass" });
+    expect(found.col.getTypes()[0]).toBe("ClassBody");
+    expect(found.col.size()).toBe(1);
   });
   test("ClassBody: Should throw a ClassBody empty error", () => {
     try {
@@ -78,11 +78,11 @@ describe("programFinder", () => {
 
 describe("switchFinder", () => {
   const type = "SwitchStatement";
-  const col = finders.switchFinder(jcs, ast, { name: "testSwitch" });
+  const found = finders.switchFinder(jcs, ast, { name: "testSwitch" });
 
   test(`${type}: Should return a ${type} collection with 1 path.`, () => {
-    expect(col.size()).toBe(1);
-    expect(col.getTypes()[0]).toBe(type);
+    expect(found.col.size()).toBe(1);
+    expect(found.col.getTypes()[0]).toBe(type);
   });
 });
 
@@ -107,18 +107,18 @@ describe("tsEnumFinder", () => {
 
 describe("tsInterfaceBodyFinder", () => {
   const type = "TSInterfaceBody";
-  const col = finders.tsInterfaceBodyFinder(jcs, ast, {
+  const found = finders.tsInterfaceBodyFinder(jcs, ast, {
     name: "TestInterface"
   });
 
   test(`${type}: Should return a ${type} collection with 1 path.`, () => {
-    expect(col.size()).toBe(1);
-    expect(col.getTypes()[0]).toBe(type);
+    expect(found.col.size()).toBe(1);
+    expect(found.col.getTypes()[0]).toBe(type);
   });
   test(`${type}: Should have a property signature called testProperty`, () => {
     expect(
       (
-        (col.paths()[0].value.body[0] as TSPropertySignature)
+        (found.col.paths()[0].value.body[0] as TSPropertySignature)
           .key as IdentifierKind
       ).name
     ).toBe("testProperty");
@@ -162,31 +162,31 @@ describe("tsTypeLiteralFinder", () => {
 
 describe("arrayVariableFinder", () => {
   const type = "ArrayExpression";
-  const col = finders.arrayVariableFinder(jcs, ast, { name: "testArray" });
+  const found = finders.arrayVariableFinder(jcs, ast, { name: "testArray" });
 
   test(`${type}: Should return a ${type} collection with 1 path.`, () => {
-    expect(col.size()).toBe(1);
-    expect(col.getTypes()[0]).toBe(type);
+    expect(found.col.size()).toBe(1);
+    expect(found.col.getTypes()[0]).toBe(type);
   });
   test(`${type}: Should have an element called "test value"`, () => {
-    expect((col.paths()[0].value.elements[0] as StringLiteral).value).toBe(
-      "test value"
-    );
+    expect(
+      (found.col.paths()[0].value.elements[0] as StringLiteral).value
+    ).toBe("test value");
   });
 });
 
 describe("objectVariableFinder", () => {
   const type = "ObjectExpression";
-  const col = finders.objectVariableFinder(jcs, ast, { name: "testObject" });
+  const found = finders.objectVariableFinder(jcs, ast, { name: "testObject" });
 
   test(`${type}: Should return a ${type} collection with 1 path.`, () => {
-    expect(col.size()).toBe(1);
-    expect(col.getTypes()[0]).toBe(type);
+    expect(found.col.size()).toBe(1);
+    expect(found.col.getTypes()[0]).toBe(type);
   });
   test(`${type}: Should have a property called testProperty`, () => {
     expect(
       (
-        (col.paths()[0].value.properties[0] as ObjectProperty)
+        (found.col.paths()[0].value.properties[0] as ObjectProperty)
           .key as IdentifierKind
       ).name
     ).toBe("testProperty");
