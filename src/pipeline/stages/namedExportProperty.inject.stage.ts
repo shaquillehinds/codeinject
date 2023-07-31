@@ -31,17 +31,13 @@ export default function injectNamedExportPropertyStage(
     return workingSource;
   }
 
-  const namedExpSpecifiers = col.find(jcs.ExportSpecifier);
   const newExport = jcs.exportSpecifier.from({ local: expId, exported: expId });
 
-  const newExportDec = jcs.exportNamedDeclaration(null, [
-    ...namedExpSpecifiers.nodes(),
-    newExport
-  ]);
-
-  const exportDec = namedExpSpecifiers.closest(jcs.ExportNamedDeclaration);
-
-  exportDec.replaceWith(newExportDec);
+  col.forEach(path =>
+    path.value.specifiers
+      ? path.value.specifiers.push(newExport)
+      : (path.value.specifiers = [newExport])
+  );
 
   return workingSource;
 }
