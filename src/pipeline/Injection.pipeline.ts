@@ -15,6 +15,8 @@ import {
 import { FinderOptions, FinderType } from "@src/@types/finder";
 import { FileFromTemplateOptions } from "@src/@types";
 
+const chalkGold = chalk.rgb(244, 184, 0);
+
 class InjectionPipeline {
   protected ast?: Collection;
   protected asts: { location: string; ast: Collection }[] = [];
@@ -27,7 +29,7 @@ class InjectionPipeline {
     protected fileLocation: string,
     public prettierOptions?: Options
   ) {
-    this.updated.push(`${chalk.yellow("[Updating]")}: ${fileLocation}`);
+    this.updated.push(chalk.bold.cyanBright(`\nUpdating >> ${fileLocation}`));
   }
 
   public get _ast() {
@@ -40,7 +42,7 @@ class InjectionPipeline {
         return this;
       }
       this.fileLocation = fileLocation;
-      this.updated.push(`${chalk.yellow("[Updating]")}: ${fileLocation}`);
+      this.updated.push(chalk.bold.cyanBright(`\nUpdating >> ${fileLocation}`));
     }
     const file = readFileSync(this.fileLocation, "utf-8");
     this.ast = j.withParser("tsx")(file);
@@ -116,11 +118,11 @@ class InjectionPipeline {
 
   protected addLog(log: string, type: StageLogType = "update") {
     if (type === "update")
-      this.updated.push(`${chalk.cyanBright("[Update]")}: ${log}`);
+      this.updated.push(`${chalkGold("[Update]")}: ${log}`);
     else if (type === "create")
       this.created.push(`${chalk.greenBright("[Create]")}: ${log}`);
     else if (type === "directory")
-      this.newDirLogs.push(`${chalk.green.underline("+[Directory]")}: ${log}`);
+      this.newDirLogs.push(`${chalk.bold.green("+ [Directory]")}: ${log}`);
   }
 
   public injectDirectory(path: string) {
