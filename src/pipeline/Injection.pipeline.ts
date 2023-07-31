@@ -1,6 +1,6 @@
 import j, { Collection } from "jscodeshift";
 import { readFileSync, writeFileSync } from "fs";
-// import { Options, format } from "prettier";
+import { Options, format } from "prettier/index";
 import chalk from "chalk";
 import s from "./stages";
 import f from "./finders";
@@ -23,7 +23,7 @@ class InjectionPipeline {
   protected created: string[] = [];
   constructor(
     protected fileLocation: string,
-    public prettierOptions?: any
+    public prettierOptions?: Options
   ) {
     this.updated.push(`${chalk.yellow("[Updating]")}: ${fileLocation}`);
   }
@@ -69,13 +69,10 @@ class InjectionPipeline {
 
     for (let ast of this.asts) {
       try {
-        const updatedSource =
-          // await format(
-          ast.ast.toSource();
-        //   , {
-        //   parser: "typescript",
-        //   ...this.prettierOptions
-        // });
+        const updatedSource = await format(ast.ast.toSource(), {
+          parser: "typescript",
+          ...this.prettierOptions
+        });
         writeFileSync(ast.location, updatedSource, "utf-8");
       } catch (error) {
         console.error(`${chalk.bgRed("[Error]")}: ${error}`);

@@ -1,9 +1,8 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 export default {
   verbose: true,
-  preset: "ts-jest/presets/js-with-babel",
+  preset: "ts-jest/presets/js-with-babel-esm", // needed to transpile esm node_modules
   testEnvironment: "node",
-  transformIgnorePatterns: ["node_modules/(?!chalk/.*)"],
   moduleNameMapper: {
     "^@src/(.*)$": "<rootDir>/src/$1",
     "^@utils/(.*)$": "<rootDir>/src/utils/$1",
