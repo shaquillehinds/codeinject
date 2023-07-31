@@ -19,8 +19,10 @@ class InjectionPipeline {
   protected ast?: Collection;
   protected asts: { location: string; ast: Collection }[] = [];
   protected newFiles: { location: string; content: string }[] = [];
+  protected newDirPaths: string[] = [];
   protected updated: string[] = [];
   protected created: string[] = [];
+  protected newDirLogs: string[] = [];
   constructor(
     protected fileLocation: string,
     public prettierOptions?: Options
@@ -67,6 +69,24 @@ class InjectionPipeline {
       return this;
     }
 
+    this.newDirPaths.forEach((dir, index) => {
+      try {
+        mkdirSync(dir);
+        console.info(this.newDirLogs[index]);
+      } catch (error) {
+        console.error(`${chalk.bgRed("[Error]")}: ${error}`);
+      }
+    });
+
+    this.newFiles.forEach((newFile, index) => {
+      try {
+        writeFileSync(newFile.location, newFile.content, "utf-8");
+        console.info(this.created[index]);
+      } catch (error) {
+        console.error(`${chalk.bgRed("[Error]")}: ${error}`);
+      }
+    });
+
     for (let ast of this.asts) {
       try {
         const updatedSource = await format(ast.ast.toSource(), {
@@ -82,22 +102,15 @@ class InjectionPipeline {
     const updateString = this.updated.join("\n");
     console.info(updateString);
 
-    this.newFiles.forEach((newFile, index) => {
-      try {
-        writeFileSync(newFile.location, newFile.content, "utf-8");
-        console.info(this.created[index]);
-      } catch (error) {
-        console.error(`${chalk.bgRed("[Error]")}: ${error}`);
-      }
-    });
-
     if (filesToOpen && filesToOpen.length > 0) {
       filesToOpen.forEach(file => execSync(`code ${file}`));
     }
     this.asts = [];
     this.newFiles = [];
+    this.newDirPaths = [];
     this.updated = [];
     this.created = [];
+    this.newDirLogs = [];
     return this;
   }
 
@@ -106,12 +119,14 @@ class InjectionPipeline {
       this.updated.push(`${chalk.cyanBright("[Update]")}: ${log}`);
     else if (type === "create")
       this.created.push(`${chalk.greenBright("[Create]")}: ${log}`);
+    else if (type === "directory")
+      this.newDirLogs.push(`${chalk.green.underline("+[Directory]")}: ${log}`);
   }
 
-  public injectFolder(path: string) {
+  public injectDirectory(path: string) {
     if (!this.ast) this.parse();
-    mkdirSync(path);
-    this.addLog(path, "create");
+    this.newDirPaths.push(path);
+    this.addLog(path, "directory");
     return this;
   }
 

@@ -1,7 +1,7 @@
 import { Collection, JSCodeshift } from "jscodeshift";
 import { Finder, FinderOptions, FinderType } from "./finder";
 
-export type StageLogType = "update" | "create";
+export type StageLogType = "update" | "create" | "directory";
 
 export enum StageTypeE {
   property = "property",
