@@ -11,6 +11,6 @@ export default function classBodyFinder<T>(
     collection
       .find(jcs.ClassDeclaration, { id: { type: "Identifier", name } })
       .find(jcs.ClassBody),
-    "ClassBody"
+    name
   );
 }

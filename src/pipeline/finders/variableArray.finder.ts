@@ -12,6 +12,6 @@ export default function arrayVariableFinder<T>(
       .find(jcs.Identifier, { name })
       .closest(jcs.VariableDeclaration)
       .find(jcs.ArrayExpression),
-    "ArrayExpression"
+    name
   );
 }

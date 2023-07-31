@@ -12,6 +12,6 @@ export default function switchFinder<T>(
     collection
       .find(jcs.Identifier, { name: split[split.length - 1] })
       .closest(jcs.SwitchStatement),
-    "SwitchStatement"
+    name
   );
 }

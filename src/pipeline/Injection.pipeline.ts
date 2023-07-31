@@ -276,7 +276,7 @@ class InjectionPipeline {
       col: f.importFinder(j, this.ast!)
     });
     this.addLog(
-      `Injected ${stageOptions.importName ? "default" : ""}import: ${
+      `Injected${stageOptions.importName ? " default " : " "}import: ${
         stageOptions.importName
       }`
     );
@@ -287,7 +287,7 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.programFinder(j, this.ast!);
     s.injectStringTemplateStage(j, this.ast!, stageOptions);
-    this.addLog(`Injected string template code: \n ${stageOptions.template}`);
+    this.addLog(`Injected string template code`);
     return this;
   }
 }

@@ -12,6 +12,6 @@ export default function variableObjectFinder<T>(
       .find(jcs.Identifier, { name })
       .closest(jcs.VariableDeclaration)
       .find(jcs.ObjectExpression),
-    "ObjectExpression"
+    name
   );
 }
