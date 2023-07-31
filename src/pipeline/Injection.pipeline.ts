@@ -1,6 +1,6 @@
 import j, { Collection } from "jscodeshift";
 import { readFileSync, writeFileSync } from "fs";
-import { Options, format } from "prettier/index";
+import { Options, format } from "prettier";
 import chalk from "chalk";
 import s from "./stages";
 import f from "./finders";
