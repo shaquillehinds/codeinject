@@ -1,5 +1,5 @@
 import j, { Collection } from "jscodeshift";
-import { readFileSync, writeFileSync } from "fs";
+import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import { Options, format } from "prettier";
 import chalk from "chalk";
 import s from "./stages";
@@ -108,7 +108,14 @@ class InjectionPipeline {
       this.created.push(`${chalk.greenBright("[Create]")}: ${log}`);
   }
 
+  public injectFolder(path: string) {
+    if (!this.ast) this.parse();
+    mkdirSync(path);
+    return this;
+  }
+
   public injectFileFromTemplate(options: FileFromTemplateOptions) {
+    if (!this.ast) this.parse();
     let content = readFileSync(options.templatePath, "utf-8");
     for (let { keyword, replacement } of options.replaceKeywords) {
       content = content.replaceAll(keyword, replacement);
