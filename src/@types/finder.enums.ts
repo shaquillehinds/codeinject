@@ -11,4 +11,5 @@ export enum FinderTypeE {
   tsTypeAlias = "tsTypeAlias",
   tsTypeLiteral = "tsTypeLiteral",
   classBody = "classBody",
+  jsxElement = "jsxElement"
 }
