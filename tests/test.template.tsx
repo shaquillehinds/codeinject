@@ -1,3 +1,4 @@
+import React from "react";
 import { finderTestConst } from "./test.import";
 
 class TestClass {
@@ -39,3 +40,10 @@ switch (testSwitch) {
   default:
     break;
 }
+
+type TestElementProps = { title: string };
+const TestElement = (props: TestElementProps) => (
+  <React.Fragment>{props.title}</React.Fragment>
+);
+
+const TestComponent2 = () => <TestElement title="test"></TestElement>;

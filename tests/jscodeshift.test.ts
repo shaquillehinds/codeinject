@@ -2,7 +2,7 @@ import { describe, expect, test } from "@jest/globals";
 import { readFileSync } from "fs";
 import jcs from "jscodeshift";
 
-const sourceContent = readFileSync("tests/test.template.ts", "utf-8");
+const sourceContent = readFileSync("tests/test.template.tsx", "utf-8");
 const ast = jcs.withParser("tsx")(sourceContent);
 
 describe("Testing Jscodeshift", () => {

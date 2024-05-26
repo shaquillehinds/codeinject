@@ -257,6 +257,18 @@ class InjectionPipeline {
     return this;
   }
 
+  public injectJSXElement(
+    stageOptions: StageOptions<"jsxElement">,
+    finderOpts: FinderOptions<"jsxElement">
+  ) {
+    if (!this.ast) this.parse();
+    const found = f.jsxElementFinder(j, this.ast!, finderOpts);
+    const newStageOpts = { ...stageOptions, ...found };
+    s.injectJSXElementStage(j, this.ast!, newStageOpts);
+    this.addLog(`Injected to jsx element: ${found.idName}`);
+    return this;
+  }
+
   public injectNamedExportProperty(
     stageOptions: StageOptions<"namedExportProperty">
   ) {

@@ -13,6 +13,7 @@ export enum FinderTypeE {
   tsTypeAlias = "tsTypeAlias",
   tsTypeLiteral = "tsTypeLiteral",
   classBody = "classBody",
+  jsxElement = "jsxElement"
 }
 
 export type FinderType = keyof typeof FinderTypeE;
@@ -41,6 +42,8 @@ export type FinderOptions<T extends FinderType> = T extends "classBody"
   ? DefaultExportFinderOptions
   : T extends "program"
   ? ProgramFinderOptions
+  : T extends "jsxElement"
+  ? JSXElementFinderOptions
   : BaseFinderOptions;
 
 export type Finder = (
@@ -88,5 +91,9 @@ export type DefaultExportFinderOptions = BaseFinderOptions & {};
 export type ProgramFinderOptions = BaseFinderOptions & {};
 
 export type classBodyFinderOptions = BaseFinderOptions & {
+  name: string;
+};
+
+export type JSXElementFinderOptions = BaseFinderOptions & {
   name: string;
 };

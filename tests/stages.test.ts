@@ -9,7 +9,7 @@ let pipeline: InjectionPipeline;
 const currSnapLocation = "tests/snapshots/current.snapshot";
 
 beforeAll(() => {
-  pipeline = new InjectionPipeline("tests/test.template.ts");
+  pipeline = new InjectionPipeline("tests/test.template.tsx");
 });
 
 afterAll(() => {
@@ -317,5 +317,22 @@ describe("injectClassMethod", () => {
   test(`Should add members to class TestClass`, () => {
     pipeline.injectClassMember(stageOptions, finderOptions);
     testSourceForInjection(expectedInjection, "toBeTruthy");
+  });
+});
+
+describe("injectJSXElement", () => {
+  const finderName = "TestElement";
+  test("Should inject new child element TestElementChild into TestElement component", () => {
+    const stageOptions: StageOptions<"jsxElement"> = {
+      stringTemplate: "<TestElementChild></TestElementChild>"
+    };
+    const finderOptions: FinderOptions<"jsxElement"> = {
+      name: finderName
+    };
+    pipeline.injectJSXElement(stageOptions, finderOptions);
+    testSourceForInjection(
+      `const TestComponent2 = () => <TestElement title="test"><TestElementChild></TestElementChild></TestElement>;`,
+      "toBeTruthy"
+    );
   });
 });

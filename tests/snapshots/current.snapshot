@@ -1,3 +1,4 @@
+import React from "react";
 import testImportDefaultConst from "./test.import";
 import { testImportConst } from "./test.import";
 import { finderTestConst } from "./test.import";
@@ -66,6 +67,13 @@ case "a":
 default:
   break;
 }
+
+type TestElementProps = { title: string };
+const TestElement = (props: TestElementProps) => (
+  <React.Fragment>{props.title}</React.Fragment>
+);
+
+const TestComponent2 = () => <TestElement title="test"><TestElementChild></TestElementChild></TestElement>;
 export type TestConditionalType<T> = T extends "b" ? "b" : T extends "a" ? "a" : undefined;
 
 const jestStringTemplate = "hello from jest test";

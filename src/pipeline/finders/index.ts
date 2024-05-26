@@ -10,6 +10,7 @@ import arrayVariableFinder from "./variableArray.finder";
 import objectVariableFinder from "./variableObject.finder";
 import classBodyFinder from "./classBody.finder";
 import tsInterfaceBodyFinder from "./tsInterfaceBody.finder";
+import jsxElementFinder from "./jsxElement.finder";
 
 const finders = {
   classBodyFinder,
@@ -24,5 +25,6 @@ const finders = {
   arrayVariableFinder,
   objectVariableFinder,
   tsInterfaceBodyFinder,
+  jsxElementFinder
 };
 export default finders;

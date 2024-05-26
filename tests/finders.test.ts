@@ -8,7 +8,7 @@ import jcs, {
 import { IdentifierKind } from "ast-types/gen/kinds";
 import finders from "../src/pipeline/finders";
 
-const sourceContent = readFileSync("tests/test.template.ts", "utf-8");
+const sourceContent = readFileSync("tests/test.template.tsx", "utf-8");
 const ast = jcs.withParser("tsx")(sourceContent);
 
 describe("classBodyFinder", () => {
@@ -18,12 +18,11 @@ describe("classBodyFinder", () => {
     expect(found.col.size()).toBe(1);
   });
   test("ClassBody: Should throw a ClassBody empty error", () => {
+    const name = "NonExistantClass";
     try {
-      const collection = finders.classBodyFinder(jcs, ast, {
-        name: "NonExistantClass"
-      });
+      const collection = finders.classBodyFinder(jcs, ast, { name });
     } catch (error: any) {
-      expect(error.message.includes("ClassBody is empty")).toBeTruthy();
+      expect(error.message.includes(name + " is empty")).toBeTruthy();
     }
   });
 });
@@ -60,8 +59,8 @@ describe("importFinder", () => {
   const type = "ImportDeclaration";
   const col = finders.importFinder(jcs, ast);
 
-  test(`${type}: Should return a ${type} collection with 1 path.`, () => {
-    expect(col.size()).toBe(1);
+  test(`${type}: Should return a ${type} collection with 2 path.`, () => {
+    expect(col.size()).toBe(2);
     expect(col.getTypes()[0]).toBe(type);
   });
 });
@@ -190,5 +189,34 @@ describe("objectVariableFinder", () => {
           .key as IdentifierKind
       ).name
     ).toBe("testProperty");
+  });
+});
+
+describe("jsxElementFinder", () => {
+  const type = "JSXElement";
+  const found = finders.jsxElementFinder(jcs, ast, { name: "React.Fragment" });
+
+  test(`${type}: Should return a ${type} collection with 1 path.`, () => {
+    expect(found.col.size()).toBe(1);
+    expect(found.col.getTypes()[0]).toBe(type);
+  });
+
+  const found2 = finders.jsxElementFinder(jcs, ast, { name: "TestElement" });
+
+  test(`${type}: Should return a ${type} collection with 1 path.`, () => {
+    expect(found2.col.size()).toBe(1);
+    expect(found2.col.getTypes()[0]).toBe(type);
+  });
+  test(`${type}: Element should have the attribute "title"`, () => {
+    const attributes = found2.col.paths()[0].value.openingElement.attributes;
+    expect(attributes).toBeDefined();
+    if (attributes) {
+      const firstAttribute = attributes[0];
+      expect(firstAttribute.type).toBe("JSXAttribute");
+      if (firstAttribute.type === "JSXAttribute") {
+        expect(firstAttribute.name.type).toBe("JSXIdentifier");
+        expect(firstAttribute.name.name).toBe("title");
+      }
+    }
   });
 });

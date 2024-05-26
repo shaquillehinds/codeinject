@@ -15,7 +15,8 @@ export enum StageTypeE {
   tsTypeLiteral = "tsTypeLiteral",
   stringTemplate = "stringTemplate",
   namedExportProperty = "namedExportProperty",
-  classMember = "classMember"
+  classMember = "classMember",
+  jsxElement = "jsxElement"
 }
 
 export type StageType = keyof typeof StageTypeE;
@@ -44,6 +45,8 @@ export type StageOptions<T extends StageType> = T extends "classMember"
   ? TSTypeLiteralOptions
   : T extends "stringTemplate"
   ? StringTemplateOptions
+  : T extends "jsxElement"
+  ? JSXElementOptions
   : BaseStageOptions;
 
 export type StageOptionsAndIdName<T extends StageType> = StageOptions<T> & {
@@ -132,6 +135,11 @@ export type TSTypeAliasConditionalOptions = {
 export type TSTypeLiteralOptions = {
   stringTemplate: string;
   col?: Collection<import("jscodeshift").TSTypeLiteral>;
+} & BaseStageOptions;
+
+export type JSXElementOptions = {
+  stringTemplate: string;
+  col?: Collection<import("jscodeshift").JSXElement>;
 } & BaseStageOptions;
 
 export type StringTemplatePosition =
