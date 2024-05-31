@@ -327,7 +327,9 @@ describe("injectJSXElement", () => {
       stringTemplate: "<TestElementChild></TestElementChild>"
     };
     const finderOptions: FinderOptions<"jsxElement"> = {
-      name: finderName
+      name: finderName,
+      attributeName: "title",
+      attributeValue: { type: "StringLiteral", value: "test" }
     };
     pipeline.injectJSXElement(stageOptions, finderOptions);
     testSourceForInjection(

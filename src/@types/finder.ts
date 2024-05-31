@@ -1,4 +1,5 @@
 import { Collection } from "jscodeshift";
+import { LiteralKind } from "ast-types/gen/kinds";
 
 export enum FinderTypeE {
   variableObject = "variableObject",
@@ -94,6 +95,12 @@ export type classBodyFinderOptions = BaseFinderOptions & {
   name: string;
 };
 
+export type AttributeValue = {
+  type: LiteralKind["type"];
+  value: any;
+};
 export type JSXElementFinderOptions = BaseFinderOptions & {
-  name: string;
+  name?: string;
+  attributeName?: string;
+  attributeValue?: AttributeValue;
 };
