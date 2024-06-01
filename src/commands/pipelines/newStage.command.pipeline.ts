@@ -38,7 +38,12 @@ export default async function newStageCommandPipeline(
       isDefault: true
     })
     .injectProperty(
-      { key: `inject${name}Stage`, value: `inject${name}Stage@jcs.identifier` },
+      {
+        property: {
+          key: `inject${name}Stage`,
+          value: `inject${name}Stage@jcs.identifier`
+        }
+      },
       { name: "stages" }
     )
     .parse("src/pipeline/Injection.pipeline.ts")

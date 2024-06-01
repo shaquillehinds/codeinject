@@ -37,8 +37,10 @@ export default async function newFinderCommandPipeline(
     })
     .injectProperty(
       {
-        key: `${nameL}Finder`,
-        value: `${nameL}Finder@jcs.identifier`
+        property: {
+          key: `${nameL}Finder`,
+          value: `${nameL}Finder@jcs.identifier`
+        }
       },
       { name: "finders" }
     )
