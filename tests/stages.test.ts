@@ -340,6 +340,36 @@ describe("injectClassMethod", () => {
   });
 });
 
+describe("injectConstructor", () => {
+  const finderOptions: FinderOptions<"classBody"> = { name: "TestClass" };
+  const stageOptions: StageOptions<"classConstructor"> = {
+    stringTemplate: `this._testProperty = "new value";`
+  };
+  const expectedInjection = `class TestClass {
+  private _testProperty: string = "test value";
+  constructor() {
+    this._testProperty = "new value";
+  }
+
+  public testMethod(testArg: string) {
+    return testArg;
+  }
+
+  protected _jestProperty: string | undefined;
+
+  public set jestProperty(name: string){
+    this._jestProperty = name;
+  }
+  public get jestProperty(){
+    return this._jestProperty;
+  }
+}`;
+  test(`Should add members to class TestClass`, () => {
+    pipeline.injectClassConstructor(stageOptions, finderOptions);
+    testSourceForInjection(expectedInjection, "toBeTruthy");
+  });
+});
+
 describe("injectJSXElement", () => {
   const finderName = "TestElement";
   test("Should inject new child element TestElementChild into TestElement component", () => {

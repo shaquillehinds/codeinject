@@ -9,6 +9,7 @@ import injectTSTypeLiteralStage from "./tsTypeLiteral.inject.stage";
 import injectStringTemplateStage from "./stringTemplate.inject.stage";
 import injectTSInterfaceBodyStage from "./tsInterfaceBody.inject.stage";
 import injectClassMemberStage from "./classMember.inject.stage";
+import injectClassConstructorStage from "./classConstructor.inject.stage";
 import injectNamedExportPropertyStage from "./namedExportProperty.inject.stage";
 import injectTSTypeAliasConditionalStage from "./tsTypeAliasConditional.inject.stage";
 
@@ -24,6 +25,7 @@ const stages = {
   injectTSTypeLiteralStage,
   injectStringTemplateStage,
   injectTSInterfaceBodyStage,
+  injectClassConstructorStage,
   injectNamedExportPropertyStage,
   injectTSTypeAliasConditionalStage
 };

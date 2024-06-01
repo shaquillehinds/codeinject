@@ -5,7 +5,9 @@ import { finderTestConst } from "./test.import";
 
 class TestClass {
   private _testProperty: string = "test value";
-  constructor() {}
+  constructor() {
+    this._testProperty = "new value";
+  }
 
   public testMethod(testArg: string) {
     return testArg;

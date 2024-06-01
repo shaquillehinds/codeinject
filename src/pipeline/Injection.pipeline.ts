@@ -245,6 +245,18 @@ class InjectionPipeline {
     return this;
   }
 
+  public injectClassConstructor(
+    stageOptions: StageOptions<"classConstructor">,
+    finderOpts: FinderOptions<"classBody">
+  ) {
+    if (!this.ast) this.parse();
+    const found = f.classBodyFinder(j, this.ast!, finderOpts);
+    const newStageOpts = { ...stageOptions, ...found };
+    s.injectClassConstructorStage(j, this.ast!, newStageOpts);
+    this.addLog(`Injected a constructor to class: ${found.idName}`);
+    return this;
+  }
+
   public injectTSInterfaceBody(
     stageOptions: StageOptions<"tsInterfaceBody">,
     finderOpts: FinderOptions<"tsInterfaceBody">

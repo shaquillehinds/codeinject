@@ -1,23 +1,8 @@
 import { Collection, JSCodeshift } from "jscodeshift";
 import { Finder, FinderOptions, FinderType } from "./finder";
+import { StageTypeE } from "./stage.enums";
 
 export type StageLogType = "update" | "create" | "directory";
-
-export enum StageTypeE {
-  property = "property",
-  arrayElement = "arrayElement",
-  case = "case",
-  import = "import",
-  tsEnumMember = "tsEnumMember",
-  tsInterfaceBody = "tsInterfaceBody",
-  tsTypeAlias = "tsTypeAlias",
-  tsTypeAliasConditional = "tsTypeAliasConditional",
-  tsTypeLiteral = "tsTypeLiteral",
-  stringTemplate = "stringTemplate",
-  namedExportProperty = "namedExportProperty",
-  classMember = "classMember",
-  jsxElement = "jsxElement"
-}
 
 export type StageType = keyof typeof StageTypeE;
 
@@ -47,6 +32,8 @@ export type StageOptions<T extends StageType> = T extends "classMember"
   ? StringTemplateOptions
   : T extends "jsxElement"
   ? JSXElementOptions
+  : T extends "classConstructor"
+  ? ClassConstructorOptions
   : BaseStageOptions;
 
 export type StageOptionsAndIdName<T extends StageType> = StageOptions<T> & {
@@ -160,6 +147,11 @@ export type StringTemplateOptions = {
 } & BaseStageOptions;
 
 export type ClassMemberOptions = {
+  stringTemplate: string;
+  col?: Collection<import("jscodeshift").ClassBody>;
+} & BaseStageOptions;
+
+export type ClassConstructorOptions = {
   stringTemplate: string;
   col?: Collection<import("jscodeshift").ClassBody>;
 } & BaseStageOptions;
