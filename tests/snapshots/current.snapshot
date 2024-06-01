@@ -22,6 +22,8 @@ class TestClass {
 }
 
 const testObject = {
+  literal: new TestClass(),
+
   jest: {
     nested: true,
     using: "ts",

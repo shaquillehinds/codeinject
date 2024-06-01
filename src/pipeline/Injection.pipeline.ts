@@ -190,7 +190,7 @@ class InjectionPipeline {
     const newStageOpts = { ...stageOptions, ...found };
     s.injectPropertyStage(j, this.ast!, newStageOpts);
     this.addLog(
-      `Injected object property ${stageOptions.key} to: ${found.idName}`
+      `Injected object property ${stageOptions.property} to: ${found.idName}`
     );
     return this;
   }

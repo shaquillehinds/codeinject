@@ -217,8 +217,10 @@ describe("injectProperty", () => {
     name: "testObject"
   };
   const stageOptions: StageOptions<"property"> = {
-    key: "jest",
-    value: { nested: true, using: "ts", time: 0 }
+    property: {
+      key: "jest",
+      value: { nested: true, using: "ts", time: 0 }
+    }
   };
   const expectedInjection = `const testObject = {
   jest: {
@@ -232,6 +234,24 @@ describe("injectProperty", () => {
   test(`Should add property jest to testObject.`, () => {
     pipeline.injectProperty(stageOptions, finderOptions);
     testSourceForInjection(expectedInjection, "toBeTruthy");
+  });
+  const stageOptions2: StageOptions<"property"> = {
+    property: "literal: new TestClass()"
+  };
+  const expectedInjection2 = `const testObject = {
+  literal: new TestClass(),
+
+  jest: {
+    nested: true,
+    using: "ts",
+    time: 0
+  },
+
+  testProperty: "test value"
+};`;
+  test(`Should add property literal as a jcs literal to testObject`, () => {
+    pipeline.injectProperty(stageOptions2, finderOptions);
+    testSourceForInjection(expectedInjection2, "toBeTruthy");
   });
 });
 

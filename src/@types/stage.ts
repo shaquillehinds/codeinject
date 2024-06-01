@@ -79,8 +79,13 @@ export type NamedExportPropertyOptions = {
 } & BaseStageOptions;
 
 export type PropertyOptions = {
-  key: string;
-  value: any;
+  property:
+    | {
+        key: string;
+        value: any;
+      }
+    | string;
+  stringTemplate?: string;
   col?: Collection<import("jscodeshift").ObjectExpression>;
 } & BaseStageOptions;
 
