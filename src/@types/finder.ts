@@ -1,21 +1,6 @@
 import { Collection } from "jscodeshift";
 import { LiteralKind } from "ast-types/gen/kinds";
-
-export enum FinderTypeE {
-  variableObject = "variableObject",
-  variableArray = "variableArray",
-  switch = "switch",
-  tsEnum = "tsEnum",
-  import = "import",
-  export = "export",
-  defaultExport = "defaultExport",
-  program = "program",
-  tsInterfaceBody = "tsInterfaceBody",
-  tsTypeAlias = "tsTypeAlias",
-  tsTypeLiteral = "tsTypeLiteral",
-  classBody = "classBody",
-  jsxElement = "jsxElement"
-}
+import { FinderTypeE } from "./finder.enums";
 
 export type FinderType = keyof typeof FinderTypeE;
 
@@ -45,6 +30,10 @@ export type FinderOptions<T extends FinderType> = T extends "classBody"
   ? ProgramFinderOptions
   : T extends "jsxElement"
   ? JSXElementFinderOptions
+  : T extends "tsNamespace"
+  ? TSNamespaceFinderOptions
+  : T extends "existingImport"
+  ? ExistingImportFinderOptions
   : BaseFinderOptions;
 
 export type Finder = (
@@ -83,7 +72,14 @@ export type TSTypeLiteralFinderOptions = BaseFinderOptions & {
   name: string;
 };
 
+export type TSNamespaceFinderOptions = BaseFinderOptions & {
+  name: string;
+};
+
 export type ImportFinderOptions = BaseFinderOptions & {};
+export type ExistingImportFinderOptions = BaseFinderOptions & {
+  source: string;
+};
 
 export type ExportFinderOptions = BaseFinderOptions & {};
 

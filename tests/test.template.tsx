@@ -47,3 +47,5 @@ const TestElement = (props: TestElementProps) => (
 );
 
 const TestComponent2 = () => <TestElement title="test"></TestElement>;
+
+namespace King {}

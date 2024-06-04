@@ -7,6 +7,7 @@ import {
 } from "jscodeshift";
 import { DebugLogger } from "@utils/Logger";
 import { StageOptionsAndIdName } from "@src/@types/stage";
+import addBrackets from "@src/utils/addBrackets";
 
 const log = DebugLogger("constructor.inject.stage.ts");
 
@@ -26,14 +27,11 @@ export default function injectConstructorStage(
 
   const ast2 = jcs.withParser("tsx")(
     isNewConstructor
-      ? `class Template {
-  ${stringTemplate}
-}
+      ? `class Template ${addBrackets(stringTemplate)}
+
 `
       : `class Template{
-  constructor() {
-    ${stringTemplate}
-  }
+  constructor() ${addBrackets(stringTemplate)}
 }
 `
   );

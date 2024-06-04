@@ -281,6 +281,18 @@ class InjectionPipeline {
     return this;
   }
 
+  public injectTSNamespace(
+    stageOptions: StageOptions<"tsNamespace">,
+    finderOpts: FinderOptions<"tsNamespace">
+  ) {
+    if (!this.ast) this.parse();
+    const found = f.tsNamespaceFinder(j, this.ast!, finderOpts);
+    const newStageOpts = { ...stageOptions, ...found };
+    s.injectTSNamespaceStage(j, this.ast!, newStageOpts);
+    this.addLog(`Injected namespace: ${found.idName}`);
+    return this;
+  }
+
   public injectNamedExportProperty(
     stageOptions: StageOptions<"namedExportProperty">
   ) {

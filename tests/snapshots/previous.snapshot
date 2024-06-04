@@ -1,7 +1,10 @@
 import React from "react";
-import testImportDefaultConst from "./test.import";
-import { testImportConst } from "./test.import";
+import testImportDefaultConst, { testImportConst } from "./test.import2";
 import { finderTestConst } from "./test.import";
+
+namespace Queen {
+  
+}
 
 class TestClass {
   private _testProperty: string = "test value";
@@ -12,9 +15,7 @@ class TestClass {
   public testMethod(testArg: string) {
     return testArg;
   }
-
   protected _jestProperty: string | undefined;
-
   public set jestProperty(name: string){
     this._jestProperty = name;
   }
@@ -78,6 +79,11 @@ const TestElement = (props: TestElementProps) => (
 );
 
 const TestComponent2 = () => <TestElement title="test"><TestElementChild></TestElementChild></TestElement>;
+
+namespace King {
+  type Prince = 'Agnes'
+  export type Princess = 'Kali'
+}
 export type TestConditionalType<T> = T extends "b" ? "b" : T extends "a" ? "a" : undefined;
 
 const jestStringTemplate = "hello from jest test";

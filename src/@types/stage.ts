@@ -34,6 +34,8 @@ export type StageOptions<T extends StageType> = T extends "classMember"
   ? JSXElementOptions
   : T extends "classConstructor"
   ? ClassConstructorOptions
+  : T extends "tsNamespace"
+  ? TSNamespace
   : BaseStageOptions;
 
 export type StageOptionsAndIdName<T extends StageType> = StageOptions<T> & {
@@ -154,4 +156,9 @@ export type ClassMemberOptions = {
 export type ClassConstructorOptions = {
   stringTemplate: string;
   col?: Collection<import("jscodeshift").ClassBody>;
+} & BaseStageOptions;
+
+export type TSNamespace = {
+  stringTemplate: string;
+  col?: Collection<import("jscodeshift").TSModuleDeclaration>;
 } & BaseStageOptions;

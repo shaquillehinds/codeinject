@@ -2,6 +2,7 @@ import { Collection, JSCodeshift, TSTypeLiteral } from "jscodeshift";
 import { DebugLogger } from "@utils/Logger";
 import { StageOptionsAndIdName } from "@src/@types/stage";
 import injectToProgram from "@src/utils/injectToProgram.inject";
+import addBrackets from "@src/utils/addBrackets";
 
 const log = DebugLogger("tsTypeLiteral.inject.stage.ts");
 /**
@@ -33,7 +34,7 @@ export default function injectTSTypeLiteralStage(
   if (colSize === 0 && !forceInject)
     log("error", `Type alias ${idName} was not found.`);
 
-  const template = `type Template = ${stringTemplate}`;
+  const template = `type Template = ${addBrackets(stringTemplate)}`;
   const ast = jcs.withParser("tsx")(template);
   const body = ast.find(jcs.TSTypeLiteral).paths()[0].value;
   const tsTypeLiteral = col.paths()[0].value;

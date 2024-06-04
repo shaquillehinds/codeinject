@@ -1,6 +1,7 @@
 import { Collection, JSCodeshift, TSInterfaceBody } from "jscodeshift";
 import { DebugLogger } from "@utils/Logger";
 import { StageOptionsAndIdName } from "@src/@types/stage";
+import addBrackets from "@src/utils/addBrackets";
 
 const log = DebugLogger("tsInterfaceBody.inject.stage.ts");
 /**
@@ -23,7 +24,7 @@ export default function injectTSInterfaceBodyStage(
     log("error", "No expression collection passed to this stage.");
     return workingSource;
   }
-  const template = `interface Template ${bodyStringTemplate}`;
+  const template = `interface Template ${addBrackets(bodyStringTemplate)}`;
   const ast = jcs.withParser("tsx")(template);
   const body = ast.find(jcs.TSInterfaceBody).get().value as TSInterfaceBody;
   const tsInterfaceBody = col.get().value as TSInterfaceBody;

@@ -7,9 +7,11 @@ export enum FinderTypeE {
   export = "export",
   defaultExport = "defaultExport",
   program = "program",
+  classBody = "classBody",
+  jsxElement = "jsxElement",
   tsInterfaceBody = "tsInterfaceBody",
   tsTypeAlias = "tsTypeAlias",
   tsTypeLiteral = "tsTypeLiteral",
-  classBody = "classBody",
-  jsxElement = "jsxElement"
+  tsNamespace = "tsNamespace",
+  existingImport = "existingImport"
 }

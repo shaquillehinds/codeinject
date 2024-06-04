@@ -7,6 +7,7 @@ import {
 import objToExp from "../parsers/objToExp.parser";
 import { DebugLogger } from "@utils/Logger";
 import { StageOptionsAndIdName } from "@src/@types/stage";
+import addBrackets from "@src/utils/addBrackets";
 
 const log = DebugLogger("property.inject.stage.ts");
 
@@ -24,9 +25,7 @@ export default function injectPropertyStage(
 
   if (typeof property === "string") {
     const ast2 = jcs.withParser("tsx")(
-      `const template = {
-      ${property}
-     }
+      `const template = ${addBrackets(property)}
     `
     );
     const col2 = ast2.find(jcs.ObjectExpression);

@@ -26,9 +26,11 @@ afterAll(() => {
 function testSourceForInjection(
   stringSourceShouldHave: string,
   testType: "toBeTruthy" | "toBeFalsy",
-  updates?: string
+  opts?: { updates?: string; log?: boolean }
 ) {
+  let updates = opts?.updates;
   if (!updates) updates = pipeline._ast?.toSource() || "";
+  if (opts?.log) console.log(updates);
   expect(updates.includes(stringSourceShouldHave))[testType]();
   return updates;
 }
@@ -270,20 +272,20 @@ describe("injectImport", () => {
   test(`Should add a default import to the top of the file.`, () => {
     const stageOptions: StageOptions<"import"> = {
       importName: "testImportDefaultConst",
-      source: "./test.import",
+      source: "./test.import2",
       isDefault: true
     };
-    const expectedInjection = `import testImportDefaultConst from "./test.import";`;
+    const expectedInjection = `import testImportDefaultConst from "./test.import2"`;
     pipeline.injectImport(stageOptions);
     testSourceForInjection(expectedInjection, "toBeTruthy");
   });
 
-  test(`Should add a named import to the top of the file.`, () => {
+  test(`Should add a named import to the previous default import source`, () => {
     const stageOptions: StageOptions<"import"> = {
       importName: "testImportConst",
-      source: "./test.import"
+      source: "./test.import2"
     };
-    const expectedInjection = `import { testImportConst } from "./test.import";`;
+    const expectedInjection = `import testImportDefaultConst, { testImportConst } from "./test.import2"`;
     pipeline.injectImport(stageOptions);
     testSourceForInjection(expectedInjection, "toBeTruthy");
   });
@@ -308,14 +310,12 @@ describe("injectClassMethod", () => {
   const finderOptions: FinderOptions<"classBody"> = { name: "TestClass" };
   const stageOptions: StageOptions<"classMember"> = {
     stringTemplate: `protected _jestProperty: string | undefined;
-
   public set jestProperty(name: string){
     this._jestProperty = name;
   }
   public get jestProperty(){
     return this._jestProperty;
-  }
-    `
+  }`
   };
   const expectedInjection = `class TestClass {
   private _testProperty: string = "test value";
@@ -324,9 +324,7 @@ describe("injectClassMethod", () => {
   public testMethod(testArg: string) {
     return testArg;
   }
-
   protected _jestProperty: string | undefined;
-
   public set jestProperty(name: string){
     this._jestProperty = name;
   }
@@ -354,9 +352,7 @@ describe("injectConstructor", () => {
   public testMethod(testArg: string) {
     return testArg;
   }
-
   protected _jestProperty: string | undefined;
-
   public set jestProperty(name: string){
     this._jestProperty = name;
   }
@@ -384,6 +380,57 @@ describe("injectJSXElement", () => {
     pipeline.injectJSXElement(stageOptions, finderOptions);
     testSourceForInjection(
       `const TestComponent2 = () => <TestElement title="test"><TestElementChild></TestElementChild></TestElement>;`,
+      "toBeTruthy"
+    );
+  });
+});
+
+describe("injectTSNamespace", () => {
+  const finderName = "King";
+  test("Should inject new typescript type 'Prince' to the ts namespace King", () => {
+    const stageOptions: StageOptions<"tsNamespace"> = {
+      stringTemplate: "type Prince = 'Agnes'"
+    };
+    const finderOptions: FinderOptions<"tsNamespace"> = {
+      name: finderName
+    };
+    pipeline.injectTSNamespace(stageOptions, finderOptions);
+    testSourceForInjection(
+      `namespace King {
+  type Prince = 'Agnes'
+}`,
+      "toBeTruthy"
+    );
+  });
+  test("Should inject new typescript type 'Princess' to the ts namespace King", () => {
+    const stageOptions: StageOptions<"tsNamespace"> = {
+      stringTemplate: "export type Princess = 'Kali'"
+    };
+    const finderOptions: FinderOptions<"tsNamespace"> = {
+      name: finderName
+    };
+    pipeline.injectTSNamespace(stageOptions, finderOptions);
+    testSourceForInjection(
+      `namespace King {
+  type Prince = 'Agnes'
+  export type Princess = 'Kali'
+}`,
+      "toBeTruthy"
+    );
+  });
+  test("Should inject a new namespace called Queen", () => {
+    const stageOptions: StageOptions<"tsNamespace"> = {
+      stringTemplate: "",
+      forceInject: true
+    };
+    const finderOptions: FinderOptions<"tsNamespace"> = {
+      name: "Queen"
+    };
+    pipeline.injectTSNamespace(stageOptions, finderOptions);
+    testSourceForInjection(
+      `namespace Queen {
+  
+}`,
       "toBeTruthy"
     );
   });

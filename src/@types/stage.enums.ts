@@ -12,7 +12,8 @@ export enum StageTypeE {
   namedExportProperty = "namedExportProperty",
   classMember = "classMember",
   jsxElement = "jsxElement",
-  classConstructor = "classConstructor"
+  classConstructor = "classConstructor",
+  tsNamespace = "tsNamespace"
 }
 
 export enum StageNameE {
@@ -29,5 +30,6 @@ export enum StageNameE {
   tsTypeAliasConditional = "injectTSTypeAliasConditionalStage",
   classMember = "injectClassMemberStage",
   jsxElement = "injectJSXElementStage",
-  classConstructor = "injectClassConstructorStage"
+  classConstructor = "injectClassConstructorStage",
+  tsNamespace = "injectTSNamespaceStage"
 }

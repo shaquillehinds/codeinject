@@ -193,6 +193,20 @@ describe("objectVariableFinder", () => {
   });
 });
 
+describe("tsNamespaceFinder", () => {
+  const type = "TSModuleDeclaration";
+  const name = "King";
+  const found = finders.tsNamespaceFinder(jcs, ast, { name });
+
+  test(`${type}: Should return a ${type} collection with 1 path.`, () => {
+    expect(found.col.size()).toBe(1);
+    expect(found.col.getTypes()[0]).toBe(type);
+  });
+  const id = found.col.paths()[0].value.id;
+  expect(id.type).toBe("Identifier");
+  if (id.type === "Identifier") expect(id.name).toBe(name);
+});
+
 describe("jsxElementFinder", () => {
   const type = "JSXElement";
   const found = finders.jsxElementFinder(jcs, ast, { name: "React.Fragment" });
