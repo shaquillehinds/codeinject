@@ -271,6 +271,35 @@ describe("jsxElementFinder", () => {
   });
 });
 
+describe("functionFinder", () => {
+  const type = "ArrowFunctionExpression";
+  const type2 = "FunctionExpression";
+  const type3 = "FunctionDeclaration";
+
+  const { col } = finders.functionFinder(jcs, ast, {
+    name: "TestComponent2"
+  });
+  const { col: col2 } = finders.functionFinder(jcs, ast, {
+    name: "funcExp"
+  });
+  const { col: col3 } = finders.functionFinder(jcs, ast, {
+    name: "funcDec"
+  });
+
+  test("ArrowFunctionExpression: Should return a Function collection with 1 path.", () => {
+    expect(col.size()).toBe(1);
+    expect(col.getTypes()[0]).toBe(type);
+  });
+  test("FunctionExpression: Should return a Function collection with 1 path.", () => {
+    expect(col2.size()).toBe(1);
+    expect(col2.getTypes()[0]).toBe(type2);
+  });
+  test("FunctionDeclaration: Should return a Function collection with 1 path.", () => {
+    expect(col3.size()).toBe(1);
+    expect(col3.getTypes()[0]).toBe(type3);
+  });
+});
+
 const reactSourceContent = readFileSync(
   "tests/test.react.template.tsx",
   "utf-8"

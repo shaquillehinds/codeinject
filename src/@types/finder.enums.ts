@@ -14,5 +14,6 @@ export enum FinderTypeE {
   tsTypeLiteral = "tsTypeLiteral",
   tsNamespace = "tsNamespace",
   existingImport = "existingImport",
-  useEffect = "useEffect"
+  useEffect = "useEffect",
+  function = "function"
 }

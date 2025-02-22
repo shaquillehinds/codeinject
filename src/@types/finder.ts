@@ -4,7 +4,9 @@ import { FinderTypeE } from "./finder.enums";
 
 export type FinderType = keyof typeof FinderTypeE;
 
-export type FinderOptions<T extends FinderType> = T extends "useEffect"
+export type FinderOptions<T extends FinderType> = T extends "function"
+  ? FunctionFinderOptions
+  : T extends "useEffect"
   ? UseEffectFinderOptions
   : T extends "classBody"
   ? classBodyFinderOptions
@@ -104,3 +106,7 @@ export type JSXElementFinderOptions = BaseFinderOptions & {
 };
 
 export type UseEffectFinderOptions = BaseFinderOptions;
+
+export type FunctionFinderOptions = BaseFinderOptions & {
+  name: string;
+};

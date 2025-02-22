@@ -48,4 +48,8 @@ const TestElement = (props: TestElementProps) => (
 
 const TestComponent2 = () => <TestElement title="test"></TestElement>;
 
+const funcExp = function () {};
+
+function funcDec() {}
+
 namespace King {}
