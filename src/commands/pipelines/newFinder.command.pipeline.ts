@@ -9,7 +9,6 @@ export default async function newFinderCommandPipeline(
   const nameL = name[0].toLowerCase() + name.slice(1);
 
   await new InjectionPipeline("src/@types/finder.ts", config)
-    .injectTSEnumMember({ key: nameL, value: nameL }, { name: "FinderTypeE" })
     .injectStringTemplate({
       template: `
 
@@ -63,7 +62,7 @@ export default async function newFinderCommandPipeline(
       template: `
    describe("${nameL}Finder", () => {
      const type = "${collection}";
-     const col = finders.${nameL}Finder(jcs, ast, { name: "[identifierName]" });
+     const { col } = finders.${nameL}Finder(jcs, ast, { name: "[identifierName]" });
    
      test("${collection}: Should return a ${collection} collection with 1 path.", () => {
        expect(col.size()).toBe(1);
