@@ -68,7 +68,7 @@ describe("importFinder", () => {
 
 describe("programFinder", () => {
   const type = "Program";
-  const col = finders.programFinder(jcs, ast);
+  const { col } = finders.programFinder(jcs, ast);
 
   test(`${type}: Should return a ${type} collection with 1 path.`, () => {
     expect(col.size()).toBe(1);
@@ -268,5 +268,21 @@ describe("jsxElementFinder", () => {
         }
       }
     });
+  });
+});
+
+const reactSourceContent = readFileSync(
+  "tests/test.react.template.tsx",
+  "utf-8"
+);
+const reactAST = jcs.withParser("tsx")(reactSourceContent);
+
+describe("useEffectFinder", () => {
+  const type = "CallExpression";
+  const { col } = finders.useEffectFinder(jcs, reactAST, {});
+
+  test("CallExpression: Should return a CallExpression collection with 1 path.", () => {
+    expect(col.size()).toBe(2);
+    expect(col.getTypes()[0]).toBe(type);
   });
 });

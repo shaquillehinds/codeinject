@@ -11,5 +11,5 @@ export default function emptyCollectionValidator<T>(
         `The collection ${collectionName} is empty, check your injection pipeline finder options. If everything looks good, there might be an issue with the finder function itself.`
       )
     );
-  return collection;
+  return { col: collection, idName: collectionName };
 }

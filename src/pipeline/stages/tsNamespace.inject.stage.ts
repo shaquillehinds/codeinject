@@ -18,7 +18,7 @@ export default function injectTSNamespaceStage(
   }: StageOptionsAndIdName<"tsNamespace">
 ) {
   if (!col) {
-    log("error", "No expression collection passed to this stage.");
+    log($lf(21), "error", "No expression collection passed to this stage.");
     return workingSource;
   }
 
@@ -33,7 +33,7 @@ export default function injectTSNamespaceStage(
         template,
         position: "afterImport",
         forceInject: true,
-        col: programFinder(jcs, workingSource)
+        col: programFinder(jcs, workingSource).col
       });
     } else
       throw new Error(
@@ -80,4 +80,9 @@ export default function injectTSNamespaceStage(
   col.replaceWith(originalDeclaration);
 
   return workingSource;
+}
+
+function $lf(n: number) {
+  return "$lf|pipeline/stages/tsNamespace.inject.stage.ts:" + n + " >";
+  // Automatically injected by Log Location Injector vscode extension
 }

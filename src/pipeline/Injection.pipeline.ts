@@ -67,7 +67,7 @@ class InjectionPipeline {
 
   public async finish(filesToOpen?: string[]) {
     if (this.asts.length === 0) {
-      console.error(chalk.bgRed("You don't have any asts loaded."));
+      console.error($lf(70), chalk.bgRed("You don't have any asts loaded."));
       return this;
     }
 
@@ -76,7 +76,7 @@ class InjectionPipeline {
         mkdirSync(dir);
         console.info(this.newDirLogs[index]);
       } catch (error) {
-        console.error(`${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(79), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -85,7 +85,7 @@ class InjectionPipeline {
         writeFileSync(newFile.location, newFile.content, "utf-8");
         console.info(this.created[index]);
       } catch (error) {
-        console.error(`${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(88), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -97,7 +97,7 @@ class InjectionPipeline {
         });
         writeFileSync(ast.location, updatedSource, "utf-8");
       } catch (error) {
-        console.error(`${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(100), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     }
 
@@ -321,7 +321,7 @@ class InjectionPipeline {
 
   public injectStringTemplate(stageOptions: StageOptions<"stringTemplate">) {
     if (!this.ast) this.parse();
-    stageOptions.col = f.programFinder(j, this.ast!);
+    stageOptions.col = f.programFinder(j, this.ast!).col;
     s.injectStringTemplateStage(j, this.ast!, stageOptions);
     this.addLog(`Injected string template code`);
     return this;
@@ -329,3 +329,8 @@ class InjectionPipeline {
 }
 
 export default InjectionPipeline;
+
+function $lf(n: number) {
+  return "$lf|src/pipeline/Injection.pipeline.ts:" + n + " >";
+  // Automatically injected by Log Location Injector vscode extension
+}

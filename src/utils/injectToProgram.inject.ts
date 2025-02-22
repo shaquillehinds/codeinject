@@ -9,7 +9,7 @@ export default function injectToProgram(
     injectionLine?: "last" | "first";
   }[]
 ) {
-  const programCol = programFinder(jcs, ast);
+  const programCol = programFinder(jcs, ast).col;
 
   programCol.forEach(path => {
     injections.forEach(({ statement, injectionLine }) => {
