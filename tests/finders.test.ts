@@ -286,15 +286,15 @@ describe("functionFinder", () => {
     name: "funcDec"
   });
 
-  test("ArrowFunctionExpression: Should return a Function collection with 1 path.", () => {
+  test("ArrowFunctionExpression: Should return a ArrowFunction collection with 1 path.", () => {
     expect(col.size()).toBe(1);
     expect(col.getTypes()[0]).toBe(type);
   });
-  test("FunctionExpression: Should return a Function collection with 1 path.", () => {
+  test("FunctionExpression: Should return a FunctionExpression collection with 1 path.", () => {
     expect(col2.size()).toBe(1);
     expect(col2.getTypes()[0]).toBe(type2);
   });
-  test("FunctionDeclaration: Should return a Function collection with 1 path.", () => {
+  test("FunctionDeclaration: Should return a FunctionDeclaration collection with 1 path.", () => {
     expect(col3.size()).toBe(1);
     expect(col3.getTypes()[0]).toBe(type3);
   });
@@ -310,7 +310,7 @@ describe("useEffectFinder", () => {
   const type = "CallExpression";
   const { col } = finders.useEffectFinder(jcs, reactAST, {});
 
-  test("CallExpression: Should return a CallExpression collection with 1 path.", () => {
+  test("CallExpression: Should return a CallExpression collection with 2 path.", () => {
     expect(col.size()).toBe(2);
     expect(col.getTypes()[0]).toBe(type);
   });
