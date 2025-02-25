@@ -28,7 +28,7 @@
     "start:dev": "yarn build && concurrently \"tsc -w\" \"tsc-alias -w\"",
     "npm-pub": "yarn build && npm publish --access public",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "new": "npm exec tscodeinject new"
+    "new": "node ./dist/index.bin.js new"
   },
   "dependencies": {
     "chalk": "^5.3.0",

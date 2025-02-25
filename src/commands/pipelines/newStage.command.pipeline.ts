@@ -8,7 +8,6 @@ export default async function newStageCommandPipeline(
 ) {
   const nameL = name[0].toLowerCase() + name.slice(1);
   await new InjectionPipeline("src/@types/stage.ts")
-    .injectTSEnumMember({ key: nameL, value: nameL }, { name: "StageTypeE" })
     .injectStringTemplate({
       template: `
 
