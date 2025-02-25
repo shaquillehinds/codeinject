@@ -1,3 +1,4 @@
+//$lf-ignore
 import programFinder from "@src/pipeline/finders/program.finder";
 import jcs from "jscodeshift";
 import { StatementKind } from "ast-types/gen/kinds";
@@ -19,7 +20,7 @@ import { StatementKind } from "ast-types/gen/kinds";
 export default function stringToStatements(str: string) {
   const ast = jcs.withParser("tsx")(str);
 
-  const programCol = programFinder(jcs, ast);
+  const programCol = programFinder(jcs, ast, {}).col;
   let statements: StatementKind[] = [];
   programCol
     .paths()[0]

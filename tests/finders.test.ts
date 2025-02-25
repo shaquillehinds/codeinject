@@ -33,7 +33,7 @@ describe("exportDefaultFinder", () => {
   test(
     type + ": Should return an ExportDefaultDeclaration with 1 path.",
     () => {
-      const { col, idName } = finders.exportDefaultFinder(jcs, ast);
+      const { col, idName } = finders.exportDefaultFinder(jcs, ast, {});
       expect(col.getTypes()[0]).toBe(type);
       expect(col.size()).toBe(1);
     }
@@ -42,7 +42,7 @@ describe("exportDefaultFinder", () => {
 
 describe("exportFinder", () => {
   const type = "ExportNamedDeclaration";
-  const { col } = finders.exportFinder(jcs, ast);
+  const { col } = finders.exportFinder(jcs, ast, {});
   test(`${type}: Should return a ${type} collection with 1 path.`, () => {
     expect(col.getTypes()[0]).toBe(type);
     expect(col.size()).toBe(1);
@@ -58,7 +58,7 @@ describe("exportFinder", () => {
 
 describe("importFinder", () => {
   const type = "ImportDeclaration";
-  const col = finders.importFinder(jcs, ast);
+  const col = finders.importFinder(jcs, ast, {});
 
   test(`${type}: Should return a ${type} collection with 2 path.`, () => {
     expect(col.size()).toBe(2);
@@ -68,7 +68,7 @@ describe("importFinder", () => {
 
 describe("programFinder", () => {
   const type = "Program";
-  const { col } = finders.programFinder(jcs, ast);
+  const { col } = finders.programFinder(jcs, ast, {});
 
   test(`${type}: Should return a ${type} collection with 1 path.`, () => {
     expect(col.size()).toBe(1);

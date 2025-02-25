@@ -7,3 +7,4 @@ dist/
 .ebextensions
 *playground.ts
 *playground.js
+local/

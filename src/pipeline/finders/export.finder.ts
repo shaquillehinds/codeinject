@@ -1,5 +1,6 @@
 import { Collection, JSCodeshift } from "jscodeshift";
 import optionalNodeCollectionValidator from "../validators/optionalNodeCollection.finder.validator";
+import { ExportFinderOptions } from "@src/@types/finder";
 
 /**
  * Finds undeclared export
@@ -14,7 +15,8 @@ import optionalNodeCollectionValidator from "../validators/optionalNodeCollectio
 
 export default function exportFinder<T>(
   jcs: JSCodeshift,
-  collection: Collection<T>
+  collection: Collection<T>,
+  options: ExportFinderOptions
 ) {
   return optionalNodeCollectionValidator(
     collection.find(jcs.ExportNamedDeclaration, { declaration: null }),

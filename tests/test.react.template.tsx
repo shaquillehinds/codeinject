@@ -1,6 +1,6 @@
 //$lf-ignore
 // @ts-nocheck
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import ScreenLayout from "@components/layouts/Screen.layout";
 import { transportLayer } from "@transports/TransportLayer";
@@ -25,7 +25,12 @@ export default function BusinessLocationsScreen() {
       pathname: "/platform/settings/business-location",
       params: { data: JSON.stringify({ mode: "Add", locations }) }
     });
+  const gangGang = useCallback(() => {}, []);
   const focused = useIsFocused();
+  function game() {}
+  const game2 = function () {};
+  const game3 = () => {};
+  const game4 = useCallback(() => {}, []);
   useEffect(() => {}, []);
   useEffect(() => {
     if (focused)

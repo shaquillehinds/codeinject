@@ -32,4 +32,8 @@ const stages = {
   injectTSTypeAliasConditionalStage
 };
 
+export type Stages = typeof stages;
+export type StagesKey = keyof Stages;
+export type StagesOpts<K extends StagesKey> = Parameters<Stages[K]>[2];
+
 export default stages;

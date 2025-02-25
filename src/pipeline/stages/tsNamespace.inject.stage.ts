@@ -33,7 +33,7 @@ export default function injectTSNamespaceStage(
         template,
         position: "afterImport",
         forceInject: true,
-        col: programFinder(jcs, workingSource).col
+        col: programFinder(jcs, workingSource, {}).col
       });
     } else
       throw new Error(

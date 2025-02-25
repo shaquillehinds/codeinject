@@ -34,5 +34,9 @@ const finders = {
   existingImportFinder,
   objectVariableFinder,
   tsInterfaceBodyFinder
-};
+} as const;
+
+export type Finders = typeof finders;
+export type FindersKey = keyof Finders;
+export type FindersOpts<K extends FindersKey> = Parameters<Finders[K]>[2];
 export default finders;

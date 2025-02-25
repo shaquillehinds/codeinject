@@ -1,9 +1,9 @@
-import j, { Collection } from "jscodeshift";
+import j, { Collection, Node } from "jscodeshift";
 import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import { Options, format } from "prettier";
 import chalk from "chalk";
-import s from "./stages";
-import f from "./finders";
+import s, { StagesKey } from "./stages";
+import f, { FindersKey } from "./finders";
 import { execSync } from "child_process";
 import {
   Stage,
@@ -14,10 +14,49 @@ import {
 } from "@src/@types/stage";
 import { FinderOptions, FinderType } from "@src/@types/finder";
 import { FileFromTemplateOptions } from "@src/@types";
+import nodeGrouper, {
+  NodeGrouperProps,
+  NodeGrouperType,
+  VariableType
+} from "@src/utils/nodeGrouper";
 
 const chalkGold = chalk.rgb(244, 184, 0);
 
 class InjectionPipeline {
+  public static getFinder<K extends FindersKey>(finder: K) {
+    const finderFunc = f[finder];
+    return finderFunc;
+  }
+
+  public static getStage<K extends StagesKey>(stage: K) {
+    const stageFunc = s[stage];
+    return stageFunc;
+  }
+
+  public static getName(col: Collection) {
+    try {
+      return col.find(j.Identifier).get().value.name as string;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  public static getBodyNodes(col: Collection) {
+    try {
+      return col.find(j.BlockStatement).get().value.body as Node[];
+    } catch (error) {
+      return null;
+    }
+  }
+
+  public static nodeGrouper<
+    T extends NodeGrouperType,
+    V extends VariableType,
+    C extends VariableType
+  >(props: NodeGrouperProps<T, V, C>) {
+    return nodeGrouper<T, V, C>(props);
+  }
+
   protected ast?: Collection;
   protected asts: { location: string; ast: Collection }[] = [];
   protected newFiles: { location: string; content: string }[] = [];
@@ -67,7 +106,7 @@ class InjectionPipeline {
 
   public async finish(filesToOpen?: string[]) {
     if (this.asts.length === 0) {
-      console.error($lf(70), chalk.bgRed("You don't have any asts loaded."));
+      console.error($lf(109), chalk.bgRed("You don't have any asts loaded."));
       return this;
     }
 
@@ -76,7 +115,7 @@ class InjectionPipeline {
         mkdirSync(dir);
         console.info(this.newDirLogs[index]);
       } catch (error) {
-        console.error($lf(79), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(118), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -85,7 +124,7 @@ class InjectionPipeline {
         writeFileSync(newFile.location, newFile.content, "utf-8");
         console.info(this.created[index]);
       } catch (error) {
-        console.error($lf(88), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(127), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -97,7 +136,7 @@ class InjectionPipeline {
         });
         writeFileSync(ast.location, updatedSource, "utf-8");
       } catch (error) {
-        console.error($lf(100), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(139), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     }
 
@@ -299,7 +338,7 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     s.injectNamedExportPropertyStage(j, this.ast!, {
       ...stageOptions,
-      ...f.exportFinder(j, this.ast!)
+      ...f.exportFinder(j, this.ast!, {})
     });
     this.addLog(`Injected export property: ${stageOptions.name}`);
     return this;
@@ -309,7 +348,7 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     s.injectImportStage(j, this.ast!, {
       ...stageOptions,
-      col: f.importFinder(j, this.ast!)
+      col: f.importFinder(j, this.ast!, {})
     });
     this.addLog(
       `Injected${stageOptions.importName ? " default " : " "}import: ${
@@ -321,7 +360,7 @@ class InjectionPipeline {
 
   public injectStringTemplate(stageOptions: StageOptions<"stringTemplate">) {
     if (!this.ast) this.parse();
-    stageOptions.col = f.programFinder(j, this.ast!).col;
+    stageOptions.col = f.programFinder(j, this.ast!, {}).col;
     s.injectStringTemplateStage(j, this.ast!, stageOptions);
     this.addLog(`Injected string template code`);
     return this;
