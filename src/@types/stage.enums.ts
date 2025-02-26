@@ -13,7 +13,8 @@ export enum StageTypeE {
   classMember = "classMember",
   jsxElement = "jsxElement",
   classConstructor = "classConstructor",
-  tsNamespace = "tsNamespace"
+  tsNamespace = "tsNamespace",
+  functionBody = "functionBody",
 }
 
 export enum StageNameE {
@@ -31,5 +32,6 @@ export enum StageNameE {
   classMember = "injectClassMemberStage",
   jsxElement = "injectJSXElementStage",
   classConstructor = "injectClassConstructorStage",
-  tsNamespace = "injectTSNamespaceStage"
+  tsNamespace = "injectTSNamespaceStage",
+  functionBody = "injectFunctionBodyStage",
 }

@@ -80,9 +80,13 @@ const TestElement = (props: TestElementProps) => (
 
 const TestComponent2 = () => <TestElement title="test"><TestElementChild></TestElementChild></TestElement>;
 
-const funcExp = function () {};
+const funcExp = function () {
+  const gg2 = false;
+};
 
-function funcDec() {}
+function funcDec() {
+  const gg = true;
+}
 
 namespace King {
   type Prince = 'Agnes'

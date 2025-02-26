@@ -23,7 +23,7 @@ export default function BusinessLocationsScreen() {
   const onAddNewLocation = () =>
     router.navigate({
       pathname: "/platform/settings/business-location",
-      params: { data: JSON.stringify({ mode: "Add", locations }) }
+      params: { data: JSON.stringify({ mode: "Add", locations }) },
     });
   const gangGang = useCallback(() => {}, []);
   const focused = useIsFocused();
@@ -46,13 +46,15 @@ export default function BusinessLocationsScreen() {
     <ScreenLayout>
       <ScrollView
         contentContainerStyle={styles.scrollView}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         <RowLayout
           margin={[3, 0]}
           width={100}
           center
           centerX
-          onTouchStart={onAddNewLocation}>
+          onTouchStart={onAddNewLocation}
+        >
           <Plus color={theme.primary.dark} />
           <Title margin={[0, 0, 0, 3]} customColor={theme.primary.dark}>
             Add new location
@@ -68,19 +70,19 @@ export default function BusinessLocationsScreen() {
               try {
                 const res = await transportLayer.mainTransport.updateSetting(
                   updatedInfo,
-                  true
+                  true,
                 );
                 if (res.data) {
                   setLocations(newLocations);
                   actions.inAppNotification({
                     type: "success",
-                    title: "Delete successful"
+                    title: "Delete successful",
                   });
                 } else if (res.error) {
                   actions.inAppNotification({
                     type: "error",
                     title: "Error",
-                    message: res.error.message
+                    message: res.error.message,
                   });
                   console.warn(res.error);
                 }
@@ -88,7 +90,7 @@ export default function BusinessLocationsScreen() {
                 actions.inAppNotification({
                   type: "error",
                   title: "An unexpected error occured",
-                  message: "Check your internet connection or try again later."
+                  message: "Check your internet connection or try again later.",
                 });
                 console.warn(error);
               }
@@ -101,9 +103,9 @@ export default function BusinessLocationsScreen() {
                     locations,
                     location,
                     mode: "Edit",
-                    index
-                  })
-                }
+                    index,
+                  }),
+                },
               })
             }
           />
@@ -116,6 +118,6 @@ export default function BusinessLocationsScreen() {
 const styles = StyleSheet.create({
   scrollView: {
     alignItems: "center",
-    paddingBottom: relativeY(5)
-  }
+    paddingBottom: relativeY(5),
+  },
 });

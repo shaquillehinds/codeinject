@@ -6,7 +6,9 @@ export type StageLogType = "update" | "create" | "directory";
 
 export type StageType = keyof typeof StageTypeE;
 
-export type StageOptions<T extends StageType> = T extends "classMember"
+export type StageOptions<T extends StageType> = T extends "functionBody"
+  ? FunctionBodyOptions
+  : T extends "classMember"
   ? ClassMemberOptions
   : T extends "import"
   ? ImportOptions
@@ -161,4 +163,15 @@ export type ClassConstructorOptions = {
 export type TSNamespace = {
   stringTemplate: string;
   col?: Collection<import("jscodeshift").TSModuleDeclaration>;
+} & BaseStageOptions;
+
+type FunctionBodyOptions = {
+  nodes?: import("jscodeshift").Node[];
+  stringTemplate?: string;
+  col?:
+    | Collection<import("jscodeshift").FunctionDeclaration>
+    | Collection<
+        | import("jscodeshift").FunctionExpression
+        | import("jscodeshift").ArrowFunctionExpression
+      >;
 } & BaseStageOptions;

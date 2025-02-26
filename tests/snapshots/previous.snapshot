@@ -82,7 +82,9 @@ const TestComponent2 = () => <TestElement title="test"><TestElementChild></TestE
 
 const funcExp = function () {};
 
-function funcDec() {}
+function funcDec() {
+  const gg = true;
+}
 
 namespace King {
   type Prince = 'Agnes'

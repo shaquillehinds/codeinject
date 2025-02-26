@@ -89,6 +89,18 @@ class InjectionPipeline {
     return this;
   }
 
+  public parseString({
+    text,
+    outputLocation
+  }: {
+    text: string;
+    outputLocation: string;
+  }) {
+    this.ast = j.withParser("tsx")(text);
+    this.asts.push({ location: outputLocation, ast: this.ast });
+    return this;
+  }
+
   public stage<T extends StageType, F extends FinderType = FinderType>({
     finder,
     stage,
@@ -106,7 +118,7 @@ class InjectionPipeline {
 
   public async finish(filesToOpen?: string[]) {
     if (this.asts.length === 0) {
-      console.error($lf(109), chalk.bgRed("You don't have any asts loaded."));
+      console.error($lf(121), chalk.bgRed("You don't have any asts loaded."));
       return this;
     }
 
@@ -115,7 +127,7 @@ class InjectionPipeline {
         mkdirSync(dir);
         console.info(this.newDirLogs[index]);
       } catch (error) {
-        console.error($lf(118), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(130), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -124,7 +136,7 @@ class InjectionPipeline {
         writeFileSync(newFile.location, newFile.content, "utf-8");
         console.info(this.created[index]);
       } catch (error) {
-        console.error($lf(127), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(139), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -136,7 +148,7 @@ class InjectionPipeline {
         });
         writeFileSync(ast.location, updatedSource, "utf-8");
       } catch (error) {
-        console.error($lf(139), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(151), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     }
 
@@ -363,6 +375,15 @@ class InjectionPipeline {
     stageOptions.col = f.programFinder(j, this.ast!, {}).col;
     s.injectStringTemplateStage(j, this.ast!, stageOptions);
     this.addLog(`Injected string template code`);
+    return this;
+  }
+  public injectFunctionBody(
+    stageOptions: StageOptions<"functionBody">,
+    finderOptions: FinderOptions<"function">
+  ) {
+    if (!this.ast) this.parse();
+    stageOptions.col = f.functionFinder(j, this.ast!, finderOptions).col;
+    s.injectFunctionBodyStage(j, this.ast!, stageOptions);
     return this;
   }
 }

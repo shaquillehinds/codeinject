@@ -1,3 +1,4 @@
+//$lf-ignore
 import { afterAll, beforeAll, describe, expect, test } from "@jest/globals";
 import InjectionPipeline from "../src/pipeline/Injection.pipeline";
 import { StageOptions } from "../src/@types/stage";
@@ -433,5 +434,25 @@ describe("injectTSNamespace", () => {
 }`,
       "toBeTruthy"
     );
+  });
+});
+describe("injectFunctionBody", () => {
+  test("Should inject into function declaration body", () => {
+    const finderOptions: FinderOptions<"function"> = { name: "funcDec" };
+    const stageOptions: StageOptions<"functionBody"> = {
+      stringTemplate: `const gg = true;`
+    };
+    const expectedInjection = "const gg = true;";
+    pipeline.injectFunctionBody(stageOptions, finderOptions);
+    testSourceForInjection(expectedInjection, "toBeTruthy");
+  });
+  test("Should inject into function expression body", () => {
+    const finderOptions: FinderOptions<"function"> = { name: "funcExp" };
+    const stageOptions: StageOptions<"functionBody"> = {
+      stringTemplate: `const gg2 = false;`
+    };
+    const expectedInjection = "const gg2 = false;";
+    pipeline.injectFunctionBody(stageOptions, finderOptions);
+    testSourceForInjection(expectedInjection, "toBeTruthy");
   });
 });
