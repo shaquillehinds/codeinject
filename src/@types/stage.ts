@@ -2,47 +2,57 @@ import { Collection, JSCodeshift } from "jscodeshift";
 import { Finder, FinderOptions, FinderType } from "./finder";
 import { StageTypeE } from "./stage.enums";
 
+type FunctionCollection =
+  | Collection<import("jscodeshift").FunctionDeclaration>
+  | Collection<
+      | import("jscodeshift").FunctionExpression
+      | import("jscodeshift").ArrowFunctionExpression
+    >;
+
 export type StageLogType = "update" | "create" | "directory";
 
 export type StageType = keyof typeof StageTypeE;
 
-export type StageOptions<T extends StageType> = T extends "importsFromFile"
-  ? ImportsFromFileOptions
-  : T extends "returnObjectProperty"
-  ? ReturnObjectPropertyOptions
-  : T extends "functionBody"
-  ? FunctionBodyOptions
-  : T extends "classMember"
-  ? ClassMemberOptions
-  : T extends "import"
-  ? ImportOptions
-  : T extends "namedExportProperty"
-  ? NamedExportPropertyOptions
-  : T extends "property"
-  ? PropertyOptions
-  : T extends "arrayElement"
-  ? ArrayElementOptions
-  : T extends "case"
-  ? CaseOptions
-  : T extends "tsEnumMember"
-  ? TSEnumMemberOptions
-  : T extends "tsInterfaceBody"
-  ? TSInterfaceBodyOptions
-  : T extends "tsTypeAlias"
-  ? TSTypeAliasOptions
-  : T extends "tsTypeAliasConditional"
-  ? TSTypeAliasConditionalOptions
-  : T extends "tsTypeLiteral"
-  ? TSTypeLiteralOptions
-  : T extends "stringTemplate"
-  ? StringTemplateOptions
-  : T extends "jsxElement"
-  ? JSXElementOptions
-  : T extends "classConstructor"
-  ? ClassConstructorOptions
-  : T extends "tsNamespace"
-  ? TSNamespace
-  : BaseStageOptions;
+export type StageOptions<T extends StageType> =
+  T extends "returnAllFunctionVariables"
+    ? ReturnAllFunctionVariablesOptions
+    : T extends "importsFromFile"
+    ? ImportsFromFileOptions
+    : T extends "returnObjectProperty"
+    ? ReturnObjectPropertyOptions
+    : T extends "functionBody"
+    ? FunctionBodyOptions
+    : T extends "classMember"
+    ? ClassMemberOptions
+    : T extends "import"
+    ? ImportOptions
+    : T extends "namedExportProperty"
+    ? NamedExportPropertyOptions
+    : T extends "property"
+    ? PropertyOptions
+    : T extends "arrayElement"
+    ? ArrayElementOptions
+    : T extends "case"
+    ? CaseOptions
+    : T extends "tsEnumMember"
+    ? TSEnumMemberOptions
+    : T extends "tsInterfaceBody"
+    ? TSInterfaceBodyOptions
+    : T extends "tsTypeAlias"
+    ? TSTypeAliasOptions
+    : T extends "tsTypeAliasConditional"
+    ? TSTypeAliasConditionalOptions
+    : T extends "tsTypeLiteral"
+    ? TSTypeLiteralOptions
+    : T extends "stringTemplate"
+    ? StringTemplateOptions
+    : T extends "jsxElement"
+    ? JSXElementOptions
+    : T extends "classConstructor"
+    ? ClassConstructorOptions
+    : T extends "tsNamespace"
+    ? TSNamespace
+    : BaseStageOptions;
 
 export type StageOptionsAndIdName<T extends StageType> = StageOptions<T> & {
   idName: string;
@@ -170,24 +180,14 @@ export type TSNamespace = {
   col?: Collection<import("jscodeshift").TSModuleDeclaration>;
 } & BaseStageOptions;
 
-type FunctionBodyOptions = {
+export type FunctionBodyOptions = {
   nodes?: import("jscodeshift").Node[];
   stringTemplate?: string;
-  col?:
-    | Collection<import("jscodeshift").FunctionDeclaration>
-    | Collection<
-        | import("jscodeshift").FunctionExpression
-        | import("jscodeshift").ArrowFunctionExpression
-      >;
+  col?: FunctionCollection;
 } & BaseStageOptions;
 
-type ReturnObjectPropertyOptions = {
-  col?:
-    | Collection<import("jscodeshift").FunctionDeclaration>
-    | Collection<
-        | import("jscodeshift").FunctionExpression
-        | import("jscodeshift").ArrowFunctionExpression
-      >;
+export type ReturnObjectPropertyOptions = {
+  col?: FunctionCollection;
   nodes?: (
     | import("ast-types/gen/kinds").PropertyKind
     | import("ast-types/gen/kinds").ObjectMethodKind
@@ -198,8 +198,12 @@ type ReturnObjectPropertyOptions = {
   stringTemplate?: string;
 } & BaseStageOptions;
 
-type ImportsFromFileOptions = {
+export type ImportsFromFileOptions = {
   all?: boolean;
   origin: { source: string; type: "source" } | { text: string; type: "text" };
   col?: Collection<import("jscodeshift").ImportDeclaration>;
+} & BaseStageOptions;
+
+export type ReturnAllFunctionVariablesOptions = {
+  col?: FunctionCollection;
 } & BaseStageOptions;

@@ -55,4 +55,10 @@ function funcDec() {
   return { ghost };
 }
 
+function variablesReturn() {
+  const first = 1;
+  const second = "2";
+  const third = true;
+}
+
 namespace King {}

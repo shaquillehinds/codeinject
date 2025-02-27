@@ -442,6 +442,15 @@ class InjectionPipeline {
     s.injectImportsFromFileStage(j, this.ast!, stageOptions);
     return this;
   }
+  public injectReturnAllFunctionVariables(
+    stageOptions: StageOptions<"returnAllFunctionVariables">,
+    finderOptions: FinderOptions<"function">
+  ) {
+    if (!this.ast) this.parse();
+    stageOptions.col = f.functionFinder(j, this.ast!, finderOptions).col;
+    s.injectReturnAllFunctionVariablesStage(j, this.ast!, stageOptions);
+    return this;
+  }
 }
 
 export default InjectionPipeline;

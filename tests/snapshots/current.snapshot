@@ -102,6 +102,18 @@ function funcDec() {
   const gg = true;
 }
 
+function variablesReturn() {
+  const first = 1;
+  const second = "2";
+  const third = true;
+
+  return {
+    first,
+    second,
+    third
+  };
+}
+
 namespace King {
   type Prince = 'Agnes'
   export type Princess = 'Kali'

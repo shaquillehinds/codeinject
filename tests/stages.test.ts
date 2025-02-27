@@ -495,3 +495,16 @@ describe("injectImportsFromFile", () => {
     testSourceForInjection(expectedInjection, "toBeTruthy");
   });
 });
+describe("injectReturnAllFunctionVariables", () => {
+  const finderOptions: FinderOptions<"function"> = { name: "variablesReturn" };
+  const stageOptions: StageOptions<"returnAllFunctionVariables"> = {};
+  const expectedInjection = `  return {
+    first,
+    second,
+    third
+  };`;
+  test("Should return all the variables in function variablesReturn", () => {
+    pipeline.injectReturnAllFunctionVariables(stageOptions, finderOptions);
+    testSourceForInjection(expectedInjection, "toBeTruthy");
+  });
+});

@@ -1,4 +1,6 @@
-import path from "path";import fs from "fs";import React from "react";
+import path from "path";
+import fs from "fs";
+import React from "react";
 import testImportDefaultConst, { testImportConst } from "./test.import2";
 import { finderTestConst } from "./test.import";
 
@@ -98,6 +100,18 @@ function funcDec() {
   };
 
   const gg = true;
+}
+
+function VariablesReturn() {
+  const first = 1;
+  const second = "2";
+  const third = true;
+
+  return {
+    first,
+    second,
+    third
+  };
 }
 
 namespace King {
