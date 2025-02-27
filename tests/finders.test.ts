@@ -300,6 +300,23 @@ describe("functionFinder", () => {
   });
 });
 
+describe("returnFinder", () => {
+  const type = "ReturnStatement";
+  const { col } = finders.returnFinder(jcs, ast, {});
+  test("ReturnStatement: Should return a ReturnStatement collection with 2 paths.", () => {
+    expect(col.size()).toBe(2);
+    expect(col.getTypes()[0]).toBe(type);
+  });
+
+  const { col: col2 } = finders.returnFinder(jcs, ast, {
+    argumentType: "ObjectExpression"
+  });
+  test("ReturnStatement: Should return a ReturnStatement collection with 1 path.", () => {
+    expect(col2.size()).toBe(1);
+    expect(col2.getTypes()[0]).toBe(type);
+  });
+});
+
 const reactSourceContent = readFileSync(
   "tests/test.react.template.tsx",
   "utf-8"

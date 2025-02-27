@@ -59,8 +59,9 @@ export type BaseStageOptions = { forceInject?: boolean };
 
 export type ImportOptions = {
   isDefault?: boolean;
-  source: string;
-  importName: string;
+  nodes?: import("jscodeshift").Node[];
+  source?: string;
+  importName?: string;
   col?: Collection<import("jscodeshift").ImportDeclaration>;
 } & BaseStageOptions;
 

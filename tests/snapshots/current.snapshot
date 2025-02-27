@@ -85,6 +85,8 @@ const funcExp = function () {
 };
 
 function funcDec() {
+  const ghost = true;
+  return { ghost };
   const gg = true;
 }
 

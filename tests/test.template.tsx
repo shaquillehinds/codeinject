@@ -50,6 +50,9 @@ const TestComponent2 = () => <TestElement title="test"></TestElement>;
 
 const funcExp = function () {};
 
-function funcDec() {}
+function funcDec() {
+  const ghost = true;
+  return { ghost };
+}
 
 namespace King {}

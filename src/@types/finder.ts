@@ -1,10 +1,21 @@
-import { Collection } from "jscodeshift";
-import { LiteralKind } from "ast-types/gen/kinds";
+import { Collection, Identifier, ReturnStatement } from "jscodeshift";
+import { ExpressionKind, LiteralKind } from "ast-types/gen/kinds";
 import { FinderTypeE } from "./finder.enums";
+import { ASTNode } from "ast-types";
 
 export type FinderType = keyof typeof FinderTypeE;
 
-export type FinderOptions<T extends FinderType> = T extends "function"
+type RecursiveMatchNode<T> =
+  | (T extends {}
+      ? {
+          [K in keyof T]?: RecursiveMatchNode<T[K]>;
+        }
+      : T)
+  | ((value: T) => boolean);
+
+export type FinderOptions<T extends FinderType> = T extends "return"
+  ? ReturnFinderOptions
+  : T extends "function"
   ? FunctionFinderOptions
   : T extends "useEffect"
   ? UseEffectFinderOptions
@@ -109,4 +120,11 @@ export type UseEffectFinderOptions = BaseFinderOptions;
 
 export type FunctionFinderOptions = BaseFinderOptions & {
   name: string;
+};
+
+export type ReturnFinderOptions = BaseFinderOptions & {
+  // argumentType?: ExpressionKind;
+  argumentType?: ExpressionKind["type"];
+  // argumentType?: RecursiveMatchNode<ReturnStatement>;
+  // argumentType?: ReturnStatement['argument'];
 };

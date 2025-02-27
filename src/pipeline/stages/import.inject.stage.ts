@@ -3,19 +3,36 @@ import { DebugLogger } from "@utils/Logger";
 import { StageOptions } from "@src/@types/stage";
 import injectToProgram from "@src/utils/injectToProgram.inject";
 import existingImportFinder from "../finders/existingImport.finder";
+import { StatementKind } from "ast-types/gen/kinds";
 
 const log = DebugLogger("import.inject.stage.ts");
 
 export default function injectImportStage(
   jcs: JSCodeshift,
   workingSource: Collection,
-  { importName, source, isDefault, col }: StageOptions<"import">
+  { importName, source, isDefault, col, nodes }: StageOptions<"import">
 ): Collection {
   if (!col) {
-    log("error", "No expression collection passed to this stage.");
+    log($lf(16), "error", "No expression collection passed to this stage.");
+    return workingSource;
+  }
+  if (nodes) {
+    injectToProgram(
+      workingSource,
+      nodes.map(node => ({
+        statement: node as StatementKind,
+        injectionLine: "first"
+      }))
+    );
     return workingSource;
   }
 
+  if (!source || !importName) {
+    console.error(
+      "source and importName props required if nodes aren't provided"
+    );
+    return workingSource;
+  }
   const existingImport = existingImportFinder(jcs, workingSource, { source });
   if (existingImport.size()) {
     const newImportSpecifier = isDefault
@@ -56,4 +73,9 @@ export default function injectImportStage(
     ]);
 
   return workingSource;
+}
+
+function $lf(n: number) {
+  return "$lf|pipeline/stages/import.inject.stage.ts:" + n + " >";
+  // Automatically injected by Log Location Injector vscode extension
 }

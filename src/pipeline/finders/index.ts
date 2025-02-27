@@ -14,9 +14,11 @@ import existingImportFinder from "./existingImport.finder";
 import objectVariableFinder from "./variableObject.finder";
 import useEffectFinder from "./useEffect.finder";
 import functionFinder from "./function.finder";
+import returnFinder from "./return.finder";
 import tsInterfaceBodyFinder from "./tsInterfaceBody.finder";
 
 const finders = {
+  returnFinder,
   functionFinder,
   useEffectFinder,
   classBodyFinder,
