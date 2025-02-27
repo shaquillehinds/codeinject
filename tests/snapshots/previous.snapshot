@@ -1,4 +1,4 @@
-import React from "react";
+import path from "path";import fs from "fs";import React from "react";
 import testImportDefaultConst, { testImportConst } from "./test.import2";
 import { finderTestConst } from "./test.import";
 
@@ -82,6 +82,10 @@ const TestComponent2 = () => <TestElement title="test"><TestElementChild></TestE
 
 const funcExp = function () {
   const gg2 = false;
+
+  return {
+    love
+  };
 };
 
 function funcDec() {

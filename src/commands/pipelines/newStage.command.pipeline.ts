@@ -79,7 +79,10 @@ export default async function newStageCommandPipeline(
       template: `
     describe("inject${name}", () => {
       const finderOptions: FinderOptions<"${finderName}"> = { name: "[identifierName]" };
-      const stageOptions: StageOptions<"${nameL}"> = {${options}};
+      const stageOptions: StageOptions<"${nameL}"> = {${options.replaceAll(
+        ";",
+        ","
+      )}};
       const expectedInjection = '';
       test('Should ', () => {
         pipeline.inject${name}(stageOptions, finderOptions);
@@ -90,7 +93,6 @@ export default async function newStageCommandPipeline(
     })
     .finish([
       "tests/stages.test.ts",
-      "tests/test.template.ts",
       "src/@types/stage.ts",
       `src/pipeline/stages/${nameL}.inject.stage.ts`
     ]);

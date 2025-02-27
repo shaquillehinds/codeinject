@@ -6,7 +6,9 @@ export type StageLogType = "update" | "create" | "directory";
 
 export type StageType = keyof typeof StageTypeE;
 
-export type StageOptions<T extends StageType> = T extends "returnObjectProperty"
+export type StageOptions<T extends StageType> = T extends "importsFromFile"
+  ? ImportsFromFileOptions
+  : T extends "returnObjectProperty"
   ? ReturnObjectPropertyOptions
   : T extends "functionBody"
   ? FunctionBodyOptions
@@ -194,4 +196,10 @@ type ReturnObjectPropertyOptions = {
     | import("ast-types/gen/kinds").SpreadElementKind
   )[];
   stringTemplate?: string;
+} & BaseStageOptions;
+
+type ImportsFromFileOptions = {
+  all?: boolean;
+  origin: { source: string; type: "source" } | { text: string; type: "text" };
+  col?: Collection<import("jscodeshift").ImportDeclaration>;
 } & BaseStageOptions;

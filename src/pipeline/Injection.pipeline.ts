@@ -433,6 +433,15 @@ class InjectionPipeline {
     s.injectReturnObjectPropertyStage(j, this.ast!, stageOptions);
     return this;
   }
+  public injectImportsFromFile(
+    stageOptions: StageOptions<"importsFromFile">,
+    finderOptions: FinderOptions<"import">
+  ) {
+    if (!this.ast) this.parse();
+    stageOptions.col = f.importFinder(j, this.ast!, finderOptions);
+    s.injectImportsFromFileStage(j, this.ast!, stageOptions);
+    return this;
+  }
 }
 
 export default InjectionPipeline;

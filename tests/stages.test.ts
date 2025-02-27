@@ -480,3 +480,18 @@ describe("injectReturnObjectProperty", () => {
     testSourceForInjection(expectedInjection2, "toBeTruthy");
   });
 });
+describe("injectImportsFromFile", () => {
+  const finderOptions: FinderOptions<"import"> = {};
+  const stageOptions: StageOptions<"importsFromFile"> = {
+    origin: {
+      type: "text",
+      text: 'import fs from "fs";\nimport path from "path";\n'
+    },
+    all: true
+  };
+  const expectedInjection = 'import fs from "fs"';
+  test("Should inject imports from file", () => {
+    pipeline.injectImportsFromFile(stageOptions, finderOptions);
+    testSourceForInjection(expectedInjection, "toBeTruthy");
+  });
+});

@@ -16,6 +16,7 @@ export enum StageTypeE {
   tsNamespace = "tsNamespace",
   functionBody = "functionBody",
   returnObjectProperty = "returnObjectProperty",
+  importsFromFile = "importsFromFile",
 }
 
 export enum StageNameE {
@@ -36,4 +37,5 @@ export enum StageNameE {
   tsNamespace = "injectTSNamespaceStage",
   functionBody = "injectFunctionBodyStage",
   returnObjectProperty = "injectReturnObjectPropertyStage",
+  importsFromFile = "injectImportsFromFileStage",
 }
