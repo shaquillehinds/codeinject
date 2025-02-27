@@ -18,6 +18,7 @@ export enum StageTypeE {
   returnObjectProperty = "returnObjectProperty",
   importsFromFile = "importsFromFile",
   returnAllFunctionVariables = "returnAllFunctionVariables",
+  functionParams = "functionParams",
 }
 
 export enum StageNameE {
@@ -40,4 +41,5 @@ export enum StageNameE {
   returnObjectProperty = "injectReturnObjectPropertyStage",
   importsFromFile = "injectImportsFromFileStage",
   returnAllFunctionVariables = "injectReturnAllFunctionVariablesStage",
+  functionParams = "injectFunctionParamsStage",
 }

@@ -16,9 +16,11 @@ import injectFunctionBodyStage from "./functionBody.inject.stage";
 import injectReturnObjectPropertyStage from "./returnObjectProperty.inject.stage";
 import injectImportsFromFileStage from "./importsFromFile.inject.stage";
 import injectReturnAllFunctionVariablesStage from "./returnAllFunctionVariables.inject.stage";
+import injectFunctionParamsStage from "./functionParams.inject.stage";
 import injectTSTypeAliasConditionalStage from "./tsTypeAliasConditional.inject.stage";
 
 const stages = {
+  injectFunctionParamsStage,
   injectReturnAllFunctionVariablesStage,
   injectImportsFromFileStage,
   injectReturnObjectPropertyStage,

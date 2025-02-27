@@ -82,7 +82,7 @@ const TestElement = (props: TestElementProps) => (
 
 const TestComponent2 = () => <TestElement title="test"><TestElementChild></TestElementChild></TestElement>;
 
-const funcExp = function () {
+const funcExp = function(love: boolean, sanity?: false) {
   const gg2 = false;
 
   return {
@@ -102,7 +102,7 @@ function funcDec() {
   const gg = true;
 }
 
-function VariablesReturn() {
+function variablesReturn() {
   const first = 1;
   const second = "2";
   const third = true;

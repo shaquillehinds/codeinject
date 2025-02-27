@@ -451,6 +451,15 @@ class InjectionPipeline {
     s.injectReturnAllFunctionVariablesStage(j, this.ast!, stageOptions);
     return this;
   }
+  public injectFunctionParams(
+    stageOptions: StageOptions<"functionParams">,
+    finderOptions: FinderOptions<"function">
+  ) {
+    if (!this.ast) this.parse();
+    stageOptions.col = f.functionFinder(j, this.ast!, finderOptions).col;
+    s.injectFunctionParamsStage(j, this.ast!, stageOptions);
+    return this;
+  }
 }
 
 export default InjectionPipeline;

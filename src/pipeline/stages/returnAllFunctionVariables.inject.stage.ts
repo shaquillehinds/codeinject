@@ -51,7 +51,6 @@ export default function injectReturnAllFunctionVariablesStage(
     });
 
   stringTemplate = stringTemplate.slice(1);
-  console.log($lf(54), stringTemplate, col);
   injectReturnObjectPropertyStage(jcs, workingSource, { stringTemplate, col });
 
   return workingSource;

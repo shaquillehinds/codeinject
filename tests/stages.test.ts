@@ -508,3 +508,14 @@ describe("injectReturnAllFunctionVariables", () => {
     testSourceForInjection(expectedInjection, "toBeTruthy");
   });
 });
+describe("injectFunctionParams", () => {
+  const finderOptions: FinderOptions<"function"> = { name: "funcExp" };
+  const stageOptions: StageOptions<"functionParams"> = {
+    stringTemplate: "love: boolean, sanity?: false"
+  };
+  const expectedInjection = "function(love: boolean, sanity?: false)";
+  test("Should in inject params into function funcExp", () => {
+    pipeline.injectFunctionParams(stageOptions, finderOptions);
+    testSourceForInjection(expectedInjection, "toBeTruthy");
+  });
+});
