@@ -15,6 +15,7 @@ export enum StageTypeE {
   classConstructor = "classConstructor",
   tsNamespace = "tsNamespace",
   functionBody = "functionBody",
+  returnObjectProperty = "returnObjectProperty",
 }
 
 export enum StageNameE {
@@ -34,4 +35,5 @@ export enum StageNameE {
   classConstructor = "injectClassConstructorStage",
   tsNamespace = "injectTSNamespaceStage",
   functionBody = "injectFunctionBodyStage",
+  returnObjectProperty = "injectReturnObjectPropertyStage",
 }

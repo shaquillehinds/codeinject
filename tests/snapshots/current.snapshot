@@ -82,11 +82,21 @@ const TestComponent2 = () => <TestElement title="test"><TestElementChild></TestE
 
 const funcExp = function () {
   const gg2 = false;
+
+  return {
+    love
+  };
 };
 
 function funcDec() {
   const ghost = true;
-  return { ghost };
+
+  return {
+    ghost,
+    gone,
+    girl
+  };
+
   const gg = true;
 }
 

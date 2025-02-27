@@ -456,3 +456,27 @@ describe("injectFunctionBody", () => {
     testSourceForInjection(expectedInjection, "toBeTruthy");
   });
 });
+describe("injectReturnObjectProperty", () => {
+  const finderOptions: FinderOptions<"function"> = { name: "funcDec" };
+  const stageOptions: StageOptions<"returnObjectProperty"> = {
+    stringTemplate: `gone, girl`
+  };
+  const expectedInjection = `  return {
+    ghost,
+    gone,`;
+  test("Should inject return object properties into existing return object for function dclaration", () => {
+    pipeline.injectReturnObjectProperty(stageOptions, finderOptions);
+    testSourceForInjection(expectedInjection, "toBeTruthy");
+  });
+
+  const finderOptions2: FinderOptions<"function"> = { name: "funcExp" };
+  const stageOptions2: StageOptions<"returnObjectProperty"> = {
+    stringTemplate: `love`
+  };
+  const expectedInjection2 = `  return {
+    love`;
+  test("Should inject object return into function expression", () => {
+    pipeline.injectReturnObjectProperty(stageOptions2, finderOptions2);
+    testSourceForInjection(expectedInjection2, "toBeTruthy");
+  });
+});

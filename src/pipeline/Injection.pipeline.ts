@@ -41,6 +41,17 @@ class InjectionPipeline {
     }
   }
 
+  public static getNames(col: Collection) {
+    try {
+      return col
+        .find(j.Identifier)
+        .paths()
+        .map(p => p.value.name);
+    } catch (error) {
+      return [];
+    }
+  }
+
   public static getBodyNodes(col: Collection) {
     try {
       return col.find(j.BlockStatement).get().value.body as Node[];
@@ -64,6 +75,7 @@ class InjectionPipeline {
   protected updated: string[] = [];
   protected created: string[] = [];
   protected newDirLogs: string[] = [];
+  protected _originalFileContent: string = "";
   constructor(
     protected fileLocation: string,
     public prettierOptions?: Options
@@ -75,6 +87,26 @@ class InjectionPipeline {
     return this.ast;
   }
 
+  public get updatedFileContent() {
+    return this.ast?.toSource() || "";
+  }
+
+  public get originalFileContent() {
+    return this._originalFileContent;
+  }
+
+  public getOriginalFileContent(
+    func: (content: string, currentPipeline: InjectionPipeline) => void
+  ) {
+    func(this._originalFileContent, this);
+    return this;
+  }
+
+  public nest(func: (currentPipeline: InjectionPipeline) => void) {
+    func(this);
+    return this;
+  }
+
   public parse(fileLocation?: string) {
     if (fileLocation) {
       if (this.fileLocation === fileLocation) {
@@ -84,6 +116,7 @@ class InjectionPipeline {
       this.updated.push(chalk.bold.cyanBright(`\nUpdating >> ${fileLocation}`));
     }
     const file = readFileSync(this.fileLocation, "utf-8");
+    this._originalFileContent = file;
     this.ast = j.withParser("tsx")(file);
     this.asts.push({ location: this.fileLocation, ast: this.ast });
     return this;
@@ -96,6 +129,7 @@ class InjectionPipeline {
     text: string;
     outputLocation: string;
   }) {
+    this._originalFileContent = text;
     this.ast = j.withParser("tsx")(text);
     this.asts.push({ location: outputLocation, ast: this.ast });
     return this;
@@ -118,7 +152,7 @@ class InjectionPipeline {
 
   public async finish(filesToOpen?: string[]) {
     if (this.asts.length === 0) {
-      console.error($lf(121), chalk.bgRed("You don't have any asts loaded."));
+      console.error($lf(155), chalk.bgRed("You don't have any asts loaded."));
       return this;
     }
 
@@ -127,7 +161,7 @@ class InjectionPipeline {
         mkdirSync(dir);
         console.info(this.newDirLogs[index]);
       } catch (error) {
-        console.error($lf(130), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(164), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -136,7 +170,7 @@ class InjectionPipeline {
         writeFileSync(newFile.location, newFile.content, "utf-8");
         console.info(this.created[index]);
       } catch (error) {
-        console.error($lf(139), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(173), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -148,7 +182,7 @@ class InjectionPipeline {
         });
         writeFileSync(ast.location, updatedSource, "utf-8");
       } catch (error) {
-        console.error($lf(151), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(185), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     }
 
@@ -164,6 +198,7 @@ class InjectionPipeline {
     this.updated = [];
     this.created = [];
     this.newDirLogs = [];
+    this._originalFileContent = "";
     return this;
   }
 
@@ -362,11 +397,14 @@ class InjectionPipeline {
       ...stageOptions,
       col: f.importFinder(j, this.ast!, {})
     });
-    this.addLog(
-      `Injected${stageOptions.importName ? " default " : " "}import: ${
-        stageOptions.importName
-      }`
-    );
+    if (stageOptions.nodes && stageOptions.nodes.length)
+      this.addLog("Inejcted an import by node.");
+    else
+      this.addLog(
+        `Injected${stageOptions.importName ? " default " : " "}import: ${
+          stageOptions.importName
+        }`
+      );
     return this;
   }
 
@@ -384,6 +422,15 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.functionFinder(j, this.ast!, finderOptions).col;
     s.injectFunctionBodyStage(j, this.ast!, stageOptions);
+    return this;
+  }
+  public injectReturnObjectProperty(
+    stageOptions: StageOptions<"returnObjectProperty">,
+    finderOptions: FinderOptions<"function">
+  ) {
+    if (!this.ast) this.parse();
+    stageOptions.col = f.functionFinder(j, this.ast!, finderOptions).col;
+    s.injectReturnObjectPropertyStage(j, this.ast!, stageOptions);
     return this;
   }
 }

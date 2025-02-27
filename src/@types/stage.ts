@@ -6,7 +6,9 @@ export type StageLogType = "update" | "create" | "directory";
 
 export type StageType = keyof typeof StageTypeE;
 
-export type StageOptions<T extends StageType> = T extends "functionBody"
+export type StageOptions<T extends StageType> = T extends "returnObjectProperty"
+  ? ReturnObjectPropertyOptions
+  : T extends "functionBody"
   ? FunctionBodyOptions
   : T extends "classMember"
   ? ClassMemberOptions
@@ -175,4 +177,21 @@ type FunctionBodyOptions = {
         | import("jscodeshift").FunctionExpression
         | import("jscodeshift").ArrowFunctionExpression
       >;
+} & BaseStageOptions;
+
+type ReturnObjectPropertyOptions = {
+  col?:
+    | Collection<import("jscodeshift").FunctionDeclaration>
+    | Collection<
+        | import("jscodeshift").FunctionExpression
+        | import("jscodeshift").ArrowFunctionExpression
+      >;
+  nodes?: (
+    | import("ast-types/gen/kinds").PropertyKind
+    | import("ast-types/gen/kinds").ObjectMethodKind
+    | import("ast-types/gen/kinds").ObjectPropertyKind
+    | import("ast-types/gen/kinds").SpreadPropertyKind
+    | import("ast-types/gen/kinds").SpreadElementKind
+  )[];
+  stringTemplate?: string;
 } & BaseStageOptions;

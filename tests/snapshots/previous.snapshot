@@ -86,7 +86,13 @@ const funcExp = function () {
 
 function funcDec() {
   const ghost = true;
-  return { ghost };
+
+  return {
+    ghost,
+    gone,
+    girl
+  };
+
   const gg = true;
 }
 
