@@ -2,7 +2,7 @@ import { Collection, JSCodeshift } from "jscodeshift";
 import { Finder, FinderOptions, FinderType } from "./finder";
 import { StageTypeE } from "./stage.enums";
 
-type FunctionCollection =
+export type FunctionCollection =
   | Collection<import("jscodeshift").FunctionDeclaration>
   | Collection<
       | import("jscodeshift").FunctionExpression

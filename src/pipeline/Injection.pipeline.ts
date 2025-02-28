@@ -19,6 +19,7 @@ import nodeGrouper, {
   NodeGrouperType,
   VariableType
 } from "@src/utils/nodeGrouper";
+import getDefinedVariableName from "@src/utils/getDefinedVariableName";
 
 const chalkGold = chalk.rgb(244, 184, 0);
 
@@ -76,6 +77,9 @@ class InjectionPipeline {
   protected created: string[] = [];
   protected newDirLogs: string[] = [];
   protected _originalFileContent: string = "";
+
+  public pipelineStore: Record<string, any> = {};
+
   constructor(
     protected fileLocation: string,
     public prettierOptions?: Options
@@ -85,6 +89,10 @@ class InjectionPipeline {
 
   public get _ast() {
     return this.ast;
+  }
+
+  public get location() {
+    return this.fileLocation;
   }
 
   public get updatedFileContent() {
@@ -102,7 +110,25 @@ class InjectionPipeline {
     return this;
   }
 
-  public nest(func: (currentPipeline: InjectionPipeline) => void) {
+  public get fileVariableNames(): string[] {
+    if (this.pipelineStore[this.location].fileVariableNames)
+      return this.pipelineStore[this.location].fileVariableNames;
+    if (!this.pipelineStore[this.location].fileVariableNames)
+      this.pipelineStore[this.location].fileVariableNames = [];
+    this._ast!.find(j.VariableDeclaration).forEach(p => {
+      const names = getDefinedVariableName(p.node);
+      for (const name of names)
+        if (name)
+          this.pipelineStore[this.location].fileVariableNames.push(name);
+    });
+    this._ast!.find(j.FunctionDeclaration).forEach(p => {
+      const name = p.node.id?.name;
+      if (name) this.pipelineStore[this.location].fileVariableNames.push(name);
+    });
+    return this.pipelineStore[this.location].fileVariableNames;
+  }
+
+  public customInject(func: (currentPipeline: InjectionPipeline) => void) {
     func(this);
     return this;
   }
@@ -113,6 +139,8 @@ class InjectionPipeline {
         return this;
       }
       this.fileLocation = fileLocation;
+      if (!this.pipelineStore[fileLocation])
+        this.pipelineStore[fileLocation] = {};
       this.updated.push(chalk.bold.cyanBright(`\nUpdating >> ${fileLocation}`));
     }
     const file = readFileSync(this.fileLocation, "utf-8");
@@ -131,6 +159,9 @@ class InjectionPipeline {
   }) {
     this._originalFileContent = text;
     this.ast = j.withParser("tsx")(text);
+    if (!this.pipelineStore[outputLocation])
+      this.pipelineStore[outputLocation] = {};
+    this.fileLocation = outputLocation;
     this.asts.push({ location: outputLocation, ast: this.ast });
     return this;
   }
@@ -152,7 +183,7 @@ class InjectionPipeline {
 
   public async finish(filesToOpen?: string[]) {
     if (this.asts.length === 0) {
-      console.error($lf(155), chalk.bgRed("You don't have any asts loaded."));
+      console.error($lf(186), chalk.bgRed("You don't have any asts loaded."));
       return this;
     }
 
@@ -161,7 +192,7 @@ class InjectionPipeline {
         mkdirSync(dir);
         console.info(this.newDirLogs[index]);
       } catch (error) {
-        console.error($lf(164), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(195), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -170,7 +201,7 @@ class InjectionPipeline {
         writeFileSync(newFile.location, newFile.content, "utf-8");
         console.info(this.created[index]);
       } catch (error) {
-        console.error($lf(173), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(204), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -182,7 +213,7 @@ class InjectionPipeline {
         });
         writeFileSync(ast.location, updatedSource, "utf-8");
       } catch (error) {
-        console.error($lf(185), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(216), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     }
 

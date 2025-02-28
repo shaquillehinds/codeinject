@@ -1,8 +1,8 @@
 import { Collection, JSCodeshift } from "jscodeshift";
 import { DebugLogger } from "@utils/Logger";
 import { StageOptions } from "@src/@types/stage";
-import InjectionPipeline from "../Injection.pipeline";
 import injectReturnObjectPropertyStage from "./returnObjectProperty.inject.stage";
+import getDefinedVariableName from "@src/utils/getDefinedVariableName";
 
 const log = DebugLogger("returnAllFunctionVariables.inject.stage.ts");
 
@@ -16,38 +16,14 @@ export default function injectReturnAllFunctionVariablesStage(
     return workingSource;
   }
   let stringTemplate = "";
-  // const functionCol = InjectionPipeline.getFinder("functionFinder")(jcs, col, {
-  //   name: "BlankTemplate"
-  // }).col;
   col
     .find(jcs.BlockStatement)
     .at(0)
     .nodes()[0]
     .body.forEach(statement => {
-      if (jcs.VariableDeclaration.check(statement)) {
-        statement.declarations.forEach(declaration => {
-          const isDeclarator = declaration.type === "VariableDeclarator";
-          const validated = isDeclarator ? declaration.id : declaration;
-          if (jcs.ArrayPattern.check(validated)) {
-            validated.elements.forEach(el => {
-              if (el && jcs.Identifier.check(el))
-                stringTemplate += "," + el.name;
-            });
-          } else if (jcs.ObjectPattern.check(validated)) {
-            validated.properties.forEach(prop => {
-              if (
-                prop.type !== "SpreadProperty" &&
-                prop.type !== "SpreadPropertyPattern" &&
-                prop.type !== "RestProperty" &&
-                jcs.Identifier.check(prop.key)
-              )
-                stringTemplate += "," + prop.key.name;
-            });
-          } else if (jcs.Identifier.check(validated)) {
-            stringTemplate += "," + validated.name;
-          }
-        });
-      }
+      const name = getDefinedVariableName(statement);
+      if (name.length)
+        stringTemplate += "," + (name.length > 1 ? name.join(",") : name[0]);
     });
 
   stringTemplate = stringTemplate.slice(1);

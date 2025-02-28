@@ -34,7 +34,9 @@ export default function BusinessLocationsScreen() {
   const game2 = function () {};
   const game3 = () => {};
   const game4 = useCallback(() => {}, []);
-  useEffect(() => {}, []);
+  useEffect(() => {
+    game();
+  }, []);
   useEffect(() => {
     if (focused)
       (async () => {
