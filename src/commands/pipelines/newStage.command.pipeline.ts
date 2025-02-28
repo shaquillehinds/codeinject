@@ -79,10 +79,8 @@ export default async function newStageCommandPipeline(
       template: `
     describe("inject${name}", () => {
       const finderOptions: FinderOptions<"${finderName}"> = { name: "[identifierName]" };
-      const stageOptions: StageOptions<"${nameL}"> = {${options.replaceAll(
-        ";",
-        ","
-      )}};
+      // define stage options here
+      const stageOptions: StageOptions<"${nameL}"> = \`{${options}}\`;
       const expectedInjection = '';
       test('Should ', () => {
         pipeline.inject${name}(stageOptions, finderOptions);
