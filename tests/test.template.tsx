@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 import React from "react";
 import { finderTestConst } from "./test.import";
 
@@ -11,7 +13,8 @@ class TestClass {
 }
 
 const testObject = {
-  testProperty: "test value"
+  testProperty: "test value",
+  testProperty2: "test value 2"
 };
 
 const testArray = ["test value"];
@@ -62,3 +65,6 @@ function variablesReturn() {
 }
 
 namespace King {}
+
+testProperty;
+testProperty2;
