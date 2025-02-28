@@ -1,7 +1,7 @@
 import jcs from "jscodeshift";
 import IP from "./index";
 import { ExpressionKind } from "ast-types/gen/kinds";
-import addObjectToAccessors from "./utils/addObjectToAccessors";
+import addObjectForAccessors from "./utils/addObjectForAccessors";
 
 const source = "tests/test.react.template.tsx";
 
@@ -108,7 +108,7 @@ async function testingFunction() {
           })
           .customInject(cp => {
             cp.fileVariableNames;
-            addObjectToAccessors({
+            addObjectForAccessors({
               collection: cp._ast!,
               objectName: "state",
               accessors: cp.pipelineStore["local/state.tsx"].fileVariableNames
@@ -139,12 +139,12 @@ async function testingFunction() {
             source: "./callbacks.tsx"
           })
           .customInject(cp => {
-            addObjectToAccessors({
+            addObjectForAccessors({
               collection: cp._ast!,
               objectName: "state",
               accessors: cp.pipelineStore["local/state.tsx"].fileVariableNames
             });
-            addObjectToAccessors({
+            addObjectForAccessors({
               collection: cp._ast!,
               objectName: "callbacks",
               accessors:

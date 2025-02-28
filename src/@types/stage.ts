@@ -13,7 +13,9 @@ export type StageLogType = "update" | "create" | "directory";
 
 export type StageType = keyof typeof StageTypeE;
 
-export type StageOptions<T extends StageType> = T extends "functionParams"
+export type StageOptions<T extends StageType> = T extends "objectForAccessors"
+  ? ObjectForAccessorsOptions
+  : T extends "functionParams"
   ? FunctionParamsOptions
   : T extends "returnAllFunctionVariables"
   ? ReturnAllFunctionVariablesOptions
@@ -212,4 +214,10 @@ export type ReturnAllFunctionVariablesOptions = {
 type FunctionParamsOptions = {
   stringTemplate: string;
   col?: FunctionCollection;
+} & BaseStageOptions;
+
+type ObjectForAccessorsOptions = {
+  objectName: string;
+  accessors: string[];
+  col?: Collection<import("jscodeshift").Program>;
 } & BaseStageOptions;

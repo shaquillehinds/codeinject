@@ -230,10 +230,7 @@ describe("injectProperty", () => {
     nested: true,
     using: "ts",
     time: 0
-  },
-
-  testProperty: "test value"
-};`;
+  }`;
   test(`Should add property jest to testObject.`, () => {
     pipeline.injectProperty(stageOptions, finderOptions);
     testSourceForInjection(expectedInjection, "toBeTruthy");
@@ -248,10 +245,7 @@ describe("injectProperty", () => {
     nested: true,
     using: "ts",
     time: 0
-  },
-
-  testProperty: "test value"
-};`;
+  }`;
   test(`Should add property literal as a jcs literal to testObject`, () => {
     pipeline.injectProperty(stageOptions2, finderOptions);
     testSourceForInjection(expectedInjection2, "toBeTruthy");
@@ -514,8 +508,20 @@ describe("injectFunctionParams", () => {
     stringTemplate: "love: boolean, sanity?: false"
   };
   const expectedInjection = "function(love: boolean, sanity?: false)";
-  test("Should in inject params into function funcExp", () => {
+  test("Should inject params into function funcExp", () => {
     pipeline.injectFunctionParams(stageOptions, finderOptions);
+    testSourceForInjection(expectedInjection, "toBeTruthy");
+  });
+});
+describe("injectObjectForAccessors", () => {
+  const finderOptions: FinderOptions<"program"> = {};
+  const stageOptions: StageOptions<"objectForAccessors"> = {
+    objectName: "testObject",
+    accessors: ["testProperty", "testProperty2"]
+  };
+  const expectedInjection = "testObject.testProperty";
+  test("Should inject 'testObject' before accessors 'testProperty' & 'testProperty'", () => {
+    pipeline.injectObjectForAccessors(stageOptions, finderOptions);
     testSourceForInjection(expectedInjection, "toBeTruthy");
   });
 });

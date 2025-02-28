@@ -491,6 +491,15 @@ class InjectionPipeline {
     s.injectFunctionParamsStage(j, this.ast!, stageOptions);
     return this;
   }
+  public injectObjectForAccessors(
+    stageOptions: StageOptions<"objectForAccessors">,
+    finderOptions: FinderOptions<"program">
+  ) {
+    if (!this.ast) this.parse();
+    stageOptions.col = f.programFinder(j, this.ast!, finderOptions).col;
+    s.injectObjectForAccessorsStage(j, this.ast!, stageOptions);
+    return this;
+  }
 }
 
 export default InjectionPipeline;

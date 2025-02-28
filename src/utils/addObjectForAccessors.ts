@@ -5,7 +5,9 @@ type AddAccessorsToObjectProps = {
   accessors: string[];
   collection: jcs.Collection;
 };
-export default function addObjectToAccessors(props: AddAccessorsToObjectProps) {
+export default function addObjectForAccessors(
+  props: AddAccessorsToObjectProps
+) {
   const { objectName, accessors, collection } = props;
   accessors.forEach((name: string) => {
     collection.find(jcs.Identifier, { name }).map(identifier => {
