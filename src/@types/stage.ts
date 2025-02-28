@@ -1,6 +1,7 @@
 import { Collection, JSCodeshift } from "jscodeshift";
 import { Finder, FinderOptions, FinderType } from "./finder";
 import { StageTypeE } from "./stage.enums";
+import InjectionPipeline from "@src/pipeline/Injection.pipeline";
 
 export type FunctionCollection =
   | Collection<import("jscodeshift").FunctionDeclaration>
@@ -218,6 +219,7 @@ type FunctionParamsOptions = {
 
 type ObjectForAccessorsOptions = {
   objectName: string;
-  accessors: string[];
+  accessors: string[] | ((ip: InjectionPipeline) => string[]);
+  ip?: InjectionPipeline;
   col?: Collection<import("jscodeshift").Program>;
 } & BaseStageOptions;

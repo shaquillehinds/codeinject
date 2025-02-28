@@ -1,6 +1,6 @@
 /**
  * DO NOT DELETE
- * Expirement file - test various implementations here
+ * Experiment file - test various implementations here
  *
  * COMMAND TO RUN
  * yarn experiment
@@ -86,9 +86,7 @@ async function testingFunction() {
             position: "lastLine",
             template: `export type BlankTemplateStateReturn = ReturnType <typeof BlankTemplateState>`
           })
-          .customInject(cp => {
-            cp.fileVariableNames;
-          })
+          .storeFileVariables()
           .parseString({
             text: blankTemplateCallbacks,
             outputLocation: "local/callbacks.tsx"
@@ -114,14 +112,13 @@ async function testingFunction() {
             importName: "BlankTemplateStateReturn",
             source: "./state.tsx"
           })
-          .customInject(cp => {
-            cp.fileVariableNames;
-            addObjectForAccessors({
-              collection: cp._ast!,
-              objectName: "state",
-              accessors: cp.pipelineStore["local/state.tsx"].fileVariableNames
-            });
+          .injectObjectForAccessors({
+            objectName: "state",
+            accessors: ip => {
+              return ip.pipelineStore["local/state.tsx"].variableNames;
+            }
           })
+          .storeFileVariables()
           .parseString({
             text: blankTemplateEffects,
             outputLocation: "local/effects.tsx"
@@ -150,13 +147,12 @@ async function testingFunction() {
             addObjectForAccessors({
               collection: cp._ast!,
               objectName: "state",
-              accessors: cp.pipelineStore["local/state.tsx"].fileVariableNames
+              accessors: cp.pipelineStore["local/state.tsx"].variableNames
             });
             addObjectForAccessors({
               collection: cp._ast!,
               objectName: "callbacks",
-              accessors:
-                cp.pipelineStore["local/callbacks.tsx"].fileVariableNames
+              accessors: cp.pipelineStore["local/callbacks.tsx"].variableNames
             });
           })
           .finish();

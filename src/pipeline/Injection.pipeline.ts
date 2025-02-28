@@ -23,6 +23,16 @@ import getDefinedVariableName from "@src/utils/getDefinedVariableName";
 
 const chalkGold = chalk.rgb(244, 184, 0);
 
+type FileRecords = {
+  variableNames: string[];
+  collectedVariableNames: boolean;
+  [key: string]: any;
+};
+
+type StoreRecords = {
+  [key: string]: FileRecords;
+};
+
 class InjectionPipeline {
   public static getFinder<K extends FindersKey>(finder: K) {
     const finderFunc = f[finder];
@@ -78,7 +88,7 @@ class InjectionPipeline {
   protected newDirLogs: string[] = [];
   protected _originalFileContent: string = "";
 
-  public pipelineStore: Record<string, any> = {};
+  public pipelineStore: StoreRecords = {};
 
   constructor(
     protected fileLocation: string,
@@ -110,22 +120,25 @@ class InjectionPipeline {
     return this;
   }
 
-  public get fileVariableNames(): string[] {
-    if (this.pipelineStore[this.location].fileVariableNames)
-      return this.pipelineStore[this.location].fileVariableNames;
-    if (!this.pipelineStore[this.location].fileVariableNames)
-      this.pipelineStore[this.location].fileVariableNames = [];
+  public get variableNames(): string[] {
+    if (this.pipelineStore[this.location].collectedVariableNames)
+      return this.pipelineStore[this.location].variableNames || [];
     this._ast!.find(j.VariableDeclaration).forEach(p => {
       const names = getDefinedVariableName(p.node);
+      console.log($lf(128), names);
       for (const name of names)
-        if (name)
-          this.pipelineStore[this.location].fileVariableNames.push(name);
+        if (name) this.pipelineStore[this.location].variableNames.push(name);
     });
     this._ast!.find(j.FunctionDeclaration).forEach(p => {
       const name = p.node.id?.name;
-      if (name) this.pipelineStore[this.location].fileVariableNames.push(name);
+      if (name) this.pipelineStore[this.location].variableNames.push(name);
     });
-    return this.pipelineStore[this.location].fileVariableNames;
+    return this.pipelineStore[this.location].variableNames;
+  }
+
+  public storeFileVariables() {
+    this.variableNames;
+    return this;
   }
 
   public customInject(func: (currentPipeline: InjectionPipeline) => void) {
@@ -140,7 +153,10 @@ class InjectionPipeline {
       }
       this.fileLocation = fileLocation;
       if (!this.pipelineStore[fileLocation])
-        this.pipelineStore[fileLocation] = {};
+        this.pipelineStore[fileLocation] = {
+          variableNames: [],
+          collectedVariableNames: false
+        };
       this.updated.push(chalk.bold.cyanBright(`\nUpdating >> ${fileLocation}`));
     }
     const file = readFileSync(this.fileLocation, "utf-8");
@@ -160,7 +176,10 @@ class InjectionPipeline {
     this._originalFileContent = text;
     this.ast = j.withParser("tsx")(text);
     if (!this.pipelineStore[outputLocation])
-      this.pipelineStore[outputLocation] = {};
+      this.pipelineStore[outputLocation] = {
+        variableNames: [],
+        collectedVariableNames: false
+      };
     this.fileLocation = outputLocation;
     this.asts.push({ location: outputLocation, ast: this.ast });
     return this;
@@ -183,7 +202,7 @@ class InjectionPipeline {
 
   public async finish(filesToOpen?: string[]) {
     if (this.asts.length === 0) {
-      console.error($lf(186), chalk.bgRed("You don't have any asts loaded."));
+      console.error($lf(205), chalk.bgRed("You don't have any asts loaded."));
       return this;
     }
 
@@ -192,7 +211,7 @@ class InjectionPipeline {
         mkdirSync(dir);
         console.info(this.newDirLogs[index]);
       } catch (error) {
-        console.error($lf(195), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(214), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -201,7 +220,7 @@ class InjectionPipeline {
         writeFileSync(newFile.location, newFile.content, "utf-8");
         console.info(this.created[index]);
       } catch (error) {
-        console.error($lf(204), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(223), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -213,7 +232,7 @@ class InjectionPipeline {
         });
         writeFileSync(ast.location, updatedSource, "utf-8");
       } catch (error) {
-        console.error($lf(216), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(235), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     }
 
@@ -492,11 +511,11 @@ class InjectionPipeline {
     return this;
   }
   public injectObjectForAccessors(
-    stageOptions: StageOptions<"objectForAccessors">,
-    finderOptions: FinderOptions<"program">
+    stageOptions: StageOptions<"objectForAccessors">
   ) {
     if (!this.ast) this.parse();
-    stageOptions.col = f.programFinder(j, this.ast!, finderOptions).col;
+    stageOptions.col = f.programFinder(j, this.ast!, {}).col;
+    stageOptions.ip = this;
     s.injectObjectForAccessorsStage(j, this.ast!, stageOptions);
     return this;
   }

@@ -9,6 +9,7 @@ export default function addObjectForAccessors(
   props: AddAccessorsToObjectProps
 ) {
   const { objectName, accessors, collection } = props;
+  console.log($lf(12), accessors, objectName);
   accessors.forEach((name: string) => {
     collection.find(jcs.Identifier, { name }).map(identifier => {
       const parentValue = identifier.parentPath.value;
@@ -36,4 +37,9 @@ export default function addObjectForAccessors(
       return identifier;
     });
   });
+}
+
+function $lf(n: number) {
+  return "$lf|src/utils/addObjectForAccessors.ts:" + n + " >";
+  // Automatically injected by Log Location Injector vscode extension
 }

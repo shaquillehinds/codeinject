@@ -514,14 +514,13 @@ describe("injectFunctionParams", () => {
   });
 });
 describe("injectObjectForAccessors", () => {
-  const finderOptions: FinderOptions<"program"> = {};
   const stageOptions: StageOptions<"objectForAccessors"> = {
     objectName: "testObject",
     accessors: ["testProperty", "testProperty2"]
   };
   const expectedInjection = "testObject.testProperty";
   test("Should inject 'testObject' before accessors 'testProperty' & 'testProperty'", () => {
-    pipeline.injectObjectForAccessors(stageOptions, finderOptions);
+    pipeline.injectObjectForAccessors(stageOptions);
     testSourceForInjection(expectedInjection, "toBeTruthy");
   });
 });

@@ -1,5 +1,7 @@
 import path from "path";
 import fs from "fs";
+//@ts-nocheck
+
 import React from "react";
 import testImportDefaultConst, { testImportConst } from "./test.import2";
 import { finderTestConst } from "./test.import";
@@ -35,7 +37,8 @@ const testObject = {
     time: 0
   },
 
-  testProperty: "test value"
+  testProperty: "test value",
+  testProperty2: "test value 2"
 };
 
 const testArray = ["test value", {
@@ -118,6 +121,9 @@ namespace King {
   type Prince = 'Agnes'
   export type Princess = 'Kali'
 }
+
+testObject.testProperty;
+testObject.testProperty2;
 export type TestConditionalType<T> = T extends "b" ? "b" : T extends "a" ? "a" : undefined;
 
 const jestStringTemplate = "hello from jest test";
