@@ -1,3 +1,4 @@
+//$lf-ignore
 /**
  * DO NOT DELETE
  * Experiment file - test various implementations here
@@ -21,11 +22,10 @@ async function testingFunction() {
   const blankTemplateState = `export default function BlankTemplateState(){}`;
   const blankTemplateCallbacks = `export default function BlankTemplateCallbacks(){}`;
   const blankTemplateEffects = `export default function BlankTemplateEffects(){}`;
-  if (!p._ast) console.log($lf(24), "Ast not loaded, file not found");
+  if (!p._ast) console.log("Ast not loaded, file not found");
   else {
     const found = expDefFinder(jcs, p._ast, {});
     const exportName = IP.getName(found.col);
-    // console.log($lf(28), exportName);
 
     if (exportName) {
       const funcFinder = IP.getFinder("functionFinder");
@@ -35,7 +35,6 @@ async function testingFunction() {
 
       p.finish();
 
-      // console.log($lf(38), nodes?.length);
       if (nodes) {
         const grouped = IP.nodeGrouper({
           nodes,
@@ -57,7 +56,6 @@ async function testingFunction() {
             return false;
           }
         });
-        // console.log($lf(60), grouped);
         const stateNodes = [
           ...grouped.VariableDeclaration
         ] as jcs.VariableDeclaration[];
@@ -161,7 +159,3 @@ async function testingFunction() {
   }
 }
 testingFunction();
-function $lf(n: number) {
-  return "$lf|codeinject/src/test.find.ts:" + n + " >";
-  // Automatically injected by Log Location Injector vscode extension
-}

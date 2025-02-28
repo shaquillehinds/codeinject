@@ -125,7 +125,6 @@ class InjectionPipeline {
       return this.pipelineStore[this.location].variableNames || [];
     this._ast!.find(j.VariableDeclaration).forEach(p => {
       const names = getDefinedVariableName(p.node);
-      console.log($lf(128), names);
       for (const name of names)
         if (name) this.pipelineStore[this.location].variableNames.push(name);
     });
@@ -202,7 +201,7 @@ class InjectionPipeline {
 
   public async finish(filesToOpen?: string[]) {
     if (this.asts.length === 0) {
-      console.error($lf(205), chalk.bgRed("You don't have any asts loaded."));
+      console.error($lf(204), chalk.bgRed("You don't have any asts loaded."));
       return this;
     }
 
@@ -211,7 +210,7 @@ class InjectionPipeline {
         mkdirSync(dir);
         console.info(this.newDirLogs[index]);
       } catch (error) {
-        console.error($lf(214), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(213), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -220,7 +219,7 @@ class InjectionPipeline {
         writeFileSync(newFile.location, newFile.content, "utf-8");
         console.info(this.created[index]);
       } catch (error) {
-        console.error($lf(223), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(222), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -232,7 +231,7 @@ class InjectionPipeline {
         });
         writeFileSync(ast.location, updatedSource, "utf-8");
       } catch (error) {
-        console.error($lf(235), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(234), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     }
 
