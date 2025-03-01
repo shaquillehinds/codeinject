@@ -11,6 +11,7 @@ import jcs from "jscodeshift";
 import IP from "./index";
 import { ExpressionKind } from "ast-types/gen/kinds";
 import addObjectForAccessors from "./utils/addObjectForAccessors";
+import objParamToIdentifier from "./utils/objParamToIdentifier";
 
 const sources = [
   "tests/experimentTemplates/test.react.template.tsx",
@@ -33,9 +34,24 @@ async function testingFunction() {
 
     if (exportName) {
       const funcFinder = IP.getFinder("functionFinder");
-      const nodes = IP.getBodyNodes(
-        funcFinder(jcs, p._ast!, { name: exportName }).col
-      );
+      const funcCol = funcFinder(jcs, p._ast!, { name: exportName }).col;
+      const nodes = IP.getBodyNodes(funcCol);
+      const paramsAliases: jcs.TSTypeAliasDeclaration[] = [];
+      const propertyNames: Record<string, string> = {};
+      const params = IP.getFunctionParams(funcCol).map((p, i) => {
+        const paramName = `props${i ? i : ""}`;
+        const paramTypeName = `BlankTemplateProps${i ? i : ""}`;
+        const transformed = objParamToIdentifier({
+          param: p,
+          paramName,
+          paramTypeName
+        });
+        transformed.propertyNames?.forEach(n => {
+          propertyNames[n] = paramName;
+        });
+        transformed.typeAlias && paramsAliases.push(transformed.typeAlias);
+        return transformed.param;
+      });
 
       p.finish();
 
@@ -73,13 +89,17 @@ async function testingFunction() {
           ...grouped.IfStatement,
           ...grouped.TryStatement
         ];
-        const ip = await new IP("")
+        await new IP("")
           .parseString({
             text: blankTemplateState,
             outputLocation: "local/state.tsx"
           })
           .injectFunctionBody(
             { nodes: stateNodes },
+            { name: "BlankTemplateState" }
+          )
+          .injectFunctionParams(
+            { nodes: params },
             { name: "BlankTemplateState" }
           )
           .injectImportsFromFile({ origin: { source, type: "source" } }, {})

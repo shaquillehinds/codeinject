@@ -1,7 +1,8 @@
-import { Collection, JSCodeshift } from "jscodeshift";
+import { Collection, JSCodeshift, TSTypeLiteral } from "jscodeshift";
 import { Finder, FinderOptions, FinderType } from "./finder";
 import { StageTypeE } from "./stage.enums";
 import InjectionPipeline from "@src/pipeline/Injection.pipeline";
+import { PatternKind } from "ast-types/gen/kinds";
 
 export type FunctionCollection =
   | Collection<import("jscodeshift").FunctionDeclaration>
@@ -148,7 +149,9 @@ export type TSTypeAliasConditionalOptions = {
 } & BaseStageOptions;
 
 export type TSTypeLiteralOptions = {
-  stringTemplate: string;
+  stringTemplate?: string;
+  nodes?: TSTypeLiteral[];
+
   col?: Collection<import("jscodeshift").TSTypeLiteral>;
 } & BaseStageOptions;
 
@@ -213,7 +216,8 @@ export type ReturnAllFunctionVariablesOptions = {
 } & BaseStageOptions;
 
 type FunctionParamsOptions = {
-  stringTemplate: string;
+  stringTemplate?: string;
+  nodes?: PatternKind[];
   col?: FunctionCollection;
 } & BaseStageOptions;
 

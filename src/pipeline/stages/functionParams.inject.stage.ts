@@ -1,27 +1,30 @@
 import { Collection, JSCodeshift } from "jscodeshift";
-import { DebugLogger } from "@utils/Logger";
 import { StageOptions } from "@src/@types/stage";
 import functionFinder from "../finders/function.finder";
-
-const log = DebugLogger("functionParams.inject.stage.ts");
+import { PatternKind } from "ast-types/gen/kinds";
 
 export default function injectFunctionParamsStage(
   jcs: JSCodeshift,
   workingSource: Collection,
-  { col, stringTemplate }: StageOptions<"functionParams">
+  { col, stringTemplate, nodes }: StageOptions<"functionParams">
 ) {
   if (!col) {
-    log($lf(14), "error", "No expression collection passed to this stage.");
+    console.warn($lf(12), "No expression collection passed to this stage.");
     return workingSource;
   }
   // params is PatternKind
   const prevParams = col.at(0).nodes()[0].params;
-  const ast2 = jcs.withParser("tsx")(
-    `function Template (${stringTemplate}){}
+  let newParams: PatternKind[] = nodes ? nodes : [];
+
+  if (stringTemplate) {
+    const ast2 = jcs.withParser("tsx")(
+      `function Template (${stringTemplate}){}
   `
-  );
-  const finderCol2 = functionFinder(jcs, ast2, { name: "Template" }).col;
-  const newParams = finderCol2.at(0).nodes()[0].params;
+    );
+    const finderCol2 = functionFinder(jcs, ast2, { name: "Template" }).col;
+    // newParams = finderCol2.at(0).nodes()[0].params
+    newParams = finderCol2.at(0).nodes()[0].params;
+  }
   //@ts-ignore
   col.at(0).forEach(p => {
     p.node.params = [...prevParams, ...newParams];

@@ -21,18 +21,34 @@ export default function injectTSTypeLiteralStage(
   {
     stringTemplate,
     col,
+    nodes,
     idName,
     forceInject
   }: StageOptionsAndIdName<"tsTypeLiteral">
 ) {
   if (!col) {
-    log("error", "No expression collection passed to this stage.");
+    console.warn($lf(30), "No expression collection passed to this stage.");
     return workingSource;
   }
   const colSize = col.size();
 
-  if (colSize === 0 && !forceInject)
-    log("error", `Type alias ${idName} was not found.`);
+  if (colSize === 0 && !forceInject) {
+    console.warn($lf(36), `Type alias ${idName} was not found.`);
+    return workingSource;
+  }
+
+  if (!nodes && !stringTemplate) {
+    console.warn(
+      $lf(41),
+      "No nodes or stringTemplate provided - injectTSTypeLiteral"
+    );
+    return workingSource;
+  }
+
+  if (!stringTemplate) {
+    // todo add node injections
+    return workingSource;
+  }
 
   const template = `type Template = ${addBrackets(stringTemplate)}`;
   const ast = jcs.withParser("tsx")(template);
@@ -54,4 +70,9 @@ export default function injectTSTypeLiteralStage(
   }
 
   return workingSource;
+}
+
+function $lf(n: number) {
+  return "$lf|pipeline/stages/tsTypeLiteral.inject.stage.ts:" + n + " >";
+  // Automatically injected by Log Location Injector vscode extension
 }
