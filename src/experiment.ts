@@ -12,7 +12,11 @@ import IP from "./index";
 import { ExpressionKind } from "ast-types/gen/kinds";
 import addObjectForAccessors from "./utils/addObjectForAccessors";
 
-const source = "tests/test.react.template.tsx";
+const sources = [
+  "tests/experimentTemplates/test.react.template.tsx",
+  "tests/experimentTemplates/react.templateA.tsx"
+];
+const source = sources[1];
 
 async function testingFunction() {
   const p = new IP(source).parse();

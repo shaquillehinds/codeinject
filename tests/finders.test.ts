@@ -318,7 +318,7 @@ describe("returnFinder", () => {
 });
 
 const reactSourceContent = readFileSync(
-  "tests/test.react.template.tsx",
+  "tests/experimentTemplates/test.react.template.tsx",
   "utf-8"
 );
 const reactAST = jcs.withParser("tsx")(reactSourceContent);

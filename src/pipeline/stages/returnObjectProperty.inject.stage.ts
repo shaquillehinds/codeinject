@@ -1,4 +1,10 @@
-import { Collection, JSCodeshift, Node } from "jscodeshift";
+import {
+  BlockStatement,
+  Collection,
+  JSCodeshift,
+  Node,
+  ReturnStatement
+} from "jscodeshift";
 import { StageOptions } from "@src/@types/stage";
 import addBrackets from "@src/utils/addBrackets";
 import returnFinder from "../finders/return.finder";
@@ -7,7 +13,8 @@ import {
   ObjectPropertyKind,
   PropertyKind,
   SpreadElementKind,
-  SpreadPropertyKind
+  SpreadPropertyKind,
+  StatementKind
 } from "ast-types/gen/kinds";
 
 export default function injectReturnObjectPropertyStage(
@@ -16,14 +23,23 @@ export default function injectReturnObjectPropertyStage(
   { col, stringTemplate, nodes }: StageOptions<"returnObjectProperty">
 ) {
   if (!col) {
-    console.error($lf(19), "No expression collection passed to this stage.");
+    console.error($lf(26), "No expression collection passed to this stage.");
     return workingSource;
   }
 
   //@ts-ignore
-  const returnStatementCol = returnFinder(jcs, col, {
-    argumentType: "ObjectExpression"
-  }).col;
+  // const returnStatementCol = returnFinder(jcs, col, {
+  //   argumentType: "ObjectExpression"
+  // }).col;
+
+  let returnStatement: ReturnStatement = undefined;
+
+  const functionBlock = col.find(jcs.BlockStatement).at(0);
+  functionBlock.forEach(p => {
+    returnStatement = p.value.body.filter(
+      s => s.type === "ReturnStatement"
+    )[0] as ReturnStatement;
+  });
 
   let returnPropertyNodes: (
     | PropertyKind
@@ -33,9 +49,16 @@ export default function injectReturnObjectPropertyStage(
     | SpreadElementKind
   )[] = [];
 
-  if (returnStatementCol.length) {
-    returnPropertyNodes =
-      returnStatementCol.get().value.argument?.properties || [];
+  // if (returnStatementCol.length) {
+  //   returnPropertyNodes =
+  //     returnStatementCol.get().value.argument?.properties || [];
+  // }
+
+  if (
+    returnStatement &&
+    returnStatement.argument?.type === "ObjectExpression"
+  ) {
+    returnPropertyNodes = returnStatement.argument.properties || [];
   }
 
   if (stringTemplate) {
@@ -49,23 +72,29 @@ export default function injectReturnObjectPropertyStage(
   }
 
   const objExp = jcs.objectExpression(returnPropertyNodes);
-  const returnStatement = jcs.returnStatement(objExp);
+  const newReturnStatement = jcs.returnStatement(objExp);
 
-  if (returnStatementCol.length) {
-    returnStatementCol.replaceWith([returnStatement]);
+  if (
+    returnStatement &&
+    returnStatement.argument?.type === "ObjectExpression"
+  ) {
+    functionBlock.map(p => {
+      p.value.body = p.value.body.map(s => {
+        return s.type === "ReturnStatement" ? newReturnStatement : s;
+      });
+      return p;
+    });
   } else {
-    const returnStatementCol = col.find(jcs.ReturnStatement);
-    if (returnStatementCol.length)
-      returnStatementCol.replaceWith([
-        ...returnStatementCol.nodes(),
-        returnStatement
-      ]);
+    if (returnStatement)
+      functionBlock.map(p => {
+        p.value.body.push(newReturnStatement);
+        return p;
+      });
     else {
       let prevBody = col.get().value.body.body;
       prevBody = prevBody?.length ? prevBody : [];
-      const newBody = jcs.blockStatement([...prevBody, returnStatement]);
+      const newBody = jcs.blockStatement([...prevBody, newReturnStatement]);
       col.find(jcs.BlockStatement).at(0).replaceWith(newBody);
-      // prevBody.repla
     }
   }
 

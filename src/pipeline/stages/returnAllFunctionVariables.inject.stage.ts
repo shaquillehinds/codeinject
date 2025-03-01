@@ -1,10 +1,7 @@
 import { Collection, JSCodeshift } from "jscodeshift";
-import { DebugLogger } from "@utils/Logger";
 import { StageOptions } from "@src/@types/stage";
 import injectReturnObjectPropertyStage from "./returnObjectProperty.inject.stage";
 import getDefinedVariableName from "@src/utils/getDefinedVariableName";
-
-const log = DebugLogger("returnAllFunctionVariables.inject.stage.ts");
 
 export default function injectReturnAllFunctionVariablesStage(
   jcs: JSCodeshift,
@@ -12,21 +9,22 @@ export default function injectReturnAllFunctionVariablesStage(
   { col }: StageOptions<"returnAllFunctionVariables">
 ) {
   if (!col) {
-    console.log($lf(15), "No expression collection passed to this stage.");
+    console.error($lf(12), "No expression collection passed to this stage.");
     return workingSource;
   }
-  let stringTemplate = "";
-  col
+  let variableNames = "";
+  const defaultFunctionNodes = col
     .find(jcs.BlockStatement)
     .at(0)
-    .nodes()[0]
-    .body.forEach(statement => {
-      const name = getDefinedVariableName(statement);
-      if (name.length)
-        stringTemplate += "," + (name.length > 1 ? name.join(",") : name[0]);
-    });
+    .nodes()[0].body;
 
-  stringTemplate = stringTemplate.slice(1);
+  defaultFunctionNodes.forEach(statement => {
+    const name = getDefinedVariableName(statement);
+    if (name.length)
+      variableNames += "," + (name.length > 1 ? name.join(",") : name[0]);
+  });
+
+  const stringTemplate = variableNames.slice(1);
   injectReturnObjectPropertyStage(jcs, workingSource, { stringTemplate, col });
 
   return workingSource;
