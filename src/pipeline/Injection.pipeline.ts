@@ -6,6 +6,7 @@ import s, { StagesKey } from "./stages";
 import f, { FindersKey } from "./finders";
 import { execSync } from "child_process";
 import {
+  FunctionCollection,
   Stage,
   StageFinder,
   StageLogType,
@@ -68,6 +69,14 @@ class InjectionPipeline {
       return col.find(j.BlockStatement).get().value.body as Node[];
     } catch (error) {
       return null;
+    }
+  }
+
+  public static getFunctionParams(col: FunctionCollection) {
+    try {
+      return col.at(0).nodes()[0].params;
+    } catch (error) {
+      return [];
     }
   }
 
@@ -201,7 +210,7 @@ class InjectionPipeline {
 
   public async finish(filesToOpen?: string[]) {
     if (this.asts.length === 0) {
-      console.error($lf(204), chalk.bgRed("You don't have any asts loaded."));
+      console.error($lf(213), chalk.bgRed("You don't have any asts loaded."));
       return this;
     }
 
@@ -210,7 +219,7 @@ class InjectionPipeline {
         mkdirSync(dir);
         console.info(this.newDirLogs[index]);
       } catch (error) {
-        console.error($lf(213), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(222), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -219,7 +228,7 @@ class InjectionPipeline {
         writeFileSync(newFile.location, newFile.content, "utf-8");
         console.info(this.created[index]);
       } catch (error) {
-        console.error($lf(222), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(231), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -231,7 +240,7 @@ class InjectionPipeline {
         });
         writeFileSync(ast.location, updatedSource, "utf-8");
       } catch (error) {
-        console.error($lf(234), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(243), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     }
 
