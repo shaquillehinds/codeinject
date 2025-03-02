@@ -21,6 +21,7 @@ import nodeGrouper, {
   VariableType
 } from "@src/utils/nodeGrouper";
 import getDefinedVariableName from "@src/utils/getDefinedVariableName";
+import wait from "@src/utils/wait";
 
 const chalkGold = chalk.rgb(244, 184, 0);
 
@@ -103,7 +104,7 @@ class InjectionPipeline {
     protected fileLocation: string,
     public prettierOptions?: Options
   ) {
-    this.updated.push(chalk.bold.cyanBright(`\nUpdating >> ${fileLocation}`));
+    // this.updated.push(chalkGold(`\nUpdating >> ${fileLocation}`));
   }
 
   public get _ast() {
@@ -165,7 +166,7 @@ class InjectionPipeline {
           variableNames: [],
           collectedVariableNames: false
         };
-      this.updated.push(chalk.bold.cyanBright(`\nUpdating >> ${fileLocation}`));
+      this.updated.push(chalkGold(`\nUpdating >> ${fileLocation}`));
     }
     const file = readFileSync(this.fileLocation, "utf-8");
     this._originalFileContent = file;
@@ -181,6 +182,7 @@ class InjectionPipeline {
     text: string;
     outputLocation: string;
   }) {
+    this.updated.push(chalk.bold.green(`\nCreating >> ${outputLocation}`));
     this._originalFileContent = text;
     this.ast = j.withParser("tsx")(text);
     if (!this.pipelineStore[outputLocation])
@@ -210,7 +212,7 @@ class InjectionPipeline {
 
   public async finish(filesToOpen?: string[]) {
     if (this.asts.length === 0) {
-      console.error($lf(213), chalk.bgRed("You don't have any asts loaded."));
+      console.error($lf(215), chalk.bgRed("You don't have any asts loaded."));
       return this;
     }
 
@@ -219,7 +221,7 @@ class InjectionPipeline {
         mkdirSync(dir);
         console.info(this.newDirLogs[index]);
       } catch (error) {
-        console.error($lf(222), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(224), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -228,7 +230,7 @@ class InjectionPipeline {
         writeFileSync(newFile.location, newFile.content, "utf-8");
         console.info(this.created[index]);
       } catch (error) {
-        console.error($lf(231), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(233), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -240,7 +242,7 @@ class InjectionPipeline {
         });
         writeFileSync(ast.location, updatedSource, "utf-8");
       } catch (error) {
-        console.error($lf(243), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(245), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     }
 
@@ -251,6 +253,7 @@ class InjectionPipeline {
       filesToOpen.forEach(file => execSync(`code ${file}`));
     }
     this.asts = [];
+    this.fileLocation = "";
     this.newFiles = [];
     this.newDirPaths = [];
     this.updated = [];
@@ -266,13 +269,34 @@ class InjectionPipeline {
     else if (type === "create")
       this.created.push(`${chalk.greenBright("[Create]")}: ${log}`);
     else if (type === "directory")
-      this.newDirLogs.push(`${chalk.bold.green("+ [Directory]")}: ${log}`);
+      this.newDirLogs.push(`${chalk.bold.cyanBright("+ [Directory]")}: ${log}`);
   }
 
   public injectDirectory(path: string) {
     if (!this.ast) this.parse();
     this.newDirPaths.push(path);
     this.addLog(path, "directory");
+    return this;
+  }
+
+  /**
+   * Use this if callstack issues occur.
+   * It will reload the ast and you can access the new ast from a callback function.
+   * Or you can access it from the pipeline awaited return
+   */
+  public async commit(
+    func?: (currentPipeline: InjectionPipeline) => void,
+    delay: number = 0
+  ) {
+    const fileLocation = this.location;
+    const originalFileContent = this._originalFileContent;
+
+    this.finish();
+    await wait(delay);
+
+    this.parse(fileLocation);
+    this._originalFileContent = originalFileContent;
+    func && func(this);
     return this;
   }
 
@@ -470,9 +494,10 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.programFinder(j, this.ast!, {}).col;
     s.injectStringTemplateStage(j, this.ast!, stageOptions);
-    this.addLog(`Injected string template code`);
+    this.addLog(`Injected string template code to program`);
     return this;
   }
+
   public injectFunctionBody(
     stageOptions: StageOptions<"functionBody">,
     finderOptions: FinderOptions<"function">
@@ -480,8 +505,10 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.functionFinder(j, this.ast!, finderOptions).col;
     s.injectFunctionBodyStage(j, this.ast!, stageOptions);
+    this.addLog(`Injected function body to function ${finderOptions.name}`);
     return this;
   }
+
   public injectReturnObjectProperty(
     stageOptions: StageOptions<"returnObjectProperty">,
     finderOptions: FinderOptions<"function">
@@ -489,6 +516,9 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.functionFinder(j, this.ast!, finderOptions).col;
     s.injectReturnObjectPropertyStage(j, this.ast!, stageOptions);
+    this.addLog(
+      `Injected return object property to function ${finderOptions.name}`
+    );
     return this;
   }
   public injectImportsFromFile(
@@ -498,6 +528,7 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.importFinder(j, this.ast!, finderOptions);
     s.injectImportsFromFileStage(j, this.ast!, stageOptions);
+    this.addLog(`Injected imports from ${stageOptions.origin.type}`);
     return this;
   }
   public injectReturnAllFunctionVariables(
@@ -507,6 +538,9 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.functionFinder(j, this.ast!, finderOptions).col;
     s.injectReturnAllFunctionVariablesStage(j, this.ast!, stageOptions);
+    this.addLog(
+      `Injected return object with all variables to function ${finderOptions.name}`
+    );
     return this;
   }
   public injectFunctionParams(
@@ -516,6 +550,7 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.functionFinder(j, this.ast!, finderOptions).col;
     s.injectFunctionParamsStage(j, this.ast!, stageOptions);
+    this.addLog(`Injected params to function ${finderOptions.name}`);
     return this;
   }
   public injectObjectForAccessors(
@@ -525,6 +560,9 @@ class InjectionPipeline {
     stageOptions.col = f.programFinder(j, this.ast!, {}).col;
     stageOptions.ip = this;
     s.injectObjectForAccessorsStage(j, this.ast!, stageOptions);
+    this.addLog(
+      `Injected object called "${stageOptions.objectName}" and made some variables accessors`
+    );
     return this;
   }
   public injectToProgram(
@@ -534,6 +572,7 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     stageOptions.col = f.programFinder(j, this.ast!, finderOptions).col;
     s.injectToProgramStage(j, this.ast!, stageOptions);
+    this.addLog(`Injected new statements to program`);
     return this;
   }
 }
