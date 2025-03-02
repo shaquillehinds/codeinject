@@ -1,6 +1,6 @@
 {
   "name": "tscodeinject",
-  "version": "2.3.2",
+  "version": "2.3.3",
   "description": "Inject code into your typescript files",
   "release": {
     "repositoryUrl": "https://github.com/shaquillehinds/codeinject",
