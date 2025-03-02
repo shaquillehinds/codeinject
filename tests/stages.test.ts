@@ -536,3 +536,15 @@ describe("injectToProgram", () => {
     testSourceForInjection(expectedInjection, "toBeTruthy");
   });
 });
+describe("injectReturnStatement", () => {
+  const finderOptions: FinderOptions<"function"> = { name: "injectReturnFunc" };
+  // define stage options here
+  const stageOptions: StageOptions<"returnStatement"> = {
+    stringTemplate: "isReturned"
+  };
+  const expectedInjection = "return isReturned";
+  test("Should ", () => {
+    pipeline.injectReturnStatement(stageOptions, finderOptions);
+    testSourceForInjection(expectedInjection, "toBeTruthy");
+  });
+});

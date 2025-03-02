@@ -19,9 +19,11 @@ import injectReturnAllFunctionVariablesStage from "./returnAllFunctionVariables.
 import injectFunctionParamsStage from "./functionParams.inject.stage";
 import injectObjectForAccessorsStage from "./objectForAccessors.inject.stage";
 import injectToProgramStage from "./program.inject.stage";
+import injectReturnStatementStage from "./returnStatement.inject.stage";
 import injectTSTypeAliasConditionalStage from "./tsTypeAliasConditional.inject.stage";
 
 const stages = {
+  injectReturnStatementStage,
   injectToProgramStage,
   injectObjectForAccessorsStage,
   injectFunctionParamsStage,
@@ -43,7 +45,7 @@ const stages = {
   injectTSInterfaceBodyStage,
   injectClassConstructorStage,
   injectNamedExportPropertyStage,
-  injectTSTypeAliasConditionalStage
+  injectTSTypeAliasConditionalStage,
 };
 
 export type Stages = typeof stages;

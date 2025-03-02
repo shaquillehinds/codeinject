@@ -65,6 +65,10 @@ function variablesReturn() {
   const third = true;
 }
 
+function injectReturnFunc() {
+  const isReturned = true;
+}
+
 namespace King {}
 
 testProperty;

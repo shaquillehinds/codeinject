@@ -1,7 +1,6 @@
 import {
   ArrowFunctionExpression,
   Collection,
-  Function,
   FunctionDeclaration,
   FunctionExpression,
   JSCodeshift

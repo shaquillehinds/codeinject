@@ -1,4 +1,9 @@
-import { Collection, JSCodeshift, TSTypeLiteral } from "jscodeshift";
+import {
+  Collection,
+  JSCodeshift,
+  ReturnStatement,
+  TSTypeLiteral
+} from "jscodeshift";
 import { Finder, FinderOptions, FinderType } from "./finder";
 import { StageTypeE } from "./stage.enums";
 import InjectionPipeline from "@src/pipeline/Injection.pipeline";
@@ -15,7 +20,9 @@ export type StageLogType = "update" | "create" | "directory";
 
 export type StageType = keyof typeof StageTypeE;
 
-export type StageOptions<T extends StageType> = T extends "program"
+export type StageOptions<T extends StageType> = T extends "returnStatement"
+  ? ReturnStatementOptions
+  : T extends "program"
   ? ProgramOptions
   : T extends "objectForAccessors"
   ? ObjectForAccessorsOptions
@@ -236,4 +243,10 @@ type ProgramOptions = {
   stringTemplate?: string;
   injectionPosition?: ProgramInjectPosition;
   col?: Collection<import("jscodeshift").Program>;
+} & BaseStageOptions;
+
+type ReturnStatementOptions = {
+  stringTemplate?: string;
+  node?: ReturnStatement;
+  col?: FunctionCollection;
 } & BaseStageOptions;

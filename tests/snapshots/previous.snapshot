@@ -117,6 +117,13 @@ function variablesReturn() {
   };
 }
 
+function injectReturnFunc() {
+  const isReturned = true;
+  return {
+    isReturned
+  }
+}
+
 namespace King {
   type Prince = 'Agnes'
   export type Princess = 'Kali'

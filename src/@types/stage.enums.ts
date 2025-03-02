@@ -21,6 +21,7 @@ export enum StageTypeE {
   functionParams = "functionParams",
   objectForAccessors = "objectForAccessors",
   program = "program",
+  returnStatement = "returnStatement",
 }
 
 export enum StageNameE {
@@ -46,4 +47,5 @@ export enum StageNameE {
   functionParams = "injectFunctionParamsStage",
   objectForAccessors = "injectObjectForAccessorsStage",
   program = "injectProgramStage",
+  returnStatement = "injectReturnStatementStage",
 }

@@ -1,4 +1,4 @@
-import j, { Collection, Node } from "jscodeshift";
+import j, { ASTNode, Collection, Node } from "jscodeshift";
 import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import { Options, format } from "prettier";
 import chalk from "chalk";
@@ -67,7 +67,7 @@ class InjectionPipeline {
 
   public static getBodyNodes(col: Collection) {
     try {
-      return col.find(j.BlockStatement).get().value.body as Node[];
+      return col.find(j.BlockStatement).get().value.body as ASTNode[];
     } catch (error) {
       return null;
     }
@@ -166,7 +166,7 @@ class InjectionPipeline {
           variableNames: [],
           collectedVariableNames: false
         };
-      this.updated.push(chalkGold(`\nUpdating >> ${fileLocation}`));
+      this.updated.push(chalkGold.bold(`\nUpdating >> ${fileLocation}`));
     }
     const file = readFileSync(this.fileLocation, "utf-8");
     this._originalFileContent = file;
@@ -573,6 +573,16 @@ class InjectionPipeline {
     stageOptions.col = f.programFinder(j, this.ast!, finderOptions).col;
     s.injectToProgramStage(j, this.ast!, stageOptions);
     this.addLog(`Injected new statements to program`);
+    return this;
+  }
+  public injectReturnStatement(
+    stageOptions: StageOptions<"returnStatement">,
+    finderOptions: FinderOptions<"function">
+  ) {
+    if (!this.ast) this.parse();
+    stageOptions.col = f.functionFinder(j, this.ast!, finderOptions).col;
+    s.injectReturnStatementStage(j, this.ast!, stageOptions);
+    this.addLog(`Injected new statements to function ${finderOptions.name}`);
     return this;
   }
 }

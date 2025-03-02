@@ -1,5 +1,5 @@
 import { ExpressionKind, NodeKind } from "ast-types/gen/kinds";
-import { VariableDeclaration, Node } from "jscodeshift";
+import { VariableDeclaration, Node, ASTNode } from "jscodeshift";
 
 export type NodeGrouperType = NodeKind["type"];
 export type VariableType = ExpressionKind["type"];
@@ -9,7 +9,7 @@ export type NodeGrouperProps<
   V extends VariableType,
   C extends VariableType
 > = {
-  nodes: Node[];
+  nodes: ASTNode[];
   groups: T[];
   variableTypes?: V[];
   customVariableValidator?: (init: ExpressionKind) => boolean;
@@ -30,9 +30,9 @@ export default function nodeGrouper<
       : [])
   ];
 
-  const groups: Record<RecordKey, Node[]> = recordKeys.reduce(
+  const groups: Record<RecordKey, ASTNode[]> = recordKeys.reduce(
     (prev, curr) => ({ ...prev, [curr]: [] }),
-    {} as Record<RecordKey, Node[]>
+    {} as Record<RecordKey, ASTNode[]>
   );
   for (const node of props.nodes) {
     if (node.type === "VariableDeclaration") {
