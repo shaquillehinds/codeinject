@@ -3,11 +3,15 @@ import { afterAll, beforeAll, describe, expect, test } from "@jest/globals";
 import InjectionPipeline from "../src/pipeline/Injection.pipeline";
 import { StageOptions } from "../src/@types/stage";
 import { FinderOptions } from "../src/@types/finder";
-import { readFileSync, writeFileSync } from "fs";
+import buildPath from "../src/utils/buildPath";
+import { existsSync, readFileSync, rmSync, writeFileSync } from "fs";
 import jcs from "jscodeshift";
 
 let pipeline: InjectionPipeline;
 const currSnapLocation = "tests/snapshots/current.snapshot";
+
+const filePath = "tests/one/two/three/four.ts";
+const dirPath = "tests/uno/dos/tres/quatro";
 
 beforeAll(() => {
   pipeline = new InjectionPipeline("tests/test.template.tsx");
@@ -19,6 +23,8 @@ afterAll(() => {
     const prevSnapshot = readFileSync(currSnapLocation);
     writeFileSync("tests/snapshots/previous.snapshot", prevSnapshot);
     writeFileSync(currSnapLocation, currentSnapshot);
+    rmSync(filePath.split("/").slice(0, 2).join("/"), { recursive: true });
+    rmSync(dirPath.split("/").slice(0, 2).join("/"), { recursive: true });
   } catch (error) {
     writeFileSync(currSnapLocation, currentSnapshot);
   }
@@ -35,6 +41,28 @@ function testSourceForInjection(
   expect(updates.includes(stringSourceShouldHave))[testType]();
   return updates;
 }
+
+describe("Testing buildPath function for directory and file injections", () => {
+  test(
+    "Should build path: " +
+      filePath +
+      " and the created file should contain Hello World",
+    () => {
+      buildPath(filePath, { type: "file", content: "Hello World" });
+
+      expect(existsSync(filePath)).toBeTruthy;
+      expect(readFileSync(filePath, { encoding: "utf-8" })).toContain(
+        "Hello World"
+      );
+    }
+  );
+
+  test("Should build path: " + dirPath, () => {
+    buildPath(dirPath, { type: "dir" });
+
+    expect(existsSync(dirPath)).toBeTruthy;
+  });
+});
 
 describe("injectTSTypeLiteral", () => {
   const finderName = "TestTypeLiteral";

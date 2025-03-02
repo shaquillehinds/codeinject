@@ -9,4 +9,5 @@ export interface FileFromTemplateOptions {
   newFilePath: string;
   templatePath: string;
   replaceKeywords: KeywordReplace[];
+  instant?: boolean;
 }

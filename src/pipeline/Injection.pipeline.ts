@@ -25,6 +25,7 @@ import wait from "@src/utils/wait";
 import objParamToIdentifier, {
   ObjParamToIdentifierProps
 } from "@src/utils/objParamToIdentifier";
+import buildPath from "@src/utils/buildPath";
 
 const chalkGold = chalk.rgb(244, 184, 0);
 
@@ -219,25 +220,25 @@ class InjectionPipeline {
 
   public async finish(filesToOpen?: string[]) {
     if (this.asts.length === 0) {
-      console.error($lf(220), chalk.bgRed("You don't have any asts loaded."));
+      console.error($lf(223), chalk.bgRed("You don't have any asts loaded."));
       return this;
     }
 
     this.newDirPaths.forEach((dir, index) => {
       try {
-        mkdirSync(dir);
+        buildPath(dir, { type: "dir" });
         console.info(this.newDirLogs[index]);
       } catch (error) {
-        console.error($lf(229), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(232), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
     this.newFiles.forEach((newFile, index) => {
       try {
-        writeFileSync(newFile.location, newFile.content, "utf-8");
+        buildPath(newFile.location, { type: "file", content: newFile.content });
         console.info(this.created[index]);
       } catch (error) {
-        console.error($lf(238), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(241), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -249,7 +250,7 @@ class InjectionPipeline {
         });
         writeFileSync(ast.location, updatedSource, "utf-8");
       } catch (error) {
-        console.error($lf(250), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(253), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     }
 
@@ -299,7 +300,13 @@ class InjectionPipeline {
     return this;
   }
 
-  public injectDirectory(path: string) {
+  public injectDirectory(path: string, instant?: boolean) {
+    if (instant) {
+      buildPath(path, { type: "dir" });
+      const chalkInstance = chalk.greenBright(`\nCreated Directory >> ${path}`);
+      console.log($lf(307), chalkInstance);
+      return this;
+    }
     if (!this.ast) this.parse();
     this.newDirPaths.push(path);
     this.addLog(path, "directory");
@@ -307,10 +314,18 @@ class InjectionPipeline {
   }
 
   public injectFileFromTemplate(options: FileFromTemplateOptions) {
-    if (!this.ast) this.parse();
+    if (!this.ast && !options.instant) this.parse();
     let content = readFileSync(options.templatePath, "utf-8");
     for (let { keyword, replacement } of options.replaceKeywords) {
       content = content.replaceAll(keyword, replacement);
+    }
+    if (options.instant) {
+      buildPath(options.newFilePath, { type: "file", content });
+      const chalkInstance = chalk.greenBright(
+        `\nCreated File >> ${options.newFilePath}`
+      );
+      console.log($lf(327), chalkInstance);
+      return this;
     }
     this.newFiles.push({ content, location: options.newFilePath });
     this.addLog(options.newFilePath, "create");
