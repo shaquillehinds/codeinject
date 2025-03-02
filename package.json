@@ -1,6 +1,6 @@
 {
   "name": "tscodeinject",
-  "version": "2.3.0",
+  "version": "2.3.5",
   "description": "Inject code into your typescript files",
   "main": "dist/index.js",
   "release": {
@@ -35,7 +35,6 @@
   ],
   "license": "ISC",
   "private": false,
-  "type": "module",
   "bin": "./dist/index.bin.js",
   "scripts": {
     "deploy": "bash scripts/deploy.sh",
