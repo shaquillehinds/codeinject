@@ -44,8 +44,8 @@
   },
   "scripts": {
     "deploy": "bash scripts/deploy.sh",
-    "build:cjs": "tsc -p ./tsconfig.common.json && tsc-alias -p ./tsconfig.common.json",
-    "build:esm": "tsc -p ./ && tsc-alias -p ./tsconfig.json",
+    "build:cjs": "tsc -p ./tsconfig.common.json && node scripts/js-to-cjs.cjs && tsc-alias -p ./tsconfig.common.json",
+    "build:esm": "tsc -p ./ && tsc-alias -p ./tsconfig.json && node scripts/js-to-mjs.cjs",
     "build": "rm -rf dist && yarn build:cjs && yarn build:esm && chmod +x dist/cjs/index.bin.js && chmod +x dist/esm/index.bin.js",
     "prestart": "yarn build",
     "start": "node dist/",

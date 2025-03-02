@@ -24,7 +24,15 @@
     },
     "typeRoots": ["./src/@types", "node_modules/@types"]
   },
-  "tsc-alias": { "resolveFullPaths": true },
+  "tsc-alias": {
+    "resolveFullPaths": true,
+    "replacers": {
+      "myReplacer": {
+        "enabled": true,
+        "file": "./scripts/mjs.replacer.cjs"
+      }
+    }
+  },
   "include": ["src"],
   "exclude": ["node_modules", "local"]
 }
