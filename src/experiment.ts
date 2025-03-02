@@ -9,8 +9,6 @@
 import jcs, { ReturnStatement } from "jscodeshift";
 import IP from "./index";
 import { ExpressionKind } from "ast-types/gen/kinds";
-import addObjectForAccessors from "./utils/addObjectForAccessors";
-import objParamToIdentifier from "./utils/objParamToIdentifier";
 
 const sources = [
   "tests/experimentTemplates/test.react.template.tsx",
@@ -30,7 +28,7 @@ async function testingFunction() {
   const blankTemplateController = `export default function BlankTemplateController(){}`;
   const blankTemplate = `export default function BlankTemplate(){}`;
 
-  if (!p._ast) console.log($lf(33), "Ast not loaded, file not found");
+  if (!p._ast) console.log($lf(31), "Ast not loaded, file not found");
   else {
     const found = expDefFinder(jcs, p._ast, {});
     const exportName = IP.getName(found.col);
@@ -44,13 +42,13 @@ async function testingFunction() {
       const params = IP.getFunctionParams(funcCol).map((p, i) => {
         const paramName = `props${i ? i : ""}`;
         const paramTypeName = `BlankTemplateProps${i ? i : ""}`;
-        const transformed = objParamToIdentifier({
+        const transformed = IP.objParamToIdentifier({
           param: p,
           paramName,
           paramTypeName
         });
         propertyNames[paramName] = [];
-        // console.log($lf(53), transformed);
+        // console.log($lf(51), transformed);
         transformed.propertyNames?.forEach(n => {
           propertyNames[paramName].push(n);
         });
@@ -222,13 +220,11 @@ async function testingFunction() {
             source: "./callbacks.tsx"
           })
           .customInject(cp => {
-            addObjectForAccessors({
-              collection: cp._ast!,
+            cp.injectObjectForAccessors({
               objectName: "state",
               accessors: cp.pipelineStore["local/state.tsx"].variableNames
             });
-            addObjectForAccessors({
-              collection: cp._ast!,
+            cp.injectObjectForAccessors({
               objectName: "callbacks",
               accessors: cp.pipelineStore["local/callbacks.tsx"].variableNames
             });
@@ -285,13 +281,11 @@ async function testingFunction() {
             { name: "BlankTemplateController" }
           )
           .commit(cp => {
-            addObjectForAccessors({
-              collection: cp._ast!,
+            cp.injectObjectForAccessors({
               objectName: "state",
               accessors: cp.pipelineStore["local/state.tsx"].variableNames
             });
-            addObjectForAccessors({
-              collection: cp._ast!,
+            cp.injectObjectForAccessors({
               objectName: "callbacks",
               accessors: cp.pipelineStore["local/callbacks.tsx"].variableNames
             });
@@ -332,13 +326,11 @@ const { state, callbacks } = BlankTemplateController(props);
           )
           .injectImportsFromFile({ origin: { source, type: "source" } }, {})
           .commit(cp => {
-            addObjectForAccessors({
-              collection: cp._ast!,
+            cp.injectObjectForAccessors({
               objectName: "state",
               accessors: cp.pipelineStore["local/state.tsx"].variableNames
             });
-            addObjectForAccessors({
-              collection: cp._ast!,
+            cp.injectObjectForAccessors({
               objectName: "callbacks",
               accessors: cp.pipelineStore["local/callbacks.tsx"].variableNames
             });

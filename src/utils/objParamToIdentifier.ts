@@ -1,28 +1,14 @@
-import {
-  PatternKind,
-  TSCallSignatureDeclarationKind,
-  TSConstructSignatureDeclarationKind,
-  TSIndexSignatureKind,
-  TSMethodSignatureKind,
-  TSPropertySignatureKind
-} from "ast-types/gen/kinds";
+import { PatternKind } from "ast-types/gen/kinds";
 import jcs, { TSTypeLiteral } from "jscodeshift";
 import filterMap from "./filterMap";
 
-type TidyObjectParamProps = {
+export type ObjParamToIdentifierProps = {
   param: PatternKind;
   paramName: string;
   paramTypeName: string;
 };
-export default function objParamToIdentifier(props: TidyObjectParamProps) {
+export default function objParamToIdentifier(props: ObjParamToIdentifierProps) {
   let typeLiteral: TSTypeLiteral | undefined = undefined;
-  // let propertySignatures: (
-  //   | TSCallSignatureDeclarationKind
-  //   | TSConstructSignatureDeclarationKind
-  //   | TSIndexSignatureKind
-  //   | TSMethodSignatureKind
-  //   | TSPropertySignatureKind
-  // )[] = [];
 
   if (props.param.type === "Identifier") return { param: props.param };
 

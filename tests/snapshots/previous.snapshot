@@ -119,9 +119,7 @@ function variablesReturn() {
 
 function injectReturnFunc() {
   const isReturned = true;
-  return {
-    isReturned
-  }
+  return isReturned
 }
 
 namespace King {

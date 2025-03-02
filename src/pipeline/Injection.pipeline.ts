@@ -22,6 +22,9 @@ import nodeGrouper, {
 } from "@src/utils/nodeGrouper";
 import getDefinedVariableName from "@src/utils/getDefinedVariableName";
 import wait from "@src/utils/wait";
+import objParamToIdentifier, {
+  ObjParamToIdentifierProps
+} from "@src/utils/objParamToIdentifier";
 
 const chalkGold = chalk.rgb(244, 184, 0);
 
@@ -79,6 +82,10 @@ class InjectionPipeline {
     } catch (error) {
       return [];
     }
+  }
+
+  public static objParamToIdentifier(props: ObjParamToIdentifierProps) {
+    return objParamToIdentifier(props);
   }
 
   public static nodeGrouper<
@@ -212,7 +219,7 @@ class InjectionPipeline {
 
   public async finish(filesToOpen?: string[]) {
     if (this.asts.length === 0) {
-      console.error($lf(215), chalk.bgRed("You don't have any asts loaded."));
+      console.error($lf(220), chalk.bgRed("You don't have any asts loaded."));
       return this;
     }
 
@@ -221,7 +228,7 @@ class InjectionPipeline {
         mkdirSync(dir);
         console.info(this.newDirLogs[index]);
       } catch (error) {
-        console.error($lf(224), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(229), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -230,7 +237,7 @@ class InjectionPipeline {
         writeFileSync(newFile.location, newFile.content, "utf-8");
         console.info(this.created[index]);
       } catch (error) {
-        console.error($lf(233), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(238), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -242,7 +249,7 @@ class InjectionPipeline {
         });
         writeFileSync(ast.location, updatedSource, "utf-8");
       } catch (error) {
-        console.error($lf(245), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(250), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     }
 
@@ -271,14 +278,6 @@ class InjectionPipeline {
     else if (type === "directory")
       this.newDirLogs.push(`${chalk.bold.cyanBright("+ [Directory]")}: ${log}`);
   }
-
-  public injectDirectory(path: string) {
-    if (!this.ast) this.parse();
-    this.newDirPaths.push(path);
-    this.addLog(path, "directory");
-    return this;
-  }
-
   /**
    * Use this if callstack issues occur.
    * It will reload the ast and you can access the new ast from a callback function.
@@ -297,6 +296,13 @@ class InjectionPipeline {
     this.parse(fileLocation);
     this._originalFileContent = originalFileContent;
     func && func(this);
+    return this;
+  }
+
+  public injectDirectory(path: string) {
+    if (!this.ast) this.parse();
+    this.newDirPaths.push(path);
+    this.addLog(path, "directory");
     return this;
   }
 
