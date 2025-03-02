@@ -7,6 +7,7 @@ function renameFiles(dir) {
   const files = fs.readdirSync(dir);
 
   files.forEach(file => {
+    if (file.endsWith(".bin.js")) return;
     const fullPath = path.join(dir, file);
     const stat = fs.statSync(fullPath);
 
