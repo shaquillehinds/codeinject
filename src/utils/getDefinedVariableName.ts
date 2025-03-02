@@ -21,7 +21,12 @@ export default function getDefinedVariableName(statement: StatementKind) {
             prop.type !== "RestProperty" &&
             jcs.Identifier.check(prop.key)
           ) {
-            names.push(prop.key.name);
+            if (
+              prop.type !== "PropertyPattern" &&
+              jcs.Identifier.check(prop.value)
+            )
+              names.push(prop.value.name);
+            else names.push(prop.key.name);
           }
         });
       } else if (jcs.Identifier.check(validated)) {

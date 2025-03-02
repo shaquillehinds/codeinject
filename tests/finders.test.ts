@@ -231,7 +231,6 @@ describe("jsxElementFinder", () => {
 
   test(`${type}: Should find a ${type} by it's attribute name "${attributeName}"`, () => {
     const name = found1.col.paths()[0].value.openingElement.name;
-    console.log($lf(234), name);
     expect(name.type).toBe("JSXIdentifier");
     if (name.type === "JSXIdentifier") expect(name.name).toBe("TestElement");
     expect(found1.col.getTypes()[0]).toBe(type);
