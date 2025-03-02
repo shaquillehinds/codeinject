@@ -1,4 +1,3 @@
-//$lf-ignore
 /**
  * DO NOT DELETE
  * Experiment file - test various implementations here
@@ -12,12 +11,14 @@ import IP from "./index";
 import { ExpressionKind } from "ast-types/gen/kinds";
 import addObjectForAccessors from "./utils/addObjectForAccessors";
 import objParamToIdentifier from "./utils/objParamToIdentifier";
+import wait from "./utils/wait";
 
 const sources = [
   "tests/experimentTemplates/test.react.template.tsx",
-  "tests/experimentTemplates/react.templateA.tsx"
+  "tests/experimentTemplates/react.templateA.tsx",
+  "tests/experimentTemplates/react.templateB.tsx"
 ];
-const source = sources[1];
+const source = sources[2];
 
 async function testingFunction() {
   const p = new IP(source).parse();
@@ -27,7 +28,8 @@ async function testingFunction() {
   const blankTemplateState = `export default function BlankTemplateState(){}`;
   const blankTemplateCallbacks = `export default function BlankTemplateCallbacks(){}`;
   const blankTemplateEffects = `export default function BlankTemplateEffects(){}`;
-  if (!p._ast) console.log("Ast not loaded, file not found");
+  const blankTemplateController = `export default function BlankTemplateController(){}`;
+  if (!p._ast) console.log($lf(32), "Ast not loaded, file not found");
   else {
     const found = expDefFinder(jcs, p._ast, {});
     const exportName = IP.getName(found.col);
@@ -47,10 +49,15 @@ async function testingFunction() {
           paramTypeName
         });
         propertyNames[paramName] = [];
+        // console.log($lf(52), transformed);
         transformed.propertyNames?.forEach(n => {
           propertyNames[paramName].push(n);
         });
-        transformed.typeAlias && paramsAliases.push(transformed.typeAlias);
+        transformed.typeAlias &&
+          paramsAliases.push(
+            //@ts-ignore
+            jcs.exportNamedDeclaration(transformed.typeAlias)
+          );
         return transformed.param;
       });
 
@@ -84,13 +91,15 @@ async function testingFunction() {
         const callbackNodes = [
           ...grouped.FunctionDeclaration,
           ...grouped.ArrowFunctionExpression,
-          ...grouped.FunctionExpression
+          ...grouped.FunctionExpression,
+          ...grouped.CallExpression
         ] as (jcs.FunctionDeclaration | jcs.VariableDeclaration)[];
         const controllerNodes = [
           ...grouped.IfStatement,
           ...grouped.TryStatement
         ];
-        await new IP("")
+        const ip = new IP("");
+        const statePipeline = await ip
           .parseString({
             text: blankTemplateState,
             outputLocation: "local/state.tsx"
@@ -125,6 +134,9 @@ async function testingFunction() {
             template: `export type BlankTemplateStateReturn = ReturnType <typeof BlankTemplateState>`
           })
           .storeFileVariables()
+          .finish();
+
+        const callbacksPipeline = await ip
           .parseString({
             text: blankTemplateCallbacks,
             outputLocation: "local/callbacks.tsx"
@@ -146,8 +158,24 @@ async function testingFunction() {
             { stringTemplate: "state: BlankTemplateStateReturn" },
             { name: "BlankTemplateCallbacks" }
           )
+          .injectFunctionParams(
+            { nodes: params },
+            { name: "BlankTemplateCallbacks" }
+          )
+          .customInject(ip => {
+            for (const property of Object.keys(propertyNames)) {
+              ip.injectObjectForAccessors({
+                accessors: propertyNames[property],
+                objectName: property
+              });
+            }
+          })
           .injectImport({
             importName: "BlankTemplateStateReturn",
+            source: "./state.tsx"
+          })
+          .injectImport({
+            importName: "BlankTemplateProps",
             source: "./state.tsx"
           })
           .injectObjectForAccessors({
@@ -157,6 +185,8 @@ async function testingFunction() {
             }
           })
           .storeFileVariables()
+          .finish();
+        const effectsPipeline = await ip
           .parseString({
             text: blankTemplateEffects,
             outputLocation: "local/effects.tsx"
@@ -173,6 +203,14 @@ async function testingFunction() {
             },
             { name: "BlankTemplateEffects" }
           )
+          .injectFunctionParams(
+            { nodes: params },
+            { name: "BlankTemplateEffects" }
+          )
+          .injectImport({
+            importName: "BlankTemplateProps",
+            source: "./state.tsx"
+          })
           .injectImport({
             importName: "BlankTemplateStateReturn",
             source: "./state.tsx"
@@ -192,10 +230,84 @@ async function testingFunction() {
               objectName: "callbacks",
               accessors: cp.pipelineStore["local/callbacks.tsx"].variableNames
             });
+            for (const property of Object.keys(propertyNames)) {
+              cp.injectObjectForAccessors({
+                accessors: propertyNames[property],
+                objectName: property
+              });
+            }
           })
           .finish();
+        const controllerPipeline = await ip
+          .parseString({
+            text: blankTemplateController,
+            outputLocation: "local/controller.tsx"
+          })
+          .injectFunctionBody(
+            {
+              stringTemplate: ` const state = BlankTemplateState(props);
+  const callbacks = BlankTemplateCallbacks(state, props)
+  BlankTemplateEffects(state, callbacks, props)`
+            },
+            { name: "BlankTemplateController" }
+          )
+          .injectFunctionBody(
+            { nodes: controllerNodes },
+            { name: "BlankTemplateController" }
+          )
+          .injectImportsFromFile({ origin: { source, type: "source" } }, {})
+          .injectFunctionParams(
+            { nodes: params },
+            { name: "BlankTemplateController" }
+          )
+          .injectImport({
+            importName: "BlankTemplateProps",
+            source: "./state.tsx"
+          })
+          .injectImport({
+            importName: "BlankTemplateState",
+            source: "./state.tsx"
+          })
+          .injectImport({
+            importName: "BlankTemplateCallbacks",
+            source: "./callbacks.tsx"
+          })
+          .injectImport({
+            importName: "BlankTemplateEffects",
+            source: "./effects.tsx"
+          })
+          .injectFunctionBody(
+            {
+              stringTemplate: `return { state, callbacks }`
+            },
+            { name: "BlankTemplateController" }
+          )
+          .commit(cp => {
+            addObjectForAccessors({
+              collection: cp._ast!,
+              objectName: "state",
+              accessors: cp.pipelineStore["local/state.tsx"].variableNames
+            });
+            addObjectForAccessors({
+              collection: cp._ast!,
+              objectName: "callbacks",
+              accessors: cp.pipelineStore["local/callbacks.tsx"].variableNames
+            });
+            for (const property of Object.keys(propertyNames)) {
+              cp.injectObjectForAccessors({
+                accessors: propertyNames[property],
+                objectName: property
+              });
+            }
+            cp.finish();
+          });
       }
     }
   }
 }
 testingFunction();
+
+function $lf(n: number) {
+  return "$lf|codeinject/src/experiment.ts:" + n + " >";
+  // Automatically injected by Log Location Injector vscode extension
+}

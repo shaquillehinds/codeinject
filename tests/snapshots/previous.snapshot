@@ -1,9 +1,9 @@
-import path from "path";
-import fs from "fs";
 //@ts-nocheck
 
 import React from "react";
 import testImportDefaultConst, { testImportConst } from "./test.import2";
+import fs from "fs";
+import path from "path";
 import { finderTestConst } from "./test.import";
 
 namespace Queen {
