@@ -1,4 +1,4 @@
-import jcs from "jscodeshift";
+import jcs, { ASTNode, Node } from "jscodeshift";
 
 type AddAccessorsToObjectProps = {
   objectName: string;
@@ -10,9 +10,16 @@ export default function addObjectForAccessors(
 ) {
   const { objectName, accessors, collection } = props;
   accessors.forEach((name: string) => {
+    const importNames: Record<string, string> = {};
     collection.find(jcs.Identifier, { name }).map(identifier => {
+      if (importNames[name]) return identifier;
       const parentValue = identifier.parentPath.value;
       if (jcs.Node.check(parentValue)) {
+        if (jcs.ImportSpecifier.check(parentValue)) {
+          importNames[name] = name;
+          return identifier;
+        }
+        if (jcs.VariableDeclarator.check(parentValue)) return identifier;
         if (jcs.ObjectProperty.check(parentValue)) {
           const objKey =
             parentValue.key.type === "Identifier" ? parentValue.key.name : "";

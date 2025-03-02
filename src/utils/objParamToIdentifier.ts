@@ -41,11 +41,12 @@ export default function objParamToIdentifier(props: TidyObjectParamProps) {
       }
     }
     returnProps.propertyNames = filterMap(props.param.properties, p => {
-      if (
-        (p.type === "ObjectProperty" || p.type === "Property") &&
-        p.value.type === "Identifier"
-      ) {
-        return p.value.name;
+      if (p.type === "ObjectProperty" || p.type === "Property") {
+        if (p.value.type === "Identifier") return p.value.name;
+        if (p.value.type === "AssignmentPattern") {
+          if (p.value.left.type === "Identifier") return p.value.left.name;
+          if (p.key.type === "Identifier") return p.key.name;
+        }
       }
     });
   }
@@ -64,4 +65,9 @@ export default function objParamToIdentifier(props: TidyObjectParamProps) {
     returnProps.param.typeAnnotation = tsTypeAnnotation;
   }
   return returnProps;
+}
+
+function $lf(n: number) {
+  return "$lf|src/utils/objParamToIdentifier.ts:" + n + " >";
+  // Automatically injected by Log Location Injector vscode extension
 }
