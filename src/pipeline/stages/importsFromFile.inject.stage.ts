@@ -1,10 +1,7 @@
-import { Collection, ImportDeclaration, JSCodeshift } from "jscodeshift";
-import { DebugLogger } from "@utils/Logger";
+import { Collection, JSCodeshift } from "jscodeshift";
 import { StageOptions } from "@src/@types/stage";
 import { readFileSync } from "fs";
-import injectImportStage from "./import.inject.stage";
-
-const log = DebugLogger("importsFromFile.inject.stage.ts");
+import injectImport from "@src/utils/injectImport";
 
 export default function injectImportsFromFileStage(
   jcs: JSCodeshift,
@@ -12,7 +9,7 @@ export default function injectImportsFromFileStage(
   { col, origin, all }: StageOptions<"importsFromFile">
 ) {
   if (!col) {
-    log($lf(15), "error", "No expression collection passed to this stage.");
+    console.error($lf(12), "No expression collection passed to this stage.");
     return workingSource;
   }
   let fileContent = "";
@@ -22,37 +19,33 @@ export default function injectImportsFromFileStage(
     fileContent = origin.text;
   }
   const ast = jcs.withParser("tsx")(fileContent);
-
-  const importNames: string[] = [];
-  const imports: Record<string, { source: string; node: ImportDeclaration }> =
-    {};
-  const importedSources: string[] = [];
   const declarations = ast.find(jcs.ImportDeclaration);
 
   declarations.forEach(path => {
     const specifiers = path.getValueProperty("specifiers");
     const source = path.getValueProperty("source").value as string;
-    if (Array.isArray(specifiers))
-      specifiers.forEach(s => {
-        const importName = s.local?.name || s.imported?.name || "";
-        importNames.push(importName);
-        imports[importName] = { source, node: path.node };
-      });
-  });
-
-  const content = workingSource.toSource();
-  for (const imp in imports) {
-    if (
-      (content.includes(imp) || all) &&
-      !importedSources.includes(imports[imp].source)
-    ) {
-      injectImportStage(jcs, workingSource, {
-        nodes: [imports[imp].node],
-        col
-      });
-      importedSources.push(imports[imp].source);
+    if (Array.isArray(specifiers)) {
+      for (const specifier of specifiers) {
+        const isDefault = specifier.type === "ImportDefaultSpecifier";
+        const importName = specifier.local?.name;
+        console.log($lf(31), importName);
+        if (typeof importName !== "string" || typeof source !== "string")
+          continue;
+        if (
+          !all &&
+          !workingSource.find(jcs.Identifier, { name: importName }).length
+        )
+          continue;
+        injectImport({
+          col,
+          source,
+          isDefault,
+          importName,
+          workingSource
+        });
+      }
     }
-  }
+  });
 
   return workingSource;
 }

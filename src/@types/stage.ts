@@ -80,7 +80,8 @@ export type BaseStageOptions = { forceInject?: boolean };
 
 export type ImportOptions = {
   isDefault?: boolean;
-  nodes?: import("jscodeshift").Node[];
+  raw?: boolean;
+  nodes?: import("jscodeshift").ImportDeclaration[];
   source?: string;
   importName?: string;
   col?: Collection<import("jscodeshift").ImportDeclaration>;
