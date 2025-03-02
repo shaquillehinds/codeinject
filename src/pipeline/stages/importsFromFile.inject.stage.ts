@@ -28,7 +28,6 @@ export default function injectImportsFromFileStage(
       for (const specifier of specifiers) {
         const isDefault = specifier.type === "ImportDefaultSpecifier";
         const importName = specifier.local?.name;
-        console.log($lf(31), importName);
         if (typeof importName !== "string" || typeof source !== "string")
           continue;
         if (
