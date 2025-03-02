@@ -2,7 +2,7 @@ import { Collection, JSCodeshift, TSTypeLiteral } from "jscodeshift";
 import { Finder, FinderOptions, FinderType } from "./finder";
 import { StageTypeE } from "./stage.enums";
 import InjectionPipeline from "@src/pipeline/Injection.pipeline";
-import { PatternKind } from "ast-types/gen/kinds";
+import { PatternKind, StatementKind } from "ast-types/gen/kinds";
 
 export type FunctionCollection =
   | Collection<import("jscodeshift").FunctionDeclaration>
@@ -15,7 +15,9 @@ export type StageLogType = "update" | "create" | "directory";
 
 export type StageType = keyof typeof StageTypeE;
 
-export type StageOptions<T extends StageType> = T extends "objectForAccessors"
+export type StageOptions<T extends StageType> = T extends "program"
+  ? ProgramOptions
+  : T extends "objectForAccessors"
   ? ObjectForAccessorsOptions
   : T extends "functionParams"
   ? FunctionParamsOptions
@@ -160,7 +162,7 @@ export type JSXElementOptions = {
   col?: Collection<import("jscodeshift").JSXElement>;
 } & BaseStageOptions;
 
-export type StringTemplatePosition =
+export type ProgramInjectPosition =
   | "afterImport"
   | "beforeImport"
   | "firstLine"
@@ -168,7 +170,7 @@ export type StringTemplatePosition =
 
 export type StringTemplateOptions = {
   template: string;
-  position?: StringTemplatePosition;
+  position?: ProgramInjectPosition;
   col?: Collection<import("jscodeshift").Program>;
 } & BaseStageOptions;
 
@@ -225,5 +227,12 @@ type ObjectForAccessorsOptions = {
   objectName: string;
   accessors: string[] | ((ip: InjectionPipeline) => string[]);
   ip?: InjectionPipeline;
+  col?: Collection<import("jscodeshift").Program>;
+} & BaseStageOptions;
+
+type ProgramOptions = {
+  nodes?: StatementKind[];
+  stringTemplate?: string;
+  injectionPosition?: ProgramInjectPosition;
   col?: Collection<import("jscodeshift").Program>;
 } & BaseStageOptions;

@@ -37,7 +37,7 @@ async function testingFunction() {
       const funcCol = funcFinder(jcs, p._ast!, { name: exportName }).col;
       const nodes = IP.getBodyNodes(funcCol);
       const paramsAliases: jcs.TSTypeAliasDeclaration[] = [];
-      const propertyNames: Record<string, string> = {};
+      const propertyNames: Record<string, string[]> = {};
       const params = IP.getFunctionParams(funcCol).map((p, i) => {
         const paramName = `props${i ? i : ""}`;
         const paramTypeName = `BlankTemplateProps${i ? i : ""}`;
@@ -46,8 +46,9 @@ async function testingFunction() {
           paramName,
           paramTypeName
         });
+        propertyNames[paramName] = [];
         transformed.propertyNames?.forEach(n => {
-          propertyNames[n] = paramName;
+          propertyNames[paramName].push(n);
         });
         transformed.typeAlias && paramsAliases.push(transformed.typeAlias);
         return transformed.param;
@@ -102,6 +103,21 @@ async function testingFunction() {
             { nodes: params },
             { name: "BlankTemplateState" }
           )
+          .injectToProgram(
+            {
+              nodes: paramsAliases,
+              injectionPosition: "afterImport"
+            },
+            {}
+          )
+          .customInject(ip => {
+            for (const property of Object.keys(propertyNames)) {
+              ip.injectObjectForAccessors({
+                accessors: propertyNames[property],
+                objectName: property
+              });
+            }
+          })
           .injectImportsFromFile({ origin: { source, type: "source" } }, {})
           .injectReturnAllFunctionVariables({}, { name: "BlankTemplateState" })
           .injectStringTemplate({

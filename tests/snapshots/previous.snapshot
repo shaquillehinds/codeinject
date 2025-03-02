@@ -24,7 +24,7 @@ class TestClass {
     this._jestProperty = name;
   }
   public get jestProperty(){
-    return this._jestProperty;
+    return this._jestProperty || "";
   }
 }
 
@@ -50,7 +50,7 @@ export type TestTypeLiteral = {
   cat: "Jasmine";
 };
 
-export type TestAlias = Alphabet;
+export type TestAlias = "a" | "b";
 
 export interface TestInterface {
   testProperty: "test value";
@@ -65,7 +65,7 @@ export enum TestEnum {
   JEST_TEST = "JEST_TEST"
 }
 
-export { testObject, testArray, TestAlias };
+export { testObject, testArray };
 
 export default TestClass;
 
@@ -78,12 +78,12 @@ default:
   break;
 }
 
-type TestElementProps = { title: string };
+type TestElementProps = React.PropsWithChildren<{ title: string }>;
 const TestElement = (props: TestElementProps) => (
-  <React.Fragment>{props.title}</React.Fragment>
+  <React.Fragment>{props.children}</React.Fragment>
 );
 
-const TestComponent2 = () => <TestElement title="test"><TestElementChild></TestElementChild></TestElement>;
+const TestComponent2 = () => <TestElement title="test"><React.Fragment></React.Fragment></TestElement>;
 
 const funcExp = function(love: boolean, sanity?: false) {
   const gg2 = false;
@@ -95,11 +95,11 @@ const funcExp = function(love: boolean, sanity?: false) {
 
 function funcDec() {
   const ghost = true;
+  const gone = "girl";
 
   return {
     ghost,
-    gone,
-    girl
+    gone
   };
 
   const gg = true;
@@ -128,3 +128,4 @@ export type TestConditionalType<T> = T extends "b" ? "b" : T extends "a" ? "a" :
 
 const jestStringTemplate = "hello from jest test";
 console.log(jestStringTemplate);
+export type GangGang = { lethal: true, sexy: true }

@@ -118,12 +118,12 @@ describe("injectTSTypeAlias", () => {
     );
   });
 
-  test("Should overwrite TestAlias with new type reference 'Alphabet'", () => {
+  test("Should overwrite TestAlias with new type", () => {
     pipeline.injectTSTypeAlias(
-      { stringTemplate: `Alphabet`, type: "overwrite" },
+      { stringTemplate: `"a" | "b"`, type: "overwrite" },
       finderOptions
     );
-    testSourceForInjection(`export type TestAlias = Alphabet;`, "toBeTruthy");
+    testSourceForInjection(`export type TestAlias = "a" | "b"`, "toBeTruthy");
   });
 });
 
@@ -254,10 +254,10 @@ describe("injectProperty", () => {
 
 describe("injectNamedExportProperty", () => {
   const stageOptions: StageOptions<"namedExportProperty"> = {
-    name: "TestAlias"
+    name: "testArray"
   };
-  const expectedInjection = `export { testObject, testArray, TestAlias };`;
-  test(`Should add TestAlias to undeclared export object.`, () => {
+  const expectedInjection = `export { testObject, testArray };`;
+  test(`Should add testArray to undeclared export object.`, () => {
     pipeline.injectNamedExportProperty(stageOptions);
     testSourceForInjection(expectedInjection, "toBeTruthy");
   });
@@ -309,7 +309,7 @@ describe("injectClassMethod", () => {
     this._jestProperty = name;
   }
   public get jestProperty(){
-    return this._jestProperty;
+    return this._jestProperty || "";
   }`
   };
   const expectedInjection = `class TestClass {
@@ -324,7 +324,7 @@ describe("injectClassMethod", () => {
     this._jestProperty = name;
   }
   public get jestProperty(){
-    return this._jestProperty;
+    return this._jestProperty || "";
   }
 }`;
   test(`Should add members to class TestClass`, () => {
@@ -352,7 +352,7 @@ describe("injectConstructor", () => {
     this._jestProperty = name;
   }
   public get jestProperty(){
-    return this._jestProperty;
+    return this._jestProperty || "";
   }
 }`;
   test(`Should add members to class TestClass`, () => {
@@ -365,7 +365,7 @@ describe("injectJSXElement", () => {
   const finderName = "TestElement";
   test("Should inject new child element TestElementChild into TestElement component", () => {
     const stageOptions: StageOptions<"jsxElement"> = {
-      stringTemplate: "<TestElementChild></TestElementChild>"
+      stringTemplate: "<React.Fragment></React.Fragment>"
     };
     const finderOptions: FinderOptions<"jsxElement"> = {
       name: finderName,
@@ -374,7 +374,7 @@ describe("injectJSXElement", () => {
     };
     pipeline.injectJSXElement(stageOptions, finderOptions);
     testSourceForInjection(
-      `const TestComponent2 = () => <TestElement title="test"><TestElementChild></TestElementChild></TestElement>;`,
+      `const TestComponent2 = () => <TestElement title="test"><React.Fragment></React.Fragment></TestElement>;`,
       "toBeTruthy"
     );
   });
@@ -453,11 +453,11 @@ describe("injectFunctionBody", () => {
 describe("injectReturnObjectProperty", () => {
   const finderOptions: FinderOptions<"function"> = { name: "funcDec" };
   const stageOptions: StageOptions<"returnObjectProperty"> = {
-    stringTemplate: `gone, girl`
+    stringTemplate: `gone`
   };
   const expectedInjection = `  return {
     ghost,
-    gone,`;
+    gone`;
   test("Should inject return object properties into existing return object for function dclaration", () => {
     pipeline.injectReturnObjectProperty(stageOptions, finderOptions);
     testSourceForInjection(expectedInjection, "toBeTruthy");
@@ -521,6 +521,18 @@ describe("injectObjectForAccessors", () => {
   const expectedInjection = "testObject.testProperty";
   test("Should inject 'testObject' before accessors 'testProperty' & 'testProperty'", () => {
     pipeline.injectObjectForAccessors(stageOptions);
+    testSourceForInjection(expectedInjection, "toBeTruthy");
+  });
+});
+describe("injectToProgram", () => {
+  const finderOptions: FinderOptions<"program"> = {};
+  // define stage options here
+  const stageOptions: StageOptions<"program"> = {
+    stringTemplate: "export type GangGang = { lethal: true, sexy: true }"
+  };
+  const expectedInjection = "export type GangGang";
+  test("Should inject to Program successfully", () => {
+    pipeline.injectToProgram(stageOptions, finderOptions);
     testSourceForInjection(expectedInjection, "toBeTruthy");
   });
 });

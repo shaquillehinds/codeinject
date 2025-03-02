@@ -22,12 +22,12 @@ export default function addObjectForAccessors(
               : "";
           if (objKey === objVal)
             identifier.value.name = `${name}: ${objectName}.${name}`;
-          else if (
-            objVal === objectName &&
-            parentValue.value.type === "Identifier"
-          )
+          else if (parentValue.value.type === "Identifier")
             parentValue.value.name = `${objectName}.${name}`;
-        } else if (jcs.TSPropertySignature.check(parentValue)) {
+        } else if (
+          jcs.TSPropertySignature.check(parentValue) ||
+          jcs.JSXAttribute.check(parentValue)
+        ) {
           return identifier;
         } else {
           identifier.value.name = `${objectName}.${name}`;

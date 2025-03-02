@@ -33,7 +33,7 @@ export enum TestEnum {
   TEST_PROPERTY = "TEST_PROPERTY"
 }
 
-export { testObject, testArray };
+export { testObject };
 
 export default TestClass;
 
@@ -44,9 +44,9 @@ switch (testSwitch) {
     break;
 }
 
-type TestElementProps = { title: string };
+type TestElementProps = React.PropsWithChildren<{ title: string }>;
 const TestElement = (props: TestElementProps) => (
-  <React.Fragment>{props.title}</React.Fragment>
+  <React.Fragment>{props.children}</React.Fragment>
 );
 
 const TestComponent2 = () => <TestElement title="test"></TestElement>;
@@ -55,6 +55,7 @@ const funcExp = function () {};
 
 function funcDec() {
   const ghost = true;
+  const gone = "girl";
   return { ghost };
 }
 
