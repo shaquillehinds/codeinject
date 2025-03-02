@@ -1,5 +1,9 @@
+//@ts-nocheck
+
 import React from "react";
 import testImportDefaultConst, { testImportConst } from "./test.import2";
+import fs from "fs";
+import path from "path";
 import { finderTestConst } from "./test.import";
 
 namespace Queen {
@@ -20,7 +24,7 @@ class TestClass {
     this._jestProperty = name;
   }
   public get jestProperty(){
-    return this._jestProperty;
+    return this._jestProperty || "";
   }
 }
 
@@ -33,7 +37,8 @@ const testObject = {
     time: 0
   },
 
-  testProperty: "test value"
+  testProperty: "test value",
+  testProperty2: "test value 2"
 };
 
 const testArray = ["test value", {
@@ -45,7 +50,7 @@ export type TestTypeLiteral = {
   cat: "Jasmine";
 };
 
-export type TestAlias = Alphabet;
+export type TestAlias = "a" | "b";
 
 export interface TestInterface {
   testProperty: "test value";
@@ -60,7 +65,7 @@ export enum TestEnum {
   JEST_TEST = "JEST_TEST"
 }
 
-export { testObject, testArray, TestAlias };
+export { testObject, testArray };
 
 export default TestClass;
 
@@ -73,18 +78,61 @@ default:
   break;
 }
 
-type TestElementProps = { title: string };
+type TestElementProps = React.PropsWithChildren<{ title: string }>;
 const TestElement = (props: TestElementProps) => (
-  <React.Fragment>{props.title}</React.Fragment>
+  <React.Fragment>{props.children}</React.Fragment>
 );
 
-const TestComponent2 = () => <TestElement title="test"><TestElementChild></TestElementChild></TestElement>;
+const TestComponent2 = () => <TestElement title="test"><React.Fragment></React.Fragment></TestElement>;
+
+const funcExp = function(love: boolean, sanity?: false) {
+  const gg2 = false;
+
+  return {
+    love
+  };
+};
+
+function funcDec() {
+  const ghost = true;
+  const gone = "girl";
+
+  return {
+    ghost,
+    gone
+  };
+
+  const gg = true;
+}
+
+function variablesReturn() {
+  const first = 1;
+  const second = "2";
+  const third = true;
+
+  return {
+    first,
+    second,
+    third
+  };
+}
+
+function injectReturnFunc() {
+  const isReturned = true;
+  return {
+    isReturned
+  }
+}
 
 namespace King {
   type Prince = 'Agnes'
   export type Princess = 'Kali'
 }
+
+testObject.testProperty;
+testObject.testProperty2;
 export type TestConditionalType<T> = T extends "b" ? "b" : T extends "a" ? "a" : undefined;
 
 const jestStringTemplate = "hello from jest test";
 console.log(jestStringTemplate);
+export type GangGang = { lethal: true, sexy: true }

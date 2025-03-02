@@ -40,7 +40,7 @@ export default function newCommand(program: Command) {
         if (!f) f = await newCommandPrompts.finder();
 
         if (!f) {
-          log("error", "A finder is required to create a new stage");
+          console.error($lf(43), "A finder is required to create a new stage");
         }
 
         const [finder, finderL] = handleName(f);
@@ -56,8 +56,14 @@ export default function newCommand(program: Command) {
         }
 
         const stageOpts = await newCommandPrompts.options("stage");
+        console.log($lf(59), stageOpts);
         await newStageCommandPipeline(name, finderL, stageOpts, collection);
       }
       process.exit(0);
     });
+}
+
+function $lf(n: number) {
+  return "$lf|commands/new.command/new.command.ts:" + n + " >";
+  // Automatically injected by Log Location Injector vscode extension
 }

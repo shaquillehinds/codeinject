@@ -22,7 +22,7 @@ export default function injectStringTemplateStage(
   { template, position, col }: StageOptions<"stringTemplate">
 ) {
   if (!col) {
-    log("error", "No expression collection passed to this stage.");
+    log($lf(25), "error", "No expression collection passed to this stage.");
     return workingSource;
   }
   const templateNodes = jcs.withParser("tsx")(template).find(jcs.Program).get()
@@ -31,7 +31,7 @@ export default function injectStringTemplateStage(
   let newProgram: Program | undefined;
   switch (position) {
     case "afterImport": {
-      const col = importFinder(jcs, workingSource);
+      const col = importFinder(jcs, workingSource, {});
       const size = col.size();
       if (size < 1) newProgram = jcs.program([...templateNodes, ...astNodes]);
       else {
@@ -42,7 +42,7 @@ export default function injectStringTemplateStage(
       break;
     }
     case "beforeImport": {
-      const col = importFinder(jcs, workingSource);
+      const col = importFinder(jcs, workingSource, {});
       const size = col.size();
       if (size < 1) newProgram = jcs.program([...templateNodes, ...astNodes]);
       else {
@@ -62,4 +62,9 @@ export default function injectStringTemplateStage(
   if (newProgram) col.replaceWith(newProgram);
 
   return workingSource;
+}
+
+function $lf(n: number) {
+  return "$lf|pipeline/stages/stringTemplate.inject.stage.ts:" + n + " >";
+  // Automatically injected by Log Location Injector vscode extension
 }

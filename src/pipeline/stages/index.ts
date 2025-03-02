@@ -12,9 +12,25 @@ import injectStringTemplateStage from "./stringTemplate.inject.stage";
 import injectTSInterfaceBodyStage from "./tsInterfaceBody.inject.stage";
 import injectClassConstructorStage from "./classConstructor.inject.stage";
 import injectNamedExportPropertyStage from "./namedExportProperty.inject.stage";
+import injectFunctionBodyStage from "./functionBody.inject.stage";
+import injectReturnObjectPropertyStage from "./returnObjectProperty.inject.stage";
+import injectImportsFromFileStage from "./importsFromFile.inject.stage";
+import injectReturnAllFunctionVariablesStage from "./returnAllFunctionVariables.inject.stage";
+import injectFunctionParamsStage from "./functionParams.inject.stage";
+import injectObjectForAccessorsStage from "./objectForAccessors.inject.stage";
+import injectToProgramStage from "./program.inject.stage";
+import injectReturnStatementStage from "./returnStatement.inject.stage";
 import injectTSTypeAliasConditionalStage from "./tsTypeAliasConditional.inject.stage";
 
 const stages = {
+  injectReturnStatementStage,
+  injectToProgramStage,
+  injectObjectForAccessorsStage,
+  injectFunctionParamsStage,
+  injectReturnAllFunctionVariablesStage,
+  injectImportsFromFileStage,
+  injectReturnObjectPropertyStage,
+  injectFunctionBodyStage,
   injectImportStage,
   injectPropertyStage,
   injectSwitchCaseStage,
@@ -29,7 +45,11 @@ const stages = {
   injectTSInterfaceBodyStage,
   injectClassConstructorStage,
   injectNamedExportPropertyStage,
-  injectTSTypeAliasConditionalStage
+  injectTSTypeAliasConditionalStage,
 };
+
+export type Stages = typeof stages;
+export type StagesKey = keyof Stages;
+export type StagesOpts<K extends StagesKey> = Parameters<Stages[K]>[2];
 
 export default stages;

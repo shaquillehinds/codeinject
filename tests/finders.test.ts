@@ -33,7 +33,7 @@ describe("exportDefaultFinder", () => {
   test(
     type + ": Should return an ExportDefaultDeclaration with 1 path.",
     () => {
-      const { col, idName } = finders.exportDefaultFinder(jcs, ast);
+      const { col, idName } = finders.exportDefaultFinder(jcs, ast, {});
       expect(col.getTypes()[0]).toBe(type);
       expect(col.size()).toBe(1);
     }
@@ -42,7 +42,7 @@ describe("exportDefaultFinder", () => {
 
 describe("exportFinder", () => {
   const type = "ExportNamedDeclaration";
-  const { col } = finders.exportFinder(jcs, ast);
+  const { col } = finders.exportFinder(jcs, ast, {});
   test(`${type}: Should return a ${type} collection with 1 path.`, () => {
     expect(col.getTypes()[0]).toBe(type);
     expect(col.size()).toBe(1);
@@ -50,15 +50,15 @@ describe("exportFinder", () => {
 
   const node = col.paths()[0].value;
 
-  test(`${type}: Node should be have a declaration of null and 2 specifiers`, () => {
+  test(`${type}: Node should be have a declaration of null and 1 specifiers`, () => {
     expect(node.declaration).toBeNull();
-    expect(node.specifiers?.length).toBe(2);
+    expect(node.specifiers?.length).toBe(1);
   });
 });
 
 describe("importFinder", () => {
   const type = "ImportDeclaration";
-  const col = finders.importFinder(jcs, ast);
+  const col = finders.importFinder(jcs, ast, {});
 
   test(`${type}: Should return a ${type} collection with 2 path.`, () => {
     expect(col.size()).toBe(2);
@@ -68,7 +68,7 @@ describe("importFinder", () => {
 
 describe("programFinder", () => {
   const type = "Program";
-  const col = finders.programFinder(jcs, ast);
+  const { col } = finders.programFinder(jcs, ast, {});
 
   test(`${type}: Should return a ${type} collection with 1 path.`, () => {
     expect(col.size()).toBe(1);
@@ -270,3 +270,70 @@ describe("jsxElementFinder", () => {
     });
   });
 });
+
+describe("functionFinder", () => {
+  const type = "ArrowFunctionExpression";
+  const type2 = "FunctionExpression";
+  const type3 = "FunctionDeclaration";
+
+  const { col } = finders.functionFinder(jcs, ast, {
+    name: "TestComponent2"
+  });
+  const { col: col2 } = finders.functionFinder(jcs, ast, {
+    name: "funcExp"
+  });
+  const { col: col3 } = finders.functionFinder(jcs, ast, {
+    name: "funcDec"
+  });
+
+  test("ArrowFunctionExpression: Should return a ArrowFunction collection with 1 path.", () => {
+    expect(col.size()).toBe(1);
+    expect(col.getTypes()[0]).toBe(type);
+  });
+  test("FunctionExpression: Should return a FunctionExpression collection with 1 path.", () => {
+    expect(col2.size()).toBe(1);
+    expect(col2.getTypes()[0]).toBe(type2);
+  });
+  test("FunctionDeclaration: Should return a FunctionDeclaration collection with 1 path.", () => {
+    expect(col3.size()).toBe(1);
+    expect(col3.getTypes()[0]).toBe(type3);
+  });
+});
+
+describe("returnFinder", () => {
+  const type = "ReturnStatement";
+  const { col } = finders.returnFinder(jcs, ast, {});
+  test("ReturnStatement: Should return a ReturnStatement collection with 2 paths.", () => {
+    expect(col.size()).toBe(2);
+    expect(col.getTypes()[0]).toBe(type);
+  });
+
+  const { col: col2 } = finders.returnFinder(jcs, ast, {
+    argumentType: "ObjectExpression"
+  });
+  test("ReturnStatement: Should return a ReturnStatement collection with 1 path.", () => {
+    expect(col2.size()).toBe(1);
+    expect(col2.getTypes()[0]).toBe(type);
+  });
+});
+
+const reactSourceContent = readFileSync(
+  "tests/experimentTemplates/test.react.template.tsx",
+  "utf-8"
+);
+const reactAST = jcs.withParser("tsx")(reactSourceContent);
+
+describe("useEffectFinder", () => {
+  const type = "CallExpression";
+  const { col } = finders.useEffectFinder(jcs, reactAST, {});
+
+  test("CallExpression: Should return a CallExpression collection with 2 path.", () => {
+    expect(col.size()).toBe(2);
+    expect(col.getTypes()[0]).toBe(type);
+  });
+});
+
+function $lf(n: number) {
+  return "$lf|codeinject/tests/finders.test.ts:" + n + " >";
+  // Automatically injected by Log Location Injector vscode extension
+}

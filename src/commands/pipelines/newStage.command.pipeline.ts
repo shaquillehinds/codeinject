@@ -8,7 +8,6 @@ export default async function newStageCommandPipeline(
 ) {
   const nameL = name[0].toLowerCase() + name.slice(1);
   await new InjectionPipeline("src/@types/stage.ts")
-    .injectTSEnumMember({ key: nameL, value: nameL }, { name: "StageTypeE" })
     .injectStringTemplate({
       template: `
 
@@ -80,7 +79,8 @@ export default async function newStageCommandPipeline(
       template: `
     describe("inject${name}", () => {
       const finderOptions: FinderOptions<"${finderName}"> = { name: "[identifierName]" };
-      const stageOptions: StageOptions<"${nameL}"> = {${options}};
+      // define stage options here
+      const stageOptions: StageOptions<"${nameL}"> = \`{${options}}\`;
       const expectedInjection = '';
       test('Should ', () => {
         pipeline.inject${name}(stageOptions, finderOptions);
@@ -91,7 +91,6 @@ export default async function newStageCommandPipeline(
     })
     .finish([
       "tests/stages.test.ts",
-      "tests/test.template.ts",
       "src/@types/stage.ts",
       `src/pipeline/stages/${nameL}.inject.stage.ts`
     ]);

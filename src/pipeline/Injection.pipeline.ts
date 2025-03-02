@@ -1,11 +1,12 @@
-import j, { Collection } from "jscodeshift";
+import j, { ASTNode, Collection, Node } from "jscodeshift";
 import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import { Options, format } from "prettier";
 import chalk from "chalk";
-import s from "./stages";
-import f from "./finders";
+import s, { StagesKey } from "./stages";
+import f, { FindersKey } from "./finders";
 import { execSync } from "child_process";
 import {
+  FunctionCollection,
   Stage,
   StageFinder,
   StageLogType,
@@ -14,10 +15,80 @@ import {
 } from "@src/@types/stage";
 import { FinderOptions, FinderType } from "@src/@types/finder";
 import { FileFromTemplateOptions } from "@src/@types";
+import nodeGrouper, {
+  NodeGrouperProps,
+  NodeGrouperType,
+  VariableType
+} from "@src/utils/nodeGrouper";
+import getDefinedVariableName from "@src/utils/getDefinedVariableName";
+import wait from "@src/utils/wait";
 
 const chalkGold = chalk.rgb(244, 184, 0);
 
+type FileRecords = {
+  variableNames: string[];
+  collectedVariableNames: boolean;
+  [key: string]: any;
+};
+
+type StoreRecords = {
+  [key: string]: FileRecords;
+};
+
 class InjectionPipeline {
+  public static getFinder<K extends FindersKey>(finder: K) {
+    const finderFunc = f[finder];
+    return finderFunc;
+  }
+
+  public static getStage<K extends StagesKey>(stage: K) {
+    const stageFunc = s[stage];
+    return stageFunc;
+  }
+
+  public static getName(col: Collection) {
+    try {
+      return col.find(j.Identifier).get().value.name as string;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  public static getNames(col: Collection) {
+    try {
+      return col
+        .find(j.Identifier)
+        .paths()
+        .map(p => p.value.name);
+    } catch (error) {
+      return [];
+    }
+  }
+
+  public static getBodyNodes(col: Collection) {
+    try {
+      return col.find(j.BlockStatement).get().value.body as ASTNode[];
+    } catch (error) {
+      return null;
+    }
+  }
+
+  public static getFunctionParams(col: FunctionCollection) {
+    try {
+      return col.at(0).nodes()[0].params;
+    } catch (error) {
+      return [];
+    }
+  }
+
+  public static nodeGrouper<
+    T extends NodeGrouperType,
+    V extends VariableType,
+    C extends VariableType
+  >(props: NodeGrouperProps<T, V, C>) {
+    return nodeGrouper<T, V, C>(props);
+  }
+
   protected ast?: Collection;
   protected asts: { location: string; ast: Collection }[] = [];
   protected newFiles: { location: string; content: string }[] = [];
@@ -25,15 +96,63 @@ class InjectionPipeline {
   protected updated: string[] = [];
   protected created: string[] = [];
   protected newDirLogs: string[] = [];
+  protected _originalFileContent: string = "";
+
+  public pipelineStore: StoreRecords = {};
+
   constructor(
     protected fileLocation: string,
     public prettierOptions?: Options
   ) {
-    this.updated.push(chalk.bold.cyanBright(`\nUpdating >> ${fileLocation}`));
+    // this.updated.push(chalkGold(`\nUpdating >> ${fileLocation}`));
   }
 
   public get _ast() {
     return this.ast;
+  }
+
+  public get location() {
+    return this.fileLocation;
+  }
+
+  public get updatedFileContent() {
+    return this.ast?.toSource() || "";
+  }
+
+  public get originalFileContent() {
+    return this._originalFileContent;
+  }
+
+  public getOriginalFileContent(
+    func: (content: string, currentPipeline: InjectionPipeline) => void
+  ) {
+    func(this._originalFileContent, this);
+    return this;
+  }
+
+  public get variableNames(): string[] {
+    if (this.pipelineStore[this.location].collectedVariableNames)
+      return this.pipelineStore[this.location].variableNames || [];
+    this._ast!.find(j.VariableDeclaration).forEach(p => {
+      const names = getDefinedVariableName(p.node);
+      for (const name of names)
+        if (name) this.pipelineStore[this.location].variableNames.push(name);
+    });
+    this._ast!.find(j.FunctionDeclaration).forEach(p => {
+      const name = p.node.id?.name;
+      if (name) this.pipelineStore[this.location].variableNames.push(name);
+    });
+    return this.pipelineStore[this.location].variableNames;
+  }
+
+  public storeFileVariables() {
+    this.variableNames;
+    return this;
+  }
+
+  public customInject(func: (currentPipeline: InjectionPipeline) => void) {
+    func(this);
+    return this;
   }
 
   public parse(fileLocation?: string) {
@@ -42,11 +161,37 @@ class InjectionPipeline {
         return this;
       }
       this.fileLocation = fileLocation;
-      this.updated.push(chalk.bold.cyanBright(`\nUpdating >> ${fileLocation}`));
+      if (!this.pipelineStore[fileLocation])
+        this.pipelineStore[fileLocation] = {
+          variableNames: [],
+          collectedVariableNames: false
+        };
+      this.updated.push(chalkGold.bold(`\nUpdating >> ${fileLocation}`));
     }
     const file = readFileSync(this.fileLocation, "utf-8");
+    this._originalFileContent = file;
     this.ast = j.withParser("tsx")(file);
     this.asts.push({ location: this.fileLocation, ast: this.ast });
+    return this;
+  }
+
+  public parseString({
+    text,
+    outputLocation
+  }: {
+    text: string;
+    outputLocation: string;
+  }) {
+    this.updated.push(chalk.bold.green(`\nCreating >> ${outputLocation}`));
+    this._originalFileContent = text;
+    this.ast = j.withParser("tsx")(text);
+    if (!this.pipelineStore[outputLocation])
+      this.pipelineStore[outputLocation] = {
+        variableNames: [],
+        collectedVariableNames: false
+      };
+    this.fileLocation = outputLocation;
+    this.asts.push({ location: outputLocation, ast: this.ast });
     return this;
   }
 
@@ -67,7 +212,7 @@ class InjectionPipeline {
 
   public async finish(filesToOpen?: string[]) {
     if (this.asts.length === 0) {
-      console.error(chalk.bgRed("You don't have any asts loaded."));
+      console.error($lf(215), chalk.bgRed("You don't have any asts loaded."));
       return this;
     }
 
@@ -76,7 +221,7 @@ class InjectionPipeline {
         mkdirSync(dir);
         console.info(this.newDirLogs[index]);
       } catch (error) {
-        console.error(`${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(224), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -85,7 +230,7 @@ class InjectionPipeline {
         writeFileSync(newFile.location, newFile.content, "utf-8");
         console.info(this.created[index]);
       } catch (error) {
-        console.error(`${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(233), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -97,7 +242,7 @@ class InjectionPipeline {
         });
         writeFileSync(ast.location, updatedSource, "utf-8");
       } catch (error) {
-        console.error(`${chalk.bgRed("[Error]")}: ${error}`);
+        console.error($lf(245), `${chalk.bgRed("[Error]")}: ${error}`);
       }
     }
 
@@ -108,11 +253,13 @@ class InjectionPipeline {
       filesToOpen.forEach(file => execSync(`code ${file}`));
     }
     this.asts = [];
+    this.fileLocation = "";
     this.newFiles = [];
     this.newDirPaths = [];
     this.updated = [];
     this.created = [];
     this.newDirLogs = [];
+    this._originalFileContent = "";
     return this;
   }
 
@@ -122,13 +269,34 @@ class InjectionPipeline {
     else if (type === "create")
       this.created.push(`${chalk.greenBright("[Create]")}: ${log}`);
     else if (type === "directory")
-      this.newDirLogs.push(`${chalk.bold.green("+ [Directory]")}: ${log}`);
+      this.newDirLogs.push(`${chalk.bold.cyanBright("+ [Directory]")}: ${log}`);
   }
 
   public injectDirectory(path: string) {
     if (!this.ast) this.parse();
     this.newDirPaths.push(path);
     this.addLog(path, "directory");
+    return this;
+  }
+
+  /**
+   * Use this if callstack issues occur.
+   * It will reload the ast and you can access the new ast from a callback function.
+   * Or you can access it from the pipeline awaited return
+   */
+  public async commit(
+    func?: (currentPipeline: InjectionPipeline) => void,
+    delay: number = 0
+  ) {
+    const fileLocation = this.location;
+    const originalFileContent = this._originalFileContent;
+
+    this.finish();
+    await wait(delay);
+
+    this.parse(fileLocation);
+    this._originalFileContent = originalFileContent;
+    func && func(this);
     return this;
   }
 
@@ -299,7 +467,7 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     s.injectNamedExportPropertyStage(j, this.ast!, {
       ...stageOptions,
-      ...f.exportFinder(j, this.ast!)
+      ...f.exportFinder(j, this.ast!, {})
     });
     this.addLog(`Injected export property: ${stageOptions.name}`);
     return this;
@@ -309,23 +477,119 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     s.injectImportStage(j, this.ast!, {
       ...stageOptions,
-      col: f.importFinder(j, this.ast!)
+      col: f.importFinder(j, this.ast!, {})
     });
-    this.addLog(
-      `Injected${stageOptions.importName ? " default " : " "}import: ${
-        stageOptions.importName
-      }`
-    );
+    if (stageOptions.nodes && stageOptions.nodes.length)
+      this.addLog("Inejcted an import by node.");
+    else
+      this.addLog(
+        `Injected${stageOptions.importName ? " default " : " "}import: ${
+          stageOptions.importName
+        }`
+      );
     return this;
   }
 
   public injectStringTemplate(stageOptions: StageOptions<"stringTemplate">) {
     if (!this.ast) this.parse();
-    stageOptions.col = f.programFinder(j, this.ast!);
+    stageOptions.col = f.programFinder(j, this.ast!, {}).col;
     s.injectStringTemplateStage(j, this.ast!, stageOptions);
-    this.addLog(`Injected string template code`);
+    this.addLog(`Injected string template code to program`);
+    return this;
+  }
+
+  public injectFunctionBody(
+    stageOptions: StageOptions<"functionBody">,
+    finderOptions: FinderOptions<"function">
+  ) {
+    if (!this.ast) this.parse();
+    stageOptions.col = f.functionFinder(j, this.ast!, finderOptions).col;
+    s.injectFunctionBodyStage(j, this.ast!, stageOptions);
+    this.addLog(`Injected function body to function ${finderOptions.name}`);
+    return this;
+  }
+
+  public injectReturnObjectProperty(
+    stageOptions: StageOptions<"returnObjectProperty">,
+    finderOptions: FinderOptions<"function">
+  ) {
+    if (!this.ast) this.parse();
+    stageOptions.col = f.functionFinder(j, this.ast!, finderOptions).col;
+    s.injectReturnObjectPropertyStage(j, this.ast!, stageOptions);
+    this.addLog(
+      `Injected return object property to function ${finderOptions.name}`
+    );
+    return this;
+  }
+  public injectImportsFromFile(
+    stageOptions: StageOptions<"importsFromFile">,
+    finderOptions: FinderOptions<"import">
+  ) {
+    if (!this.ast) this.parse();
+    stageOptions.col = f.importFinder(j, this.ast!, finderOptions);
+    s.injectImportsFromFileStage(j, this.ast!, stageOptions);
+    this.addLog(`Injected imports from ${stageOptions.origin.type}`);
+    return this;
+  }
+  public injectReturnAllFunctionVariables(
+    stageOptions: StageOptions<"returnAllFunctionVariables">,
+    finderOptions: FinderOptions<"function">
+  ) {
+    if (!this.ast) this.parse();
+    stageOptions.col = f.functionFinder(j, this.ast!, finderOptions).col;
+    s.injectReturnAllFunctionVariablesStage(j, this.ast!, stageOptions);
+    this.addLog(
+      `Injected return object with all variables to function ${finderOptions.name}`
+    );
+    return this;
+  }
+  public injectFunctionParams(
+    stageOptions: StageOptions<"functionParams">,
+    finderOptions: FinderOptions<"function">
+  ) {
+    if (!this.ast) this.parse();
+    stageOptions.col = f.functionFinder(j, this.ast!, finderOptions).col;
+    s.injectFunctionParamsStage(j, this.ast!, stageOptions);
+    this.addLog(`Injected params to function ${finderOptions.name}`);
+    return this;
+  }
+  public injectObjectForAccessors(
+    stageOptions: StageOptions<"objectForAccessors">
+  ) {
+    if (!this.ast) this.parse();
+    stageOptions.col = f.programFinder(j, this.ast!, {}).col;
+    stageOptions.ip = this;
+    s.injectObjectForAccessorsStage(j, this.ast!, stageOptions);
+    this.addLog(
+      `Injected object called "${stageOptions.objectName}" and made some variables accessors`
+    );
+    return this;
+  }
+  public injectToProgram(
+    stageOptions: StageOptions<"program">,
+    finderOptions: FinderOptions<"program">
+  ) {
+    if (!this.ast) this.parse();
+    stageOptions.col = f.programFinder(j, this.ast!, finderOptions).col;
+    s.injectToProgramStage(j, this.ast!, stageOptions);
+    this.addLog(`Injected new statements to program`);
+    return this;
+  }
+  public injectReturnStatement(
+    stageOptions: StageOptions<"returnStatement">,
+    finderOptions: FinderOptions<"function">
+  ) {
+    if (!this.ast) this.parse();
+    stageOptions.col = f.functionFinder(j, this.ast!, finderOptions).col;
+    s.injectReturnStatementStage(j, this.ast!, stageOptions);
+    this.addLog(`Injected new statements to function ${finderOptions.name}`);
     return this;
   }
 }
 
 export default InjectionPipeline;
+
+function $lf(n: number) {
+  return "$lf|src/pipeline/Injection.pipeline.ts:" + n + " >";
+  // Automatically injected by Log Location Injector vscode extension
+}

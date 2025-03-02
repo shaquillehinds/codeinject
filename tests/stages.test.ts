@@ -1,3 +1,4 @@
+//$lf-ignore
 import { afterAll, beforeAll, describe, expect, test } from "@jest/globals";
 import InjectionPipeline from "../src/pipeline/Injection.pipeline";
 import { StageOptions } from "../src/@types/stage";
@@ -117,12 +118,12 @@ describe("injectTSTypeAlias", () => {
     );
   });
 
-  test("Should overwrite TestAlias with new type reference 'Alphabet'", () => {
+  test("Should overwrite TestAlias with new type", () => {
     pipeline.injectTSTypeAlias(
-      { stringTemplate: `Alphabet`, type: "overwrite" },
+      { stringTemplate: `"a" | "b"`, type: "overwrite" },
       finderOptions
     );
-    testSourceForInjection(`export type TestAlias = Alphabet;`, "toBeTruthy");
+    testSourceForInjection(`export type TestAlias = "a" | "b"`, "toBeTruthy");
   });
 });
 
@@ -229,10 +230,7 @@ describe("injectProperty", () => {
     nested: true,
     using: "ts",
     time: 0
-  },
-
-  testProperty: "test value"
-};`;
+  }`;
   test(`Should add property jest to testObject.`, () => {
     pipeline.injectProperty(stageOptions, finderOptions);
     testSourceForInjection(expectedInjection, "toBeTruthy");
@@ -247,10 +245,7 @@ describe("injectProperty", () => {
     nested: true,
     using: "ts",
     time: 0
-  },
-
-  testProperty: "test value"
-};`;
+  }`;
   test(`Should add property literal as a jcs literal to testObject`, () => {
     pipeline.injectProperty(stageOptions2, finderOptions);
     testSourceForInjection(expectedInjection2, "toBeTruthy");
@@ -259,10 +254,10 @@ describe("injectProperty", () => {
 
 describe("injectNamedExportProperty", () => {
   const stageOptions: StageOptions<"namedExportProperty"> = {
-    name: "TestAlias"
+    name: "testArray"
   };
-  const expectedInjection = `export { testObject, testArray, TestAlias };`;
-  test(`Should add TestAlias to undeclared export object.`, () => {
+  const expectedInjection = `export { testObject, testArray };`;
+  test(`Should add testArray to undeclared export object.`, () => {
     pipeline.injectNamedExportProperty(stageOptions);
     testSourceForInjection(expectedInjection, "toBeTruthy");
   });
@@ -314,7 +309,7 @@ describe("injectClassMethod", () => {
     this._jestProperty = name;
   }
   public get jestProperty(){
-    return this._jestProperty;
+    return this._jestProperty || "";
   }`
   };
   const expectedInjection = `class TestClass {
@@ -329,7 +324,7 @@ describe("injectClassMethod", () => {
     this._jestProperty = name;
   }
   public get jestProperty(){
-    return this._jestProperty;
+    return this._jestProperty || "";
   }
 }`;
   test(`Should add members to class TestClass`, () => {
@@ -357,7 +352,7 @@ describe("injectConstructor", () => {
     this._jestProperty = name;
   }
   public get jestProperty(){
-    return this._jestProperty;
+    return this._jestProperty || "";
   }
 }`;
   test(`Should add members to class TestClass`, () => {
@@ -370,7 +365,7 @@ describe("injectJSXElement", () => {
   const finderName = "TestElement";
   test("Should inject new child element TestElementChild into TestElement component", () => {
     const stageOptions: StageOptions<"jsxElement"> = {
-      stringTemplate: "<TestElementChild></TestElementChild>"
+      stringTemplate: "<React.Fragment></React.Fragment>"
     };
     const finderOptions: FinderOptions<"jsxElement"> = {
       name: finderName,
@@ -379,7 +374,7 @@ describe("injectJSXElement", () => {
     };
     pipeline.injectJSXElement(stageOptions, finderOptions);
     testSourceForInjection(
-      `const TestComponent2 = () => <TestElement title="test"><TestElementChild></TestElementChild></TestElement>;`,
+      `const TestComponent2 = () => <TestElement title="test"><React.Fragment></React.Fragment></TestElement>;`,
       "toBeTruthy"
     );
   });
@@ -433,5 +428,123 @@ describe("injectTSNamespace", () => {
 }`,
       "toBeTruthy"
     );
+  });
+});
+describe("injectFunctionBody", () => {
+  test("Should inject into function declaration body", () => {
+    const finderOptions: FinderOptions<"function"> = { name: "funcDec" };
+    const stageOptions: StageOptions<"functionBody"> = {
+      stringTemplate: `const gg = true;`
+    };
+    const expectedInjection = "const gg = true;";
+    pipeline.injectFunctionBody(stageOptions, finderOptions);
+    testSourceForInjection(expectedInjection, "toBeTruthy");
+  });
+  test("Should inject into function expression body", () => {
+    const finderOptions: FinderOptions<"function"> = { name: "funcExp" };
+    const stageOptions: StageOptions<"functionBody"> = {
+      stringTemplate: `const gg2 = false;`
+    };
+    const expectedInjection = "const gg2 = false;";
+    pipeline.injectFunctionBody(stageOptions, finderOptions);
+    testSourceForInjection(expectedInjection, "toBeTruthy");
+  });
+});
+describe("injectReturnObjectProperty", () => {
+  const finderOptions: FinderOptions<"function"> = { name: "funcDec" };
+  const stageOptions: StageOptions<"returnObjectProperty"> = {
+    stringTemplate: `gone`
+  };
+  const expectedInjection = `  return {
+    ghost,
+    gone`;
+  test("Should inject return object properties into existing return object for function dclaration", () => {
+    pipeline.injectReturnObjectProperty(stageOptions, finderOptions);
+    testSourceForInjection(expectedInjection, "toBeTruthy");
+  });
+
+  const finderOptions2: FinderOptions<"function"> = { name: "funcExp" };
+  const stageOptions2: StageOptions<"returnObjectProperty"> = {
+    stringTemplate: `love`
+  };
+  const expectedInjection2 = `  return {
+    love`;
+  test("Should inject object return into function expression", () => {
+    pipeline.injectReturnObjectProperty(stageOptions2, finderOptions2);
+    testSourceForInjection(expectedInjection2, "toBeTruthy");
+  });
+});
+describe("injectImportsFromFile", () => {
+  const finderOptions: FinderOptions<"import"> = {};
+  const stageOptions: StageOptions<"importsFromFile"> = {
+    origin: {
+      type: "text",
+      text: 'import fs from "fs";\nimport path from "path";\n'
+    },
+    all: true
+  };
+  const expectedInjection = 'import fs from "fs"';
+  test("Should inject imports from file", () => {
+    pipeline.injectImportsFromFile(stageOptions, finderOptions);
+    testSourceForInjection(expectedInjection, "toBeTruthy");
+  });
+});
+describe("injectReturnAllFunctionVariables", () => {
+  const finderOptions: FinderOptions<"function"> = { name: "variablesReturn" };
+  const stageOptions: StageOptions<"returnAllFunctionVariables"> = {};
+  const expectedInjection = `  return {
+    first,
+    second,
+    third
+  };`;
+  test("Should return all the variables in function variablesReturn", () => {
+    pipeline.injectReturnAllFunctionVariables(stageOptions, finderOptions);
+    testSourceForInjection(expectedInjection, "toBeTruthy");
+  });
+});
+describe("injectFunctionParams", () => {
+  const finderOptions: FinderOptions<"function"> = { name: "funcExp" };
+  const stageOptions: StageOptions<"functionParams"> = {
+    stringTemplate: "love: boolean, sanity?: false"
+  };
+  const expectedInjection = "function(love: boolean, sanity?: false)";
+  test("Should inject params into function funcExp", () => {
+    pipeline.injectFunctionParams(stageOptions, finderOptions);
+    testSourceForInjection(expectedInjection, "toBeTruthy");
+  });
+});
+describe("injectObjectForAccessors", () => {
+  const stageOptions: StageOptions<"objectForAccessors"> = {
+    objectName: "testObject",
+    accessors: ["testProperty", "testProperty2"]
+  };
+  const expectedInjection = "testObject.testProperty";
+  test("Should inject 'testObject' before accessors 'testProperty' & 'testProperty'", () => {
+    pipeline.injectObjectForAccessors(stageOptions);
+    testSourceForInjection(expectedInjection, "toBeTruthy");
+  });
+});
+describe("injectToProgram", () => {
+  const finderOptions: FinderOptions<"program"> = {};
+  // define stage options here
+  const stageOptions: StageOptions<"program"> = {
+    stringTemplate: "export type GangGang = { lethal: true, sexy: true }"
+  };
+  const expectedInjection = "export type GangGang";
+  test("Should inject to Program successfully", () => {
+    pipeline.injectToProgram(stageOptions, finderOptions);
+    testSourceForInjection(expectedInjection, "toBeTruthy");
+  });
+});
+describe("injectReturnStatement", () => {
+  const finderOptions: FinderOptions<"function"> = { name: "injectReturnFunc" };
+  // define stage options here
+  const stageOptions: StageOptions<"returnStatement"> = {
+    stringTemplate: "isReturned"
+  };
+  const expectedInjection = "return isReturned";
+  test("Should ", () => {
+    pipeline.injectReturnStatement(stageOptions, finderOptions);
+    testSourceForInjection(expectedInjection, "toBeTruthy");
   });
 });

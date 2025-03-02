@@ -13,7 +13,15 @@ export enum StageTypeE {
   classMember = "classMember",
   jsxElement = "jsxElement",
   classConstructor = "classConstructor",
-  tsNamespace = "tsNamespace"
+  tsNamespace = "tsNamespace",
+  functionBody = "functionBody",
+  returnObjectProperty = "returnObjectProperty",
+  importsFromFile = "importsFromFile",
+  returnAllFunctionVariables = "returnAllFunctionVariables",
+  functionParams = "functionParams",
+  objectForAccessors = "objectForAccessors",
+  program = "program",
+  returnStatement = "returnStatement",
 }
 
 export enum StageNameE {
@@ -31,5 +39,13 @@ export enum StageNameE {
   classMember = "injectClassMemberStage",
   jsxElement = "injectJSXElementStage",
   classConstructor = "injectClassConstructorStage",
-  tsNamespace = "injectTSNamespaceStage"
+  tsNamespace = "injectTSNamespaceStage",
+  functionBody = "injectFunctionBodyStage",
+  returnObjectProperty = "injectReturnObjectPropertyStage",
+  importsFromFile = "injectImportsFromFileStage",
+  returnAllFunctionVariables = "injectReturnAllFunctionVariablesStage",
+  functionParams = "injectFunctionParamsStage",
+  objectForAccessors = "injectObjectForAccessorsStage",
+  program = "injectProgramStage",
+  returnStatement = "injectReturnStatementStage",
 }

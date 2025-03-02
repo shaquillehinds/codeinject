@@ -12,9 +12,15 @@ import tsTypeLiteralFinder from "./tsTypeLiteral.finder";
 import arrayVariableFinder from "./variableArray.finder";
 import existingImportFinder from "./existingImport.finder";
 import objectVariableFinder from "./variableObject.finder";
+import useEffectFinder from "./useEffect.finder";
+import functionFinder from "./function.finder";
+import returnFinder from "./return.finder";
 import tsInterfaceBodyFinder from "./tsInterfaceBody.finder";
 
 const finders = {
+  returnFinder,
+  functionFinder,
+  useEffectFinder,
   classBodyFinder,
   importFinder,
   exportFinder,
@@ -30,5 +36,9 @@ const finders = {
   existingImportFinder,
   objectVariableFinder,
   tsInterfaceBodyFinder
-};
+} as const;
+
+export type Finders = typeof finders;
+export type FindersKey = keyof Finders;
+export type FindersOpts<K extends FindersKey> = Parameters<Finders[K]>[2];
 export default finders;
