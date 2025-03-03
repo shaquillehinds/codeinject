@@ -1,4 +1,4 @@
-import { stderr } from "chalk";
+import chalk from "chalk";
 import { Collection } from "jscodeshift";
 
 export default function emptyCollectionValidator<T>(
@@ -7,7 +7,7 @@ export default function emptyCollectionValidator<T>(
 ) {
   if (!collection.size())
     throw new Error(
-      stderr.redBright(
+      chalk.stderr.redBright(
         `The collection ${collectionName} is empty, check your injection pipeline finder options. If everything looks good, there might be an issue with the finder function itself.`
       )
     );
