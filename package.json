@@ -1,6 +1,6 @@
 {
   "name": "tscodeinject",
-  "version": "2.3.7",
+  "version": "3.0.0",
   "description": "Inject code into your typescript files",
   "main": "dist/index.js",
   "release": {

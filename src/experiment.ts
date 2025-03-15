@@ -7,13 +7,13 @@
  */
 
 import jcs, { ReturnStatement } from "jscodeshift";
-import IP from "./index";
+import { InjectionPipeline as IP } from "./index";
 import { ExpressionKind } from "ast-types/gen/kinds";
 
 const sources = [
   "tests/experimentTemplates/test.react.template.tsx",
   "tests/experimentTemplates/react.templateA.tsx",
-  "tests/experimentTemplates/react.templateB.tsx"
+  "tests/experimentTemplates/react.templateB.tsx",
 ];
 const source = sources[2];
 
@@ -45,17 +45,17 @@ async function testingFunction() {
         const transformed = IP.objParamToIdentifier({
           param: p,
           paramName,
-          paramTypeName
+          paramTypeName,
         });
         propertyNames[paramName] = [];
         // console.log($lf(51), transformed);
-        transformed.propertyNames?.forEach(n => {
+        transformed.propertyNames?.forEach((n) => {
           propertyNames[paramName].push(n);
         });
         transformed.typeAlias &&
           paramsAliases.push(
             //@ts-ignore
-            jcs.exportNamedDeclaration(transformed.typeAlias)
+            jcs.exportNamedDeclaration(transformed.typeAlias),
           );
         return transformed.param;
       });
@@ -71,7 +71,7 @@ async function testingFunction() {
             "FunctionDeclaration",
             "IfStatement",
             "TryStatement",
-            "ReturnStatement"
+            "ReturnStatement",
           ],
           variableTypes: ["FunctionExpression", "ArrowFunctionExpression"],
           customVariableValidatorType: "CallExpression",
@@ -82,48 +82,48 @@ async function testingFunction() {
               }
             }
             return false;
-          }
+          },
         });
         const stateNodes = [
-          ...grouped.VariableDeclaration
+          ...grouped.VariableDeclaration,
         ] as jcs.VariableDeclaration[];
         const effectNodes = [...grouped.ExpressionStatement];
         const callbackNodes = [
           ...grouped.FunctionDeclaration,
           ...grouped.ArrowFunctionExpression,
           ...grouped.FunctionExpression,
-          ...grouped.CallExpression
+          ...grouped.CallExpression,
         ] as (jcs.FunctionDeclaration | jcs.VariableDeclaration)[];
         const controllerNodes = [
           ...grouped.IfStatement,
-          ...grouped.TryStatement
+          ...grouped.TryStatement,
         ];
         const ip = new IP("");
         const statePipeline = await ip
           .parseString({
             text: blankTemplateState,
-            outputLocation: "local/state.tsx"
+            outputLocation: "local/state.tsx",
           })
           .injectFunctionBody(
             { nodes: stateNodes },
-            { name: "BlankTemplateState" }
+            { name: "BlankTemplateState" },
           )
           .injectFunctionParams(
             { nodes: params },
-            { name: "BlankTemplateState" }
+            { name: "BlankTemplateState" },
           )
           .injectToProgram(
             {
               nodes: paramsAliases,
-              injectionPosition: "afterImport"
+              injectionPosition: "afterImport",
             },
-            {}
+            {},
           )
-          .customInject(ip => {
+          .customInject((ip) => {
             for (const property of Object.keys(propertyNames)) {
               ip.injectObjectForAccessors({
                 accessors: propertyNames[property],
-                objectName: property
+                objectName: property,
               });
             }
           })
@@ -131,7 +131,7 @@ async function testingFunction() {
           .injectReturnAllFunctionVariables({}, { name: "BlankTemplateState" })
           .injectStringTemplate({
             position: "lastLine",
-            template: `export type BlankTemplateStateReturn = ReturnType <typeof BlankTemplateState>`
+            template: `export type BlankTemplateStateReturn = ReturnType <typeof BlankTemplateState>`,
           })
           .storeFileVariables()
           .finish();
@@ -139,99 +139,99 @@ async function testingFunction() {
         const callbacksPipeline = await ip
           .parseString({
             text: blankTemplateCallbacks,
-            outputLocation: "local/callbacks.tsx"
+            outputLocation: "local/callbacks.tsx",
           })
           .injectFunctionBody(
             { nodes: callbackNodes },
-            { name: "BlankTemplateCallbacks" }
+            { name: "BlankTemplateCallbacks" },
           )
           .injectImportsFromFile({ origin: { source, type: "source" } }, {})
           .injectReturnAllFunctionVariables(
             {},
-            { name: "BlankTemplateCallbacks" }
+            { name: "BlankTemplateCallbacks" },
           )
           .injectStringTemplate({
             position: "lastLine",
-            template: `export type BlankTemplateCallbacksReturn = ReturnType <typeof BlankTemplateCallbacks>`
+            template: `export type BlankTemplateCallbacksReturn = ReturnType <typeof BlankTemplateCallbacks>`,
           })
           .injectFunctionParams(
             { stringTemplate: "state: BlankTemplateStateReturn" },
-            { name: "BlankTemplateCallbacks" }
+            { name: "BlankTemplateCallbacks" },
           )
           .injectFunctionParams(
             { nodes: params },
-            { name: "BlankTemplateCallbacks" }
+            { name: "BlankTemplateCallbacks" },
           )
-          .customInject(ip => {
+          .customInject((ip) => {
             for (const property of Object.keys(propertyNames)) {
               ip.injectObjectForAccessors({
                 accessors: propertyNames[property],
-                objectName: property
+                objectName: property,
               });
             }
           })
           .injectImport({
             importName: "BlankTemplateStateReturn",
-            source: "./state.tsx"
+            source: "./state.tsx",
           })
           .injectImport({
             importName: "BlankTemplateProps",
-            source: "./state.tsx"
+            source: "./state.tsx",
           })
           .injectObjectForAccessors({
             objectName: "state",
-            accessors: ip => {
+            accessors: (ip) => {
               return ip.pipelineStore["local/state.tsx"].variableNames;
-            }
+            },
           })
           .storeFileVariables()
           .finish();
         const effectsPipeline = await ip
           .parseString({
             text: blankTemplateEffects,
-            outputLocation: "local/effects.tsx"
+            outputLocation: "local/effects.tsx",
           })
           .injectFunctionBody(
             { nodes: effectNodes },
-            { name: "BlankTemplateEffects" }
+            { name: "BlankTemplateEffects" },
           )
           .injectImportsFromFile({ origin: { source, type: "source" } }, {})
           .injectFunctionParams(
             {
               stringTemplate:
-                "state: BlankTemplateStateReturn, callbacks: BlankTemplateCallbacksReturn"
+                "state: BlankTemplateStateReturn, callbacks: BlankTemplateCallbacksReturn",
             },
-            { name: "BlankTemplateEffects" }
+            { name: "BlankTemplateEffects" },
           )
           .injectFunctionParams(
             { nodes: params },
-            { name: "BlankTemplateEffects" }
+            { name: "BlankTemplateEffects" },
           )
           .injectImport({
             importName: "BlankTemplateProps",
-            source: "./state.tsx"
+            source: "./state.tsx",
           })
           .injectImport({
             importName: "BlankTemplateStateReturn",
-            source: "./state.tsx"
+            source: "./state.tsx",
           })
           .injectImport({
             importName: "BlankTemplateCallbacksReturn",
-            source: "./callbacks.tsx"
+            source: "./callbacks.tsx",
           })
-          .customInject(cp => {
+          .customInject((cp) => {
             cp.injectObjectForAccessors({
               objectName: "state",
-              accessors: cp.pipelineStore["local/state.tsx"].variableNames
+              accessors: cp.pipelineStore["local/state.tsx"].variableNames,
             });
             cp.injectObjectForAccessors({
               objectName: "callbacks",
-              accessors: cp.pipelineStore["local/callbacks.tsx"].variableNames
+              accessors: cp.pipelineStore["local/callbacks.tsx"].variableNames,
             });
             for (const property of Object.keys(propertyNames)) {
               cp.injectObjectForAccessors({
                 accessors: propertyNames[property],
-                objectName: property
+                objectName: property,
               });
             }
           })
@@ -239,60 +239,60 @@ async function testingFunction() {
         const controllerPipeline = await ip
           .parseString({
             text: blankTemplateController,
-            outputLocation: "local/controller.tsx"
+            outputLocation: "local/controller.tsx",
           })
           .injectFunctionBody(
             {
               stringTemplate: ` const state = BlankTemplateState(props);
   const callbacks = BlankTemplateCallbacks(state, props)
-  BlankTemplateEffects(state, callbacks, props)`
+  BlankTemplateEffects(state, callbacks, props)`,
             },
-            { name: "BlankTemplateController" }
+            { name: "BlankTemplateController" },
           )
           .injectFunctionBody(
             { nodes: controllerNodes },
-            { name: "BlankTemplateController" }
+            { name: "BlankTemplateController" },
           )
           .injectImportsFromFile({ origin: { source, type: "source" } }, {})
           .injectFunctionParams(
             { nodes: params },
-            { name: "BlankTemplateController" }
+            { name: "BlankTemplateController" },
           )
           .injectImport({
             importName: "BlankTemplateProps",
-            source: "./state.tsx"
+            source: "./state.tsx",
           })
           .injectImport({
             importName: "BlankTemplateState",
-            source: "./state.tsx"
+            source: "./state.tsx",
           })
           .injectImport({
             importName: "BlankTemplateCallbacks",
-            source: "./callbacks.tsx"
+            source: "./callbacks.tsx",
           })
           .injectImport({
             importName: "BlankTemplateEffects",
-            source: "./effects.tsx"
+            source: "./effects.tsx",
           })
           .injectFunctionBody(
             {
-              stringTemplate: `return { state, callbacks }`
+              stringTemplate: `return { state, callbacks }`,
             },
-            { name: "BlankTemplateController" }
+            { name: "BlankTemplateController" },
           )
-          .commit(cp => {
+          .commit((cp) => {
             cp.injectObjectForAccessors({
               objectName: "state",
-              accessors: cp.pipelineStore["local/state.tsx"].variableNames
+              accessors: cp.pipelineStore["local/state.tsx"].variableNames,
             });
             cp.injectObjectForAccessors({
               objectName: "callbacks",
-              accessors: cp.pipelineStore["local/callbacks.tsx"].variableNames
+              accessors: cp.pipelineStore["local/callbacks.tsx"].variableNames,
             });
             for (const property of Object.keys(propertyNames)) {
               cp.injectObjectForAccessors({
                 accessors: propertyNames[property],
-                objectName: property
+                objectName: property,
               });
             }
             cp.finish();
@@ -301,43 +301,43 @@ async function testingFunction() {
         const indexPipeline = ip
           .parseString({
             outputLocation: "local/index.tsx",
-            text: blankTemplate
+            text: blankTemplate,
           })
           .injectFunctionBody(
             {
               stringTemplate: `
 const { state, callbacks } = BlankTemplateController(props);
-`
+`,
             },
-            { name: "BlankTemplate" }
+            { name: "BlankTemplate" },
           )
           .injectFunctionParams({ nodes: params }, { name: "BlankTemplate" })
           .injectImport({
             importName: "BlankTemplateProps",
-            source: "./state.tsx"
+            source: "./state.tsx",
           })
           .injectImport({
             importName: "BlankTemplateController",
-            source: "./controller.tsx"
+            source: "./controller.tsx",
           })
           .injectReturnStatement(
             { node: grouped.ReturnStatement[0] as ReturnStatement },
-            { name: "BlankTemplate" }
+            { name: "BlankTemplate" },
           )
           .injectImportsFromFile({ origin: { source, type: "source" } }, {})
-          .commit(cp => {
+          .commit((cp) => {
             cp.injectObjectForAccessors({
               objectName: "state",
-              accessors: cp.pipelineStore["local/state.tsx"].variableNames
+              accessors: cp.pipelineStore["local/state.tsx"].variableNames,
             });
             cp.injectObjectForAccessors({
               objectName: "callbacks",
-              accessors: cp.pipelineStore["local/callbacks.tsx"].variableNames
+              accessors: cp.pipelineStore["local/callbacks.tsx"].variableNames,
             });
             for (const property of Object.keys(propertyNames)) {
               cp.injectObjectForAccessors({
                 accessors: propertyNames[property],
-                objectName: property
+                objectName: property,
               });
             }
             cp.finish();

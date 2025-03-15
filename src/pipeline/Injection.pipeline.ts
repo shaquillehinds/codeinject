@@ -1,3 +1,4 @@
+//$lf-ignore
 import j, { ASTNode, Collection, Node } from "jscodeshift";
 import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import { Options, format } from "prettier";
@@ -11,19 +12,19 @@ import {
   StageFinder,
   StageLogType,
   StageOptions,
-  StageType
+  StageType,
 } from "@src/@types/stage";
 import { FinderOptions, FinderType } from "@src/@types/finder";
 import { FileFromTemplateOptions } from "@src/@types";
 import nodeGrouper, {
   NodeGrouperProps,
   NodeGrouperType,
-  VariableType
+  VariableType,
 } from "@src/utils/nodeGrouper";
 import getDefinedVariableName from "@src/utils/getDefinedVariableName";
 import wait from "@src/utils/wait";
 import objParamToIdentifier, {
-  ObjParamToIdentifierProps
+  ObjParamToIdentifierProps,
 } from "@src/utils/objParamToIdentifier";
 import buildPath from "@src/utils/buildPath";
 
@@ -63,7 +64,7 @@ class InjectionPipeline {
       return col
         .find(j.Identifier)
         .paths()
-        .map(p => p.value.name);
+        .map((p) => p.value.name);
     } catch (error) {
       return [];
     }
@@ -92,7 +93,7 @@ class InjectionPipeline {
   public static nodeGrouper<
     T extends NodeGrouperType,
     V extends VariableType,
-    C extends VariableType
+    C extends VariableType,
   >(props: NodeGrouperProps<T, V, C>) {
     return nodeGrouper<T, V, C>(props);
   }
@@ -110,7 +111,7 @@ class InjectionPipeline {
 
   constructor(
     protected fileLocation: string,
-    public prettierOptions?: Options
+    public prettierOptions?: Options,
   ) {
     // this.updated.push(chalkGold(`\nUpdating >> ${fileLocation}`));
   }
@@ -132,7 +133,7 @@ class InjectionPipeline {
   }
 
   public getOriginalFileContent(
-    func: (content: string, currentPipeline: InjectionPipeline) => void
+    func: (content: string, currentPipeline: InjectionPipeline) => void,
   ) {
     func(this._originalFileContent, this);
     return this;
@@ -141,12 +142,12 @@ class InjectionPipeline {
   public get variableNames(): string[] {
     if (this.pipelineStore[this.location].collectedVariableNames)
       return this.pipelineStore[this.location].variableNames || [];
-    this._ast!.find(j.VariableDeclaration).forEach(p => {
+    this._ast!.find(j.VariableDeclaration).forEach((p) => {
       const names = getDefinedVariableName(p.node);
       for (const name of names)
         if (name) this.pipelineStore[this.location].variableNames.push(name);
     });
-    this._ast!.find(j.FunctionDeclaration).forEach(p => {
+    this._ast!.find(j.FunctionDeclaration).forEach((p) => {
       const name = p.node.id?.name;
       if (name) this.pipelineStore[this.location].variableNames.push(name);
     });
@@ -172,7 +173,7 @@ class InjectionPipeline {
       if (!this.pipelineStore[fileLocation])
         this.pipelineStore[fileLocation] = {
           variableNames: [],
-          collectedVariableNames: false
+          collectedVariableNames: false,
         };
       this.updated.push(chalkGold.bold(`\nUpdating >> ${fileLocation}`));
     }
@@ -185,7 +186,7 @@ class InjectionPipeline {
 
   public parseString({
     text,
-    outputLocation
+    outputLocation,
   }: {
     text: string;
     outputLocation: string;
@@ -196,7 +197,7 @@ class InjectionPipeline {
     if (!this.pipelineStore[outputLocation])
       this.pipelineStore[outputLocation] = {
         variableNames: [],
-        collectedVariableNames: false
+        collectedVariableNames: false,
       };
     this.fileLocation = outputLocation;
     this.asts.push({ location: outputLocation, ast: this.ast });
@@ -206,7 +207,7 @@ class InjectionPipeline {
   public stage<T extends StageType, F extends FinderType = FinderType>({
     finder,
     stage,
-    options
+    options,
   }: {
     stage: Stage<T>;
     options: StageOptions<T> & { col?: Collection };
@@ -220,7 +221,7 @@ class InjectionPipeline {
 
   public async finish(filesToOpen?: string[]) {
     if (this.asts.length === 0) {
-      console.error($lf(223), chalk.bgRed("You don't have any asts loaded."));
+      console.error(chalk.bgRed("You don't have any asts loaded."));
       return this;
     }
 
@@ -229,7 +230,7 @@ class InjectionPipeline {
         buildPath(dir, { type: "dir" });
         console.info(this.newDirLogs[index]);
       } catch (error) {
-        console.error($lf(232), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error(`${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -238,7 +239,7 @@ class InjectionPipeline {
         buildPath(newFile.location, { type: "file", content: newFile.content });
         console.info(this.created[index]);
       } catch (error) {
-        console.error($lf(241), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error(`${chalk.bgRed("[Error]")}: ${error}`);
       }
     });
 
@@ -246,11 +247,11 @@ class InjectionPipeline {
       try {
         const updatedSource = await format(ast.ast.toSource(), {
           parser: "typescript",
-          ...this.prettierOptions
+          ...this.prettierOptions,
         });
         writeFileSync(ast.location, updatedSource, "utf-8");
       } catch (error) {
-        console.error($lf(253), `${chalk.bgRed("[Error]")}: ${error}`);
+        console.error(`${chalk.bgRed("[Error]")}: ${error}`);
       }
     }
 
@@ -258,7 +259,7 @@ class InjectionPipeline {
     console.info(updateString);
 
     if (filesToOpen && filesToOpen.length > 0) {
-      filesToOpen.forEach(file => execSync(`code ${file}`));
+      filesToOpen.forEach((file) => execSync(`code ${file}`));
     }
     this.asts = [];
     this.fileLocation = "";
@@ -286,7 +287,7 @@ class InjectionPipeline {
    */
   public async commit(
     func?: (currentPipeline: InjectionPipeline) => void,
-    delay: number = 0
+    delay: number = 0,
   ) {
     const fileLocation = this.location;
     const originalFileContent = this._originalFileContent;
@@ -304,7 +305,7 @@ class InjectionPipeline {
     if (instant) {
       buildPath(path, { type: "dir" });
       const chalkInstance = chalk.greenBright(`\nCreated Directory >> ${path}`);
-      console.log($lf(307), chalkInstance);
+      console.log(chalkInstance);
       return this;
     }
     if (!this.ast) this.parse();
@@ -322,9 +323,9 @@ class InjectionPipeline {
     if (options.instant) {
       buildPath(options.newFilePath, { type: "file", content });
       const chalkInstance = chalk.greenBright(
-        `\nCreated File >> ${options.newFilePath}`
+        `\nCreated File >> ${options.newFilePath}`,
       );
-      console.log($lf(327), chalkInstance);
+      console.log(chalkInstance);
       return this;
     }
     this.newFiles.push({ content, location: options.newFilePath });
@@ -334,7 +335,7 @@ class InjectionPipeline {
 
   public injectArrayElement(
     stageOptions: StageOptions<"arrayElement">,
-    finderOpts: FinderOptions<"variableArray">
+    finderOpts: FinderOptions<"variableArray">,
   ) {
     if (!this.ast) this.parse();
     const found = f.arrayVariableFinder(j, this.ast!, finderOpts);
@@ -346,21 +347,21 @@ class InjectionPipeline {
 
   public injectTSEnumMember(
     stageOptions: StageOptions<"tsEnumMember">,
-    finderOpts: FinderOptions<"tsEnum">
+    finderOpts: FinderOptions<"tsEnum">,
   ) {
     if (!this.ast) this.parse();
     const found = f.tsEnumFinder(j, this.ast!, finderOpts);
     const newStageOpts = { ...stageOptions, ...found };
     s.injectTSEnumMemberStage(j, this.ast!, newStageOpts);
     this.addLog(
-      `Injected enum member ${stageOptions.key} to enum: ${found.idName}`
+      `Injected enum member ${stageOptions.key} to enum: ${found.idName}`,
     );
     return this;
   }
 
   public injectTSTypeAliasConditional(
     stageOptions: StageOptions<"tsTypeAliasConditional">,
-    finderOpts: FinderOptions<"tsTypeAlias">
+    finderOpts: FinderOptions<"tsTypeAlias">,
   ) {
     if (!this.ast) this.parse();
     const found = f.tsTypeAliasFinder(j, this.ast!, finderOpts);
@@ -372,35 +373,35 @@ class InjectionPipeline {
 
   public injectProperty(
     stageOptions: StageOptions<"property">,
-    finderOpts: FinderOptions<"variableObject">
+    finderOpts: FinderOptions<"variableObject">,
   ) {
     if (!this.ast) this.parse();
     const found = f.objectVariableFinder(j, this.ast!, finderOpts);
     const newStageOpts = { ...stageOptions, ...found };
     s.injectPropertyStage(j, this.ast!, newStageOpts);
     this.addLog(
-      `Injected object property ${stageOptions.property} to: ${found.idName}`
+      `Injected object property ${stageOptions.property} to: ${found.idName}`,
     );
     return this;
   }
 
   public injectSwitchCase(
     stageOptions: StageOptions<"case">,
-    finderOpts: FinderOptions<"switch">
+    finderOpts: FinderOptions<"switch">,
   ) {
     if (!this.ast) this.parse();
     const found = f.switchFinder(j, this.ast!, finderOpts);
     const newStageOpts = { ...stageOptions, ...found };
     s.injectSwitchCaseStage(j, this.ast!, newStageOpts);
     this.addLog(
-      `Injected switch case ${stageOptions.caseName} to switch statement: ${found.idName}`
+      `Injected switch case ${stageOptions.caseName} to switch statement: ${found.idName}`,
     );
     return this;
   }
 
   public injectTSTypeAlias(
     stageOptions: StageOptions<"tsTypeAlias">,
-    finderOpts: FinderOptions<"tsTypeAlias">
+    finderOpts: FinderOptions<"tsTypeAlias">,
   ) {
     if (!this.ast) this.parse();
     const found = f.tsTypeAliasFinder(j, this.ast!, finderOpts);
@@ -412,7 +413,7 @@ class InjectionPipeline {
 
   public injectTSTypeLiteral(
     stageOptions: StageOptions<"tsTypeLiteral">,
-    finderOpts: FinderOptions<"tsTypeLiteral">
+    finderOpts: FinderOptions<"tsTypeLiteral">,
   ) {
     if (!this.ast) this.parse();
     const found = f.tsTypeLiteralFinder(j, this.ast!, finderOpts);
@@ -424,7 +425,7 @@ class InjectionPipeline {
 
   public injectClassMember(
     stageOptions: StageOptions<"classMember">,
-    finderOpts: FinderOptions<"classBody">
+    finderOpts: FinderOptions<"classBody">,
   ) {
     if (!this.ast) this.parse();
     const found = f.classBodyFinder(j, this.ast!, finderOpts);
@@ -436,7 +437,7 @@ class InjectionPipeline {
 
   public injectClassConstructor(
     stageOptions: StageOptions<"classConstructor">,
-    finderOpts: FinderOptions<"classBody">
+    finderOpts: FinderOptions<"classBody">,
   ) {
     if (!this.ast) this.parse();
     const found = f.classBodyFinder(j, this.ast!, finderOpts);
@@ -448,7 +449,7 @@ class InjectionPipeline {
 
   public injectTSInterfaceBody(
     stageOptions: StageOptions<"tsInterfaceBody">,
-    finderOpts: FinderOptions<"tsInterfaceBody">
+    finderOpts: FinderOptions<"tsInterfaceBody">,
   ) {
     if (!this.ast) this.parse();
     const found = f.tsInterfaceBodyFinder(j, this.ast!, finderOpts);
@@ -460,7 +461,7 @@ class InjectionPipeline {
 
   public injectJSXElement(
     stageOptions: StageOptions<"jsxElement">,
-    finderOpts: FinderOptions<"jsxElement">
+    finderOpts: FinderOptions<"jsxElement">,
   ) {
     if (!this.ast) this.parse();
     const found = f.jsxElementFinder(j, this.ast!, finderOpts);
@@ -472,7 +473,7 @@ class InjectionPipeline {
 
   public injectTSNamespace(
     stageOptions: StageOptions<"tsNamespace">,
-    finderOpts: FinderOptions<"tsNamespace">
+    finderOpts: FinderOptions<"tsNamespace">,
   ) {
     if (!this.ast) this.parse();
     const found = f.tsNamespaceFinder(j, this.ast!, finderOpts);
@@ -483,12 +484,12 @@ class InjectionPipeline {
   }
 
   public injectNamedExportProperty(
-    stageOptions: StageOptions<"namedExportProperty">
+    stageOptions: StageOptions<"namedExportProperty">,
   ) {
     if (!this.ast) this.parse();
     s.injectNamedExportPropertyStage(j, this.ast!, {
       ...stageOptions,
-      ...f.exportFinder(j, this.ast!, {})
+      ...f.exportFinder(j, this.ast!, {}),
     });
     this.addLog(`Injected export property: ${stageOptions.name}`);
     return this;
@@ -498,7 +499,7 @@ class InjectionPipeline {
     if (!this.ast) this.parse();
     s.injectImportStage(j, this.ast!, {
       ...stageOptions,
-      col: f.importFinder(j, this.ast!, {})
+      col: f.importFinder(j, this.ast!, {}),
     });
     if (stageOptions.nodes && stageOptions.nodes.length)
       this.addLog("Inejcted an import by node.");
@@ -506,7 +507,7 @@ class InjectionPipeline {
       this.addLog(
         `Injected${stageOptions.importName ? " default " : " "}import: ${
           stageOptions.importName
-        }`
+        }`,
       );
     return this;
   }
@@ -521,7 +522,7 @@ class InjectionPipeline {
 
   public injectFunctionBody(
     stageOptions: StageOptions<"functionBody">,
-    finderOptions: FinderOptions<"function">
+    finderOptions: FinderOptions<"function">,
   ) {
     if (!this.ast) this.parse();
     stageOptions.col = f.functionFinder(j, this.ast!, finderOptions).col;
@@ -532,19 +533,19 @@ class InjectionPipeline {
 
   public injectReturnObjectProperty(
     stageOptions: StageOptions<"returnObjectProperty">,
-    finderOptions: FinderOptions<"function">
+    finderOptions: FinderOptions<"function">,
   ) {
     if (!this.ast) this.parse();
     stageOptions.col = f.functionFinder(j, this.ast!, finderOptions).col;
     s.injectReturnObjectPropertyStage(j, this.ast!, stageOptions);
     this.addLog(
-      `Injected return object property to function ${finderOptions.name}`
+      `Injected return object property to function ${finderOptions.name}`,
     );
     return this;
   }
   public injectImportsFromFile(
     stageOptions: StageOptions<"importsFromFile">,
-    finderOptions: FinderOptions<"import">
+    finderOptions: FinderOptions<"import">,
   ) {
     if (!this.ast) this.parse();
     stageOptions.col = f.importFinder(j, this.ast!, finderOptions);
@@ -554,19 +555,19 @@ class InjectionPipeline {
   }
   public injectReturnAllFunctionVariables(
     stageOptions: StageOptions<"returnAllFunctionVariables">,
-    finderOptions: FinderOptions<"function">
+    finderOptions: FinderOptions<"function">,
   ) {
     if (!this.ast) this.parse();
     stageOptions.col = f.functionFinder(j, this.ast!, finderOptions).col;
     s.injectReturnAllFunctionVariablesStage(j, this.ast!, stageOptions);
     this.addLog(
-      `Injected return object with all variables to function ${finderOptions.name}`
+      `Injected return object with all variables to function ${finderOptions.name}`,
     );
     return this;
   }
   public injectFunctionParams(
     stageOptions: StageOptions<"functionParams">,
-    finderOptions: FinderOptions<"function">
+    finderOptions: FinderOptions<"function">,
   ) {
     if (!this.ast) this.parse();
     stageOptions.col = f.functionFinder(j, this.ast!, finderOptions).col;
@@ -575,20 +576,20 @@ class InjectionPipeline {
     return this;
   }
   public injectObjectForAccessors(
-    stageOptions: StageOptions<"objectForAccessors">
+    stageOptions: StageOptions<"objectForAccessors">,
   ) {
     if (!this.ast) this.parse();
     stageOptions.col = f.programFinder(j, this.ast!, {}).col;
     stageOptions.ip = this;
     s.injectObjectForAccessorsStage(j, this.ast!, stageOptions);
     this.addLog(
-      `Injected object called "${stageOptions.objectName}" and made some variables accessors`
+      `Injected object called "${stageOptions.objectName}" and made some variables accessors`,
     );
     return this;
   }
   public injectToProgram(
     stageOptions: StageOptions<"program">,
-    finderOptions: FinderOptions<"program">
+    finderOptions: FinderOptions<"program">,
   ) {
     if (!this.ast) this.parse();
     stageOptions.col = f.programFinder(j, this.ast!, finderOptions).col;
@@ -598,7 +599,7 @@ class InjectionPipeline {
   }
   public injectReturnStatement(
     stageOptions: StageOptions<"returnStatement">,
-    finderOptions: FinderOptions<"function">
+    finderOptions: FinderOptions<"function">,
   ) {
     if (!this.ast) this.parse();
     stageOptions.col = f.functionFinder(j, this.ast!, finderOptions).col;
@@ -609,8 +610,3 @@ class InjectionPipeline {
 }
 
 export default InjectionPipeline;
-
-function $lf(n: number) {
-  return "$lf|src/pipeline/Injection.pipeline.ts:" + n + " >";
-  // Automatically injected by Log Location Injector vscode extension
-}
